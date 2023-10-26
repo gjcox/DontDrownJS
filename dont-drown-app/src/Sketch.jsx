@@ -1,11 +1,32 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
 
+/**
+ * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
+ * @param {*} width window size 
+ * @param {*} height window height 
+ * @returns the optimal [width, height] measurements 
+ */
+function determineSizes(width, height) {
+    const goldenRatio = 1.6;
+    let limitingFactor = width >= goldenRatio * height ? 'h' : 'w';
+    if (limitingFactor == 'w') {
+        return [width, width / goldenRatio];
+    } else {
+        return [height * goldenRatio, height];
+    }
+}
+
 function sketch(p5) {
     var propped = undefined;
     var background = 250;
 
-    p5.setup = () => p5.createCanvas(600, 400);
+    const canvasScale = 0.8; // the proportion of the window to take up 
+    const canvasDimensions = () => determineSizes(p5.windowWidth, p5.windowHeight).map(x => x * canvasScale);
+
+    p5.setup = () => {
+        p5.createCanvas(...canvasDimensions());
+    };
 
     p5.updateWithProps = props => {
         if (props.propped) {
@@ -26,6 +47,10 @@ function sketch(p5) {
         p5.pop();
     };
 
+
+    p5.windowResized = () => {
+        p5.resizeCanvas(...canvasDimensions());
+    };
 }
 
 export default ({ p5Prop: p5Prop, setP5Prop }) => {
