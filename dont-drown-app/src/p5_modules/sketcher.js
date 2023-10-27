@@ -133,10 +133,10 @@ export default class Sketcher {
      * @param {*} strokeColour 
      * @param {*} fillColour 
      * @param {*} lineWeight the average thickness of edge lines
-     * @param  {...any} corners four p5.Vectors 
+     * @param {any[]} corners four p5.Vectors 
      * @returns 
      */
-    buildSketchedQuad(strokeColour, fillColour, lineWeight = undefined, ...corners) {
+    buildSketchedQuad(strokeColour, fillColour, corners, lineWeight = undefined) {
         const quad = new CompositeShape();
 
         // add the fill
@@ -158,5 +158,28 @@ export default class Sketcher {
         }
 
         return quad;
+    }
+
+    /**
+     * 
+     * @param {*} strokeColour 
+     * @param {*} fillColour 
+     * @param {*} x of top-left corner
+     * @param {*} y of top-left corner
+     * @param {*} w width
+     * @param {*} h height 
+     * @param {*} lineWeight 
+     * @returns 
+     */
+    buildSketchedRect(strokeColour, fillColour, x, y, w, h, lineWeight = undefined) {
+        return this.buildSketchedQuad(
+            strokeColour,
+            fillColour,
+            [this.p5.createVector(x, y),
+            this.p5.createVector(x + w, y),
+            this.p5.createVector(x + w, y + h),
+            this.p5.createVector(x, y + h)],
+            lineWeight
+        );
     }
 }

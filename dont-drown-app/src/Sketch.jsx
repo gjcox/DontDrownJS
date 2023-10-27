@@ -24,28 +24,10 @@ function sketch(p5) {
     const background = 250;
 
     var sketcher;
-    var sketchedLine, dualWeightedLine, sketchedQuad;
+    var sketchedLine, dualWeightedLine, sketchedQuad, sketchedRect;
     var propped = undefined;
 
-    p5.setup = () => {
-        p5.createCanvas(...canvasDimensions());
-        sketcher = new Sketcher(p5);
-        p5.noStroke();
-    };
-
-    p5.updateWithProps = props => {
-        if (props.propped) {
-            propped = props.propped;
-        }
-    };
-
-    p5.draw = () => {
-        /* React strict-mode calls useEffect twice, which means two 
-         * canvases are sometimes generated. Seemingly when this happens 
-         * the first canvas does not get passed props properly, so we can
-         * use this to determine if a canvas needs deleting. */
-        if (propped === undefined) { p5.remove(); return; };
-
+    function sketchObjects() {
         if (!sketchedLine || p5.frameCount % 30 == 0) {
             sketchedLine = sketcher.buildSketchedLine(
                 p5.createVector(50, 100),
@@ -67,22 +49,61 @@ function sketch(p5) {
         if (!sketchedQuad || p5.frameCount % 30 == 0) {
             sketchedQuad = sketcher.buildSketchedQuad(
                 'gold',
-                'yellow', 
-                10, 
-                p5.createVector(300, 300),
+                'yellow',
+                [p5.createVector(300, 300),
                 p5.createVector(400, 300),
                 p5.createVector(385, 350),
-                p5.createVector(315, 350),
+                p5.createVector(315, 350)],
+                10
             );
         }
 
+        if (!sketchedRect || p5.frameCount % 30 == 0) {
+            sketchedRect = sketcher.buildSketchedRect(
+                'salmon',
+                'lightcyan',
+                400,
+                400,
+                75,
+                45,
+                10
+            );
+        }
+    }
+
+    function drawObjects() {
         p5.background(background);
         sketchedLine.draw();
         p5.push();
         p5.fill('pink');
         dualWeightedLine.draw();
         p5.pop();
-        sketchedQuad.draw(); 
+        sketchedQuad.draw();
+        sketchedRect.draw();
+    }
+
+    p5.setup = () => {
+        p5.createCanvas(...canvasDimensions());
+        sketcher = new Sketcher(p5);
+        p5.noStroke();
+    };
+
+    p5.updateWithProps = props => {
+        if (props.propped) {
+            propped = props.propped;
+        }
+    };
+
+    p5.draw = () => {
+        /* React strict-mode calls useEffect twice, which means two 
+         * canvases are sometimes generated. Seemingly when this happens 
+         * the first canvas does not get passed props properly, so we can
+         * use this to determine if a canvas needs deleting. */
+        if (propped === undefined) { p5.remove(); return; };
+
+        sketchObjects();
+
+        drawObjects();
     };
 
 
