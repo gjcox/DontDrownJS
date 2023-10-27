@@ -22,15 +22,15 @@ function sketch(p5) {
     const canvasScale = 0.8; // the proportion of the window to take up 
     const canvasDimensions = () => determineSizes(p5.windowWidth, p5.windowHeight).map(x => x * canvasScale);
     const background = 250;
-    
+
     var sketcher;
-    var sketchedLine;
+    var sketchedLine, dualWeightedLine, sketchedQuad;
     var propped = undefined;
 
     p5.setup = () => {
         p5.createCanvas(...canvasDimensions());
-        sketcher = new Sketcher(p5); 
-        p5.noStroke(); 
+        sketcher = new Sketcher(p5);
+        p5.noStroke();
     };
 
     p5.updateWithProps = props => {
@@ -52,13 +52,37 @@ function sketch(p5) {
                 p5.createVector(150, 200),
                 'blue',
                 20
-                ); 
+            );
+        }
+
+        if (!dualWeightedLine || p5.frameCount % 30 == 0) {
+            dualWeightedLine = sketcher.buildDualWeightedLine(
+                p5.createVector(150, 200),
+                p5.createVector(250, 250),
+                20,
+                50
+            );
+        }
+
+        if (!sketchedQuad || p5.frameCount % 30 == 0) {
+            sketchedQuad = sketcher.buildSketchedQuad(
+                'gold',
+                'yellow', 
+                10, 
+                p5.createVector(300, 300),
+                p5.createVector(400, 300),
+                p5.createVector(385, 350),
+                p5.createVector(315, 350),
+            );
         }
 
         p5.background(background);
+        sketchedLine.draw();
         p5.push();
-        sketchedLine.draw(); 
+        p5.fill('pink');
+        dualWeightedLine.draw();
         p5.pop();
+        sketchedQuad.draw(); 
     };
 
 

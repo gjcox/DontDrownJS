@@ -1,4 +1,4 @@
-import { Shape } from "./shapes";
+import { CompositeShape, Shape } from "./shapes";
 
 const DEF_LINE_WEIGHT_DIV = 500; // default rough stroke weight divider relative to canvas width
 const LINE_DEV_MULT_MIN = 0.15; // min magnitude of breaks as proportion of line thickness
@@ -78,8 +78,8 @@ export default class Sketcher {
                 direction.copy().mult(this.p5.random(0, smoothLineLength / nBreaks))
             );
             // offset it perpendicular to the straight line 
-            const offset = offsetDirection.copy().mult(this.deviation(lineWeight)); 
-            const offsetVertex = nextVertex.copy().add(offset); 
+            const offset = offsetDirection.copy().mult(this.deviation(lineWeight));
+            const offsetVertex = nextVertex.copy().add(offset);
             // add offset vertex to jagged line 
             jaggedEdgeVertices.push([offsetVertex.x, offsetVertex.y,]);
         }
@@ -91,8 +91,8 @@ export default class Sketcher {
      * Builds a jagged quasi-quadrilateral to act as a sketched line.
      * The top and bottom edges (those parallel to start -> end) will be jagged, and the
      * perpendicular edges will be straight.
-     * @param {*} start the 'bottom left' corner of the sketched line 
-     * @param {*} end the 'bottom right' corner of the sketched line 
+     * @param {*} start a p5.Vector; the 'bottom left' corner of the sketched line 
+     * @param {*} end a p5.Vector; the 'bottom right' corner of the sketched line 
      * @param {*} colour 
      * @param {*} lineWeight the thickness of the line at the smooth edges 
      * @returns a Shape object 
@@ -126,5 +126,37 @@ export default class Sketcher {
         // finish on bottom left corner 
         sketchedLine.addVertex([bottomLeft.x, bottomLeft.y]);
         return sketchedLine;
+    }
+
+    /**
+     * 
+     * @param {*} strokeColour 
+     * @param {*} fillColour 
+     * @param {*} lineWeight the average thickness of edge lines
+     * @param  {...any} corners four p5.Vectors 
+     * @returns 
+     */
+    buildSketchedQuad(strokeColour, fillColour, lineWeight = undefined, ...corners) {
+        const quad = new CompositeShape();
+
+        // add the fill
+        const quadFill = new Shape(this.p5, fillColour);
+        for (let corner of corners) {
+            quadFill.addVertex([corner.x, corner.y]);
+        }
+        quad.addShape(quadFill);
+
+        // add the sketched edges
+        for (let i = 0; i < 4; i++) {
+            const line = this.buildSketchedLine(
+                corners[i],
+                corners[(i + 1) % 4],
+                strokeColour,
+                lineWeight
+            );
+            quad.addShape(line);
+        }
+
+        return quad;
     }
 }
