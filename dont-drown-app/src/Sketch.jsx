@@ -24,7 +24,7 @@ function sketch(p5) {
     const background = 250;
 
     var sketcher;
-    var sketchedLine, dualWeightedLine, sketchedQuad, sketchedRect;
+    var sketchedLine, dualWeightedLine, sketchedQuad, sketchedRect, sketchedEllipse;
     var propped = undefined;
 
     function sketchObjects() {
@@ -69,6 +69,19 @@ function sketch(p5) {
                 10
             );
         }
+
+        if (!sketchedEllipse || p5.frameCount % 30 == 0) {
+            sketchedEllipse = sketcher.buildSketchedEllipse(
+                'peru',
+                'palegreen',
+                550,
+                300,
+                150,
+                350,
+                7,
+                10
+            );
+        }
     }
 
     function drawObjects() {
@@ -80,6 +93,7 @@ function sketch(p5) {
         p5.pop();
         sketchedQuad.draw();
         sketchedRect.draw();
+        sketchedEllipse.draw();
     }
 
     p5.setup = () => {

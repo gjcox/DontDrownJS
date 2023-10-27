@@ -1,4 +1,4 @@
-import { CompositeShape, Shape } from "./shapes";
+import { CompositeShape, Ellipse, Shape } from "./shapes";
 
 const DEF_LINE_WEIGHT_DIV = 500; // default rough stroke weight divider relative to canvas width
 const LINE_DEV_MULT_MIN = 0.15; // min magnitude of breaks as proportion of line thickness
@@ -181,5 +181,73 @@ export default class Sketcher {
             this.p5.createVector(x, y + h)],
             lineWeight
         );
+    }
+
+    /**
+     * 
+     * @param {*} strokeColour 
+     * @param {*} fillColour 
+     * @param {*} x centre
+     * @param {*} y centre 
+     * @param {*} w 
+     * @param {*} h 
+     * @param {*} detail number of vertices 
+     * @param {*} lineWeight 
+     */
+    buildSketchedEllipse(strokeColour, fillColour, x, y, w, h, detail, lineWeight = undefined) {
+        const ellipse = new CompositeShape();
+
+        const fillVertices = [];
+        const outerVertices = [];
+        const innerVertices = [];
+        const outerHalfW = w / 2;
+        const outerHalfH = h / 2;
+
+        /* build three ellipses (fill, outer and inner) as series of 
+           straight lines */
+        for (let i = 0; i < detail; i++) {
+            const angle = (i * this.p5.TAU) / detail;
+            // generate a smooth polygon around the origin 
+            const centredVertex = this.p5.createVector(
+                outerHalfW * this.p5.cos(angle),
+                outerHalfH * this.p5.sin(angle)
+            );
+
+            /* for the fill, just change the centre to x,y */
+            fillVertices.push(this.p5.createVector(x, y).add(centredVertex));
+
+            /* for the outer edge of the outline, change the centre to x,y 
+               and add random deviation */
+            outerVertices.push(this.p5.createVector(
+                x + this.deviation(lineWeight) / 2,
+                y + this.deviation(lineWeight) / 2).add(centredVertex));
+
+            /* for the inner edge, limit the magnitude to (outer radius
+               - lineWeight), then change centre and add deviation */
+            const outerRadius = centredVertex.mag();
+            const innerRadius = outerRadius - lineWeight;
+            centredVertex.limit(innerRadius);
+            innerVertices.push(this.p5.createVector(
+                x + this.deviation(lineWeight) / 2,
+                y + this.deviation(lineWeight) / 2).add(centredVertex));
+        }
+
+        // add the fill 
+        const fill = new Shape(this.p5, fillColour);
+        fillVertices.forEach(v => fill.addVertex([v.x, v.y]));
+        ellipse.addShape(fill);
+
+        // add the outline 
+        /* construct filled outline shape as a techincally open loop, 
+           but the two ends touch to appear like a closed loop */
+        const outline = new Shape(this.p5, strokeColour);
+        outerVertices.forEach(v => outline.addVertex([v.x, v.y]));
+        outerVertices.slice(0, 1).forEach(v => outline.addVertex([v.x, v.y]))
+        innerVertices.slice(0, 1).forEach(v => outline.addVertex([v.x, v.y]))
+        innerVertices.reverse();
+        innerVertices.forEach(v => outline.addVertex([v.x, v.y]));
+        ellipse.addShape(outline);
+
+        return ellipse;
     }
 }
