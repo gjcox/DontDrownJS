@@ -1,5 +1,6 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
+import Sketcher from "./p5_modules/sketcher";
 
 /**
  * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
@@ -18,14 +19,18 @@ function determineSizes(width, height) {
 }
 
 function sketch(p5) {
-    var propped = undefined;
-    var background = 250;
-
     const canvasScale = 0.8; // the proportion of the window to take up 
     const canvasDimensions = () => determineSizes(p5.windowWidth, p5.windowHeight).map(x => x * canvasScale);
+    const background = 250;
+    
+    var sketcher;
+    var sketchedLine;
+    var propped = undefined;
 
     p5.setup = () => {
         p5.createCanvas(...canvasDimensions());
+        sketcher = new Sketcher(p5); 
+        p5.noStroke(); 
     };
 
     p5.updateWithProps = props => {
@@ -41,9 +46,18 @@ function sketch(p5) {
          * use this to determine if a canvas needs deleting. */
         if (propped === undefined) { p5.remove(); return; };
 
+        if (!sketchedLine || p5.frameCount % 30 == 0) {
+            sketchedLine = sketcher.buildSketchedLine(
+                p5.createVector(50, 100),
+                p5.createVector(150, 200),
+                'blue',
+                20
+                ); 
+        }
+
         p5.background(background);
         p5.push();
-        p5.text(propped, 50, 50);
+        sketchedLine.draw(); 
         p5.pop();
     };
 
