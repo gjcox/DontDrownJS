@@ -10,8 +10,18 @@ export default class Sketcher {
     constructor(p5) {
         this.p5 = p5;
         this.defLineWeight = p5.width / DEF_LINE_WEIGHT_DIV; // default mean thickness of sketched lines 
-        this.lineDeviationMult = LINE_DEV_MULT_MIN; // [0..lineDeviationMult] magnitude of breaks as proportion of line thickness 
-        this.lineBreaksMax = LINE_BREAKS_MIN; // [0..lineBreaksMax] breaks in sketched lines 
+        this._lineDeviationMult = LINE_DEV_MULT_MIN; // [0..lineDeviationMult] magnitude of breaks as proportion of line thickness 
+        this._lineBreaksUpperBound = LINE_BREAKS_MIN; // [0.._lineBreaksUpperBound] breaks in sketched lines 
+    }
+
+    set lineDeviationMult(value) {
+        this._lineDeviationMult = Math.min(LINE_DEV_MULT_MAX,
+            Math.max(LINE_DEV_MULT_MIN, value));
+    }
+
+    set lineBreaksMax(value) {
+        this._lineBreaksMax = Math.min(LINE_BREAKS_MAX,
+            Math.max(LINE_BREAKS_MIN, value));
     }
 
     /* */
@@ -21,7 +31,7 @@ export default class Sketcher {
      * @returns random value from [-lineWeight * this.lineDeviationMult..-lineWeight * this.lineDeviationMult]
      */
     deviation = (lineWeight = this.defLineWeight) => {
-        let maxDeviation = this.lineDeviationMult * lineWeight;
+        let maxDeviation = this._lineDeviationMult * lineWeight;
         return -maxDeviation + Math.random() * 2 * maxDeviation;
     };
 
@@ -68,7 +78,7 @@ export default class Sketcher {
         const smoothLineLength = smoothLine.mag();
         const direction = smoothLine.normalize();
         const offsetDirection = direction.copy().rotate(this.p5.HALF_PI);
-        const nBreaks = Math.round(Math.random() * this.lineBreaksMax);
+        const nBreaks = Math.round(Math.random() * this._lineBreaksMax);
         const jaggedEdgeVertices = [];
 
         var nextVertex = start.copy();
@@ -189,9 +199,9 @@ export default class Sketcher {
      * @param {*} fillColour 
      * @param {*} x centre
      * @param {*} y centre 
-     * @param {*} w 
-     * @param {*} h 
-     * @param {*} detail number of vertices 
+     * @param {*} w width
+     * @param {*} h  height 
+     * @param {*} detail number of sides/vertices 
      * @param {*} lineWeight 
      */
     buildSketchedEllipse(strokeColour, fillColour, x, y, w, h, detail, lineWeight = undefined) {
