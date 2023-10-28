@@ -9,7 +9,7 @@ class Shape {
     this._colour = colour;
   }
 
-  addVertex(v) {
+  addVertex(v = { x: 0, y: 0 }) {
     this.vertices.push(v);
   }
 
@@ -19,7 +19,7 @@ class Shape {
       this.p5.fill(this._colour);
     }
     this.p5.beginShape();
-    this.vertices.forEach(([x, y]) => this.p5.vertex(x + pos.x, y + pos.y));
+    this.vertices.forEach(({ x, y }) => this.p5.vertex(x + pos.x, y + pos.y));
     this.p5.endShape(this.p5.CLOSE);
     this.p5.pop();
   }
