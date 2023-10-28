@@ -20,7 +20,7 @@ export default class Sketcher {
     }
 
     set lineBreaksMax(value) {
-        this._lineBreaksMax = Math.min(LINE_BREAKS_MAX,
+        this._lineBreaksUpperBound = Math.min(LINE_BREAKS_MAX,
             Math.max(LINE_BREAKS_MIN, value));
     }
 
@@ -58,7 +58,7 @@ export default class Sketcher {
         const corners = [topLeft, topRight, bottomRight, bottomLeft];
 
         const line = new Shape(this.p5);
-        corners.forEach((v) => line.addVertex([v.x, v.y]));
+        corners.forEach((v) => line.addVertex(v));
         return line;
     }
 
@@ -71,14 +71,14 @@ export default class Sketcher {
      *  
      * @param {*} start a p5.Vector 
      * @param {*} end a p5.Vector 
-     * @returns an array of [x,y] coordinates
+     * @returns an array of p5.Vector objects 
      */
     buildJaggedEdge(start, end, lineWeight) {
         const smoothLine = end.copy().sub(start);
         const smoothLineLength = smoothLine.mag();
         const direction = smoothLine.normalize();
         const offsetDirection = direction.copy().rotate(this.p5.HALF_PI);
-        const nBreaks = Math.round(Math.random() * this._lineBreaksMax);
+        const nBreaks = Math.round(Math.random() * this._lineBreaksUpperBound);
         const jaggedEdgeVertices = [];
 
         var nextVertex = start.copy();
@@ -91,7 +91,7 @@ export default class Sketcher {
             const offset = offsetDirection.copy().mult(this.deviation(lineWeight));
             const offsetVertex = nextVertex.copy().add(offset);
             // add offset vertex to jagged line 
-            jaggedEdgeVertices.push([offsetVertex.x, offsetVertex.y,]);
+            jaggedEdgeVertices.push(offsetVertex);
         }
 
         return jaggedEdgeVertices;
@@ -121,20 +121,20 @@ export default class Sketcher {
         const bottomLeft = start.copy();
 
         // start at top left corner
-        sketchedLine.addVertex([topLeft.x, topLeft.y]);
+        sketchedLine.addVertex(topLeft);
 
         // draw a jagged line between top left and top right
         this.buildJaggedEdge(topLeft, topRight, lineWeight).forEach(xy => sketchedLine.addVertex(xy));
 
         // straight line between top right and bottom right
-        sketchedLine.addVertex([topRight.x, topRight.y]);
-        sketchedLine.addVertex([bottomRight.x, bottomRight.y]);
+        sketchedLine.addVertex(topRight);
+        sketchedLine.addVertex(bottomRight);
 
         // draw a jagged line between bottom right and bottom left
         this.buildJaggedEdge(bottomRight, bottomLeft, lineWeight).forEach(xy => sketchedLine.addVertex(xy));
 
         // finish on bottom left corner 
-        sketchedLine.addVertex([bottomLeft.x, bottomLeft.y]);
+        sketchedLine.addVertex(bottomLeft);
         return sketchedLine;
     }
 
@@ -146,13 +146,13 @@ export default class Sketcher {
      * @param {any[]} corners four p5.Vectors 
      * @returns 
      */
-    buildSketchedQuad(strokeColour, fillColour, corners, lineWeight = undefined) {
+    buildSketchedQuad(strokeColour, fillColour, corners, lineWeight = this.defLineWeight) {
         const quad = new CompositeShape();
 
         // add the fill
         const quadFill = new Shape(this.p5, fillColour);
         for (let corner of corners) {
-            quadFill.addVertex([corner.x, corner.y]);
+            quadFill.addVertex(corner);
         }
         quad.addShape(quadFill);
 
@@ -181,7 +181,7 @@ export default class Sketcher {
      * @param {*} lineWeight 
      * @returns 
      */
-    buildSketchedRect(strokeColour, fillColour, x, y, w, h, lineWeight = undefined) {
+    buildSketchedRect(strokeColour, fillColour, x, y, w, h, lineWeight = this.defLineWeight) {
         return this.buildSketchedQuad(
             strokeColour,
             fillColour,
@@ -204,7 +204,7 @@ export default class Sketcher {
      * @param {*} detail number of sides/vertices 
      * @param {*} lineWeight 
      */
-    buildSketchedEllipse(strokeColour, fillColour, x, y, w, h, detail, lineWeight = undefined) {
+    buildSketchedEllipse(strokeColour, fillColour, x, y, w, h, detail, lineWeight = this.defLineWeight) {
         const ellipse = new CompositeShape();
 
         const fillVertices = [];
@@ -244,20 +244,84 @@ export default class Sketcher {
 
         // add the fill 
         const fill = new Shape(this.p5, fillColour);
-        fillVertices.forEach(v => fill.addVertex([v.x, v.y]));
+        fillVertices.forEach(v => fill.addVertex(v));
         ellipse.addShape(fill);
 
         // add the outline 
         /* construct filled outline shape as a techincally open loop, 
            but the two ends touch to appear like a closed loop */
         const outline = new Shape(this.p5, strokeColour);
-        outerVertices.forEach(v => outline.addVertex([v.x, v.y]));
-        outerVertices.slice(0, 1).forEach(v => outline.addVertex([v.x, v.y]))
-        innerVertices.slice(0, 1).forEach(v => outline.addVertex([v.x, v.y]))
+        outerVertices.forEach(v => outline.addVertex(v));
+        outerVertices.slice(0, 1).forEach(v => outline.addVertex(v))
+        innerVertices.slice(0, 1).forEach(v => outline.addVertex(v))
         innerVertices.reverse();
-        innerVertices.forEach(v => outline.addVertex([v.x, v.y]));
+        innerVertices.forEach(v => outline.addVertex(v));
         ellipse.addShape(outline);
 
         return ellipse;
+    }
+
+    /* Generates a sin wave as a set of points, for use in buildSketchedWave() */
+    buildSinWave(waveWidth, nCrests, crestHeight, detail, startOffset) {
+        let nVertices = nCrests * detail;
+        let vertices = [];
+        let xIncr = waveWidth / (nVertices - 1);
+        for (let i = 0; i < nVertices; i++) {
+            vertices.push(this.p5.createVector(
+                i * xIncr,
+                crestHeight *
+                this.p5.sin(
+                    this.p5.TAU *
+                    (((i + startOffset) % (2 * detail)) /
+                        (2 * detail))
+                )
+            ));
+        }
+        return vertices;
+    }
+
+    /**
+     * 
+     * @param {*} strokeColour 
+     * @param {*} fillColour 
+     * @param {*} w width
+     * @param {*} h height
+     * @param {*} nCrests number of crests 
+     * @param {*} crestHeight 
+     * @param {*} detail vertices per crest 
+     * @param {*} startOffset horizontal offset of sin wave 
+     * @param {*} lineWeight 
+     * @returns 
+     */
+    buildSketchedWave(strokeColour, fillColour, w, h, nCrests, crestHeight, detail, startOffset, lineWeight = this.defLineWeight) {
+        const sketchedWave = new CompositeShape();
+        const smoothWaveVertices = this.buildSinWave(
+            w,
+            nCrests,
+            crestHeight,
+            detail,
+            startOffset
+        );
+
+        // add fill 
+        const waveFill = new Shape(this.p5, fillColour);
+        smoothWaveVertices.forEach(v => waveFill.addVertex(v))
+        waveFill.addVertex(this.p5.createVector(w, h)); // bottom right corner 
+        waveFill.addVertex(this.p5.createVector(0, h)); // bottom left corner 
+        sketchedWave.addShape(waveFill);
+
+        // add sketched top line 
+        const upperEdge = smoothWaveVertices.map(v => v.copy()
+            .add(this.deviation(lineWeight) / 2, this.deviation(lineWeight) / 2));
+        const lowerEdge = smoothWaveVertices.map(v =>
+            v.copy().add(0, lineWeight)
+                .add(this.deviation(lineWeight) / 2, this.deviation(lineWeight) / 2));
+        lowerEdge.reverse();
+        const sketchedLine = new Shape(this.p5, strokeColour);
+        upperEdge.forEach(v => sketchedLine.addVertex(v));
+        lowerEdge.forEach(v => sketchedLine.addVertex(v));
+        sketchedWave.addShape(sketchedLine);
+
+        return sketchedWave;
     }
 }

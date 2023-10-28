@@ -21,14 +21,22 @@ function determineSizes(width, height) {
 function sketch(p5) {
     const canvasScale = 0.8; // the proportion of the window to take up 
     const canvasDimensions = () => determineSizes(p5.windowWidth, p5.windowHeight).map(x => x * canvasScale);
-    const background = 250;
+    const background = 'lightgoldenrodyellow';
 
     var sketcher;
-    var sketchedLine, dualWeightedLine, sketchedQuad, sketchedRect, sketchedEllipse;
+    var sketchedLine,
+        dualWeightedLine,
+        sketchedQuad,
+        sketchedRect,
+        sketchedEllipse,
+        sketchedWave;
     var propped = undefined;
 
     function sketchObjects() {
-        if (!sketchedLine || p5.frameCount % 30 == 0) {
+        const framesPerRebuild = 30;
+        const rebuild = () => p5.frameCount % framesPerRebuild == 0;
+
+        if (!sketchedLine || rebuild()) {
             sketchedLine = sketcher.buildSketchedLine(
                 p5.createVector(50, 100),
                 p5.createVector(150, 200),
@@ -37,7 +45,7 @@ function sketch(p5) {
             );
         }
 
-        if (!dualWeightedLine || p5.frameCount % 30 == 0) {
+        if (!dualWeightedLine || rebuild()) {
             dualWeightedLine = sketcher.buildDualWeightedLine(
                 p5.createVector(150, 200),
                 p5.createVector(250, 250),
@@ -46,7 +54,7 @@ function sketch(p5) {
             );
         }
 
-        if (!sketchedQuad || p5.frameCount % 30 == 0) {
+        if (!sketchedQuad || rebuild()) {
             sketchedQuad = sketcher.buildSketchedQuad(
                 'gold',
                 'yellow',
@@ -58,7 +66,7 @@ function sketch(p5) {
             );
         }
 
-        if (!sketchedRect || p5.frameCount % 30 == 0) {
+        if (!sketchedRect || rebuild()) {
             sketchedRect = sketcher.buildSketchedRect(
                 'salmon',
                 'lightcyan',
@@ -70,7 +78,7 @@ function sketch(p5) {
             );
         }
 
-        if (!sketchedEllipse || p5.frameCount % 30 == 0) {
+        if (!sketchedEllipse || rebuild()) {
             sketchedEllipse = sketcher.buildSketchedEllipse(
                 'peru',
                 'palegreen',
@@ -78,7 +86,21 @@ function sketch(p5) {
                 300,
                 150,
                 350,
-                7,
+                30,
+                10
+            );
+        }
+
+        if (!sketchedWave || rebuild()) {
+            sketchedWave = sketcher.buildSketchedWave(
+                'lightskyblue',
+                'dodgerblue',
+                p5.width,
+                p5.height,
+                20,
+                10,
+                5,
+                p5.frameCount / framesPerRebuild,
                 10
             );
         }
@@ -94,11 +116,14 @@ function sketch(p5) {
         sketchedQuad.draw();
         sketchedRect.draw();
         sketchedEllipse.draw();
+        sketchedWave.draw({x: 0, y: 500});
     }
 
     p5.setup = () => {
         p5.createCanvas(...canvasDimensions());
         sketcher = new Sketcher(p5);
+        sketcher.lineBreaksMax = 2;
+        sketcher.lineDeviationMult = 0.3;
         p5.noStroke();
     };
 
