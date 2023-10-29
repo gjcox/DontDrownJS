@@ -43,8 +43,8 @@ export default class Platform {
             this.strokeColour,
             this.fillColour,
             [
-                this.p5.createVector(groundOverhang, groundThickness/2),
-                this.p5.createVector(this.width - groundOverhang, groundThickness/2),
+                this.p5.createVector(groundOverhang, 0),
+                this.p5.createVector(this.width - groundOverhang, 0),
                 this.p5.createVector(this.width - topBottomOverhang, this.height),
                 this.p5.createVector(topBottomOverhang, this.height)
             ]
