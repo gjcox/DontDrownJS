@@ -1,4 +1,4 @@
-const G = 9.8; // gravity 
+const G = 4; // gravity 
 const MU = 0.129; // coefficient of friction 
 const COR_PLATFORM = 0; // coefficient of restitution 
 const COR_EDGE = 0.8;
@@ -25,9 +25,11 @@ function getXAtYOverlap(ball, y) {
  * @param {*} platforms 
  */
 function detectLanding(ball, platforms) {
-    if (ball.currentPlatform) {
+    if (ball.currentPlatform !== null) {
         // determine if off edge of platform 
-        // TODO 
+        if (ball.pos.x < ball.currentPlatform.pos.x || ball.pos.x > ball.currentPlatform.pos.x + ball.currentPlatform.width) {
+            ball.currentPlatform = null;
+        }
     } else if (ball.velocity.y >= 0) {
         // determine if fallen onto a platform 
         platforms.every(p => {

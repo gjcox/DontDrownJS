@@ -63,12 +63,20 @@ export default class PlayerBall {
         return this._velocity;
     }
 
+    get currentPlatform() {
+        return this._currentPlatform;
+    }
+
+    set currentPlatform(platform) {
+        this._currentPlatform = platform ?? null;
+    }
+
     land(platform) {
         this._pos.set(this._pos.x, platform.pos.y - this._radius);
         this._currentPlatform = platform;
         this._velocity.mult(1, -COR_PLATFORM);
-        if (Math.abs(this._velocity.y) < 1) { 
-            this._velocity.mult(1, 0); 
+        if (Math.abs(this._velocity.y) < 1) {
+            this._velocity.mult(1, 0);
         } else {
             this._currentPlatform = null;
         }
@@ -95,7 +103,7 @@ export default class PlayerBall {
     }
 
     gravity() {
-        if (!this._currentPlatform) { this._resultantForce.add(0, this._mass * G) }
+        if (this._currentPlatform === null) { this._resultantForce.add(0, this._mass * G) }
     }
 
     airResistance() {
