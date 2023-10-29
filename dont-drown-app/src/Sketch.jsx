@@ -1,6 +1,9 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
+import PlayerBall, { LEFT, REST, RIGHT } from "./p5_modules/playerball";
 import Sketcher from "./p5_modules/sketcher";
+import Platform from "./p5_modules/platform";
+import { detectLanding } from "./p5_modules/physicsengine";
 
 /**
  * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
@@ -30,6 +33,8 @@ function sketch(p5) {
         sketchedRect,
         sketchedEllipse,
         sketchedWave;
+    var pc;
+    const platforms = [];
     var propped = undefined;
 
     function sketchObjects() {
@@ -99,10 +104,22 @@ function sketch(p5) {
                 p5.height,
                 20,
                 10,
-                5,
+                3,
                 p5.frameCount / framesPerRebuild,
                 10
             );
+        }
+    }
+
+    function handleKeyboardInput() {
+        if ((p5.keyIsDown(p5.LEFT_ARROW) || p5.keyIsDown(65))
+            && !(p5.keyIsDown(p5.RIGHT_ARROW) || p5.keyIsDown(68))) {
+            pc.horizontalSteering = LEFT;
+        } else if ((p5.keyIsDown(p5.RIGHT_ARROW) || p5.keyIsDown(68))
+            && !(p5.keyIsDown(p5.LEFT_ARROW) || p5.keyIsDown(65))) {
+            pc.horizontalSteering = RIGHT;
+        } else {
+            pc.horizontalSteering = REST;
         }
     }
 
@@ -116,15 +133,17 @@ function sketch(p5) {
         sketchedQuad.draw();
         sketchedRect.draw();
         sketchedEllipse.draw();
-        sketchedWave.draw({x: 0, y: 500});
+        sketchedWave.draw({ x: 0, y: 500 });
     }
 
     p5.setup = () => {
         p5.createCanvas(...canvasDimensions());
         sketcher = new Sketcher(p5);
         sketcher.lineBreaksMax = 2;
-        sketcher.lineDeviationMult = 0.3;
+        sketcher.lineDeviationMult = 0.6;
         p5.noStroke();
+        pc = new PlayerBall(p5, sketcher, p5.createVector(600, 300));
+        platforms.push(new Platform(p5, sketcher, p5.createVector(550, 400)));
     };
 
     p5.updateWithProps = props => {
@@ -140,15 +159,30 @@ function sketch(p5) {
          * use this to determine if a canvas needs deleting. */
         if (propped === undefined) { p5.remove(); return; };
 
+        handleKeyboardInput();
         sketchObjects();
-
         drawObjects();
+        platforms.forEach(p => p.draw());
+        pc.integrate();
+        detectLanding(pc, platforms); 
+        pc.draw(); 
     };
-
 
     p5.windowResized = () => {
         p5.resizeCanvas(...canvasDimensions());
+        // TODO resize increment 
     };
+
+    p5.keyPressed = () => {
+        switch (p5.keyCode) {
+            case p5.LEFT_ARROW:
+                pc.horizontalSteering = LEFT;
+                break;
+            case p5.RIGHT_ARROW:
+                pc.horizontalSteering = RIGHT;
+                break;
+        }
+    }
 }
 
 export default ({ p5Prop: p5Prop, setP5Prop }) => {
