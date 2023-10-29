@@ -9,9 +9,13 @@ const LINE_BREAKS_MAX = 5; // maximum number of breaks in sketched line
 export default class Sketcher {
     constructor(p5) {
         this.p5 = p5;
-        this.defLineWeight = p5.width / DEF_LINE_WEIGHT_DIV; // default mean thickness of sketched lines 
+        this._defLineWeight = p5.width / DEF_LINE_WEIGHT_DIV; // default mean thickness of sketched lines 
         this._lineDeviationMult = LINE_DEV_MULT_MIN; // [0..lineDeviationMult] magnitude of breaks as proportion of line thickness 
         this._lineBreaksUpperBound = LINE_BREAKS_MIN; // [0.._lineBreaksUpperBound] breaks in sketched lines 
+    }
+
+    get defLineWeight() {
+        return this._defLineWeight; 
     }
 
     set lineDeviationMult(value) {
@@ -143,7 +147,7 @@ export default class Sketcher {
      * @param {*} strokeColour 
      * @param {*} fillColour 
      * @param {*} lineWeight the average thickness of edge lines
-     * @param {any[]} corners four p5.Vectors 
+     * @param {p5.Vector[]} corners four p5.Vectors 
      * @returns 
      */
     buildSketchedQuad(strokeColour, fillColour, corners, lineWeight = this.defLineWeight) {
