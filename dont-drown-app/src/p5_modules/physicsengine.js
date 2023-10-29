@@ -1,8 +1,10 @@
-const G = 4; // gravity 
+import Platform from "./platform";
+
+const G = 2; // gravity 
 const MU = 0.129; // coefficient of friction 
 const COR_PLATFORM = 0; // coefficient of restitution 
 const COR_EDGE = 0.8;
-const C = 1; // air constant 
+const C = 0.25; // air constant 
 
 /* Finds the horizontal position of the ball when it was at a given height */
 function getXAtYOverlap(ball, y) {
@@ -25,10 +27,10 @@ function getXAtYOverlap(ball, y) {
  * @param {*} platforms 
  */
 function detectLanding(ball, platforms) {
-    if (ball.currentPlatform !== null) {
+    if (ball.currentPlatform instanceof Platform) {
         // determine if off edge of platform 
         if (ball.pos.x < ball.currentPlatform.pos.x || ball.pos.x > ball.currentPlatform.pos.x + ball.currentPlatform.width) {
-            ball.currentPlatform = null;
+            ball.offPlatform();
         }
     } else if (ball.velocity.y >= 0) {
         // determine if fallen onto a platform 
@@ -41,13 +43,14 @@ function detectLanding(ball, platforms) {
                 // platform too low
                 // continue search
                 return true;
-            } else {
+            } else if (p !== ball.droppedPlatform) {
                 const xIntercept = getXAtYOverlap(ball, p.pos.y);
                 if (xIntercept >= p.pos.x && xIntercept <= p.pos.x + p.width) {
                     ball.land(p);
-                    return -1;
+                    return false;
                 }
             }
+            return true;
         });
     }
 }

@@ -31,6 +31,7 @@ export default class PlayerBall {
         this._resultantForce = p5.createVector();
         this._velocity = p5.createVector();
         this._currentPlatform = null;
+        this._droppedPlatform = null;
     }
 
     get radius() {
@@ -71,7 +72,12 @@ export default class PlayerBall {
         this._currentPlatform = platform ?? null;
     }
 
+    get droppedPlatform() {
+        return this._droppedPlatform;
+    }
+
     land(platform) {
+        this._droppedPlatform = null;
         this._pos.set(this._pos.x, platform.pos.y - this._radius);
         this._currentPlatform = platform;
         this._velocity.mult(1, -COR_PLATFORM);
@@ -82,13 +88,33 @@ export default class PlayerBall {
         }
     }
 
+    offPlatform() {
+        if ((this._horizontalSteering <= 0) != (this._velocity.x <= 0)) {
+            this._velocity.mult(0, 1);
+        } else {
+            this._currentPlatform = null;
+            // TODO coyote time        
+        }
+    }
+
+    drop() {
+        this._droppedPlatform = this._currentPlatform;
+        this._currentPlatform = null;
+    }
+
     increment() {
         return this.p5.width / PC_INCREMENT_DIV;
     }
 
     thrust() {
-        const thrust_force = this._mass * 2;
-        this._resultantForce.add(this._horizontalSteering * thrust_force, 0);
+        const thrustForce = this._mass * 2;
+        this._resultantForce.add(this._horizontalSteering * thrustForce, 0);
+    }
+
+    jump() {
+        const jumpForce = G * this._mass * 20;
+        this._resultantForce.sub(0, jumpForce);
+        this._currentPlatform = null;
     }
 
     friction() {
@@ -98,7 +124,7 @@ export default class PlayerBall {
             // (assumes that platform is level) 
             // reaction force = mass * g 
             const friction = this._mass * G * MU;
-            this._resultantForce.add(direction * -1 * friction, 0);
+            this._resultantForce.add(-direction * friction, 0);
         }
     }
 
@@ -108,7 +134,7 @@ export default class PlayerBall {
 
     airResistance() {
         // F_air = -c * v
-        this._resultantForce.sub(0, this._velocity.y * C);
+        this._resultantForce.add(0, this._velocity.y * -C);
     }
 
     integrate() {
@@ -127,8 +153,8 @@ export default class PlayerBall {
         const newXDirection = this._velocity.x / Math.abs(this._velocity.x);
 
         // ensure that friction doesn't reverse direction of motion 
-        const justFriction = (this._horizontalSteering !=
-            this._resultantForce.x / Math.abs(this._resultantForce.x));
+        const justFriction = ((this._horizontalSteering < 0) !=
+            (this._resultantForce.x < 0));
         if (justFriction && newXDirection != currentXDirection) {
             this._velocity.x = 0;
         }

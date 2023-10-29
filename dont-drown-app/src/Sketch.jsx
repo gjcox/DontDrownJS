@@ -121,6 +121,26 @@ function sketch(p5) {
         } else {
             pc.horizontalSteering = REST;
         }
+
+        if (pc.currentPlatform !== null) {
+            if ((p5.keyIsDown(p5.UP_ARROW) || p5.keyIsDown(87))
+                && !(p5.keyIsDown(p5.DOWN_ARROW) || p5.keyIsDown(83))) {
+                pc.jump();
+            } else if ((p5.keyIsDown(p5.DOWN_ARROW) || p5.keyIsDown(83))
+                && !(p5.keyIsDown(p5.UP_ARROW) || p5.keyIsDown(87))) {
+                pc.drop();
+            }
+        }
+    }
+
+    p5.keyPressed = () => {
+        if ((p5.keyCode == p5.UP_ARROW || p5.keyCode == 87)
+            && pc.currentPlatform !== null) {
+            pc.jump();
+        } else if ((p5.keyCode == p5.DOWN_ARROW || p5.keyCode == 83)
+            && pc.currentPlatform !== null) {
+            pc.drop();
+        }
     }
 
     function drawObjects() {
@@ -164,8 +184,15 @@ function sketch(p5) {
         drawObjects();
         platforms.forEach(p => p.draw());
         pc.integrate();
-        detectLanding(pc, platforms); 
-        pc.draw(); 
+        detectLanding(pc, platforms);
+        pc.draw();
+        p5.push();
+        p5.fill('black');
+        p5.textAlign(p5.RIGHT);
+        p5.textSize(100);
+        p5.text(`${Math.round(pc.velocity.x)}, ${Math.round(pc.velocity.y)}`,
+            p5.width / 10 * 9, p5.height / 10);
+        p5.pop();
     };
 
     p5.windowResized = () => {
@@ -173,16 +200,6 @@ function sketch(p5) {
         // TODO resize increment 
     };
 
-    p5.keyPressed = () => {
-        switch (p5.keyCode) {
-            case p5.LEFT_ARROW:
-                pc.horizontalSteering = LEFT;
-                break;
-            case p5.RIGHT_ARROW:
-                pc.horizontalSteering = RIGHT;
-                break;
-        }
-    }
 }
 
 export default ({ p5Prop: p5Prop, setP5Prop }) => {
