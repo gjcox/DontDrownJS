@@ -15,7 +15,7 @@ export default class Platform {
         this.strokeColour = strokeColour;
         this.fillColour = fillColour;
         this.sprite = this.buildSprite(sketcher);
-        this._pos = pos;
+        this._pos = pos.copy();
     }
 
     get width() {
