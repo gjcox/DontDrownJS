@@ -134,17 +134,12 @@ function sketch(p5) {
     }
 
     p5.keyPressed = () => {
-        if ((p5.keyCode == p5.UP_ARROW || p5.keyCode == 87)
-            && pc.currentPlatform !== null) {
-            pc.jump();
-        } else if ((p5.keyCode == p5.DOWN_ARROW || p5.keyCode == 83)
-            && pc.currentPlatform !== null) {
-            pc.drop();
-        }
+        if (p5.keyCode == 32) { // spacebar
+            pc = new PlayerBall(p5, sketcher, p5.createVector(600, 300));
+        } 
     }
 
     function drawObjects() {
-        p5.background(background);
         sketchedLine.draw();
         p5.push();
         p5.fill('pink');
@@ -156,6 +151,17 @@ function sketch(p5) {
         sketchedWave.draw({ x: 0, y: 500 });
     }
 
+    function randomPlatforms(nPlatforms) {
+        for (let i = 0; i < nPlatforms; i++) {
+            platforms.push(new Platform(p5, sketcher,
+                p5.createVector(
+                    Math.random() * p5.width, Math.random() * p5.height
+                )
+            ));
+        }
+        platforms.sort((p1, p2) => p2.pos.y - p1.pos.y);
+    }
+
     p5.setup = () => {
         p5.createCanvas(...canvasDimensions());
         sketcher = new Sketcher(p5);
@@ -164,6 +170,8 @@ function sketch(p5) {
         p5.noStroke();
         pc = new PlayerBall(p5, sketcher, p5.createVector(600, 300));
         platforms.push(new Platform(p5, sketcher, p5.createVector(550, 400)));
+        randomPlatforms(10);
+        p5.frameRate(5); 
     };
 
     p5.updateWithProps = props => {
@@ -180,11 +188,16 @@ function sketch(p5) {
         if (propped === undefined) { p5.remove(); return; };
 
         handleKeyboardInput();
-        sketchObjects();
-        drawObjects();
-        platforms.forEach(p => p.draw());
+        // sketchObjects();
+        // drawObjects();
+
+        // physics calculations 
         pc.integrate();
         detectLanding(pc, platforms);
+
+        // drawing 
+        p5.background(background);
+        platforms.forEach(p => p.draw());
         pc.draw();
         p5.push();
         p5.fill('black');

@@ -1,10 +1,14 @@
 import Platform from "./platform";
 
 const G = 2; // gravity 
-const MU = 0.129; // coefficient of friction 
+const MU = 0.5; // coefficient of friction 
 const COR_PLATFORM = 0; // coefficient of restitution 
-const COR_EDGE = 0.8;
+const COR_CAVAS_EDGE = 0.8;
+const COR_PLATFORM_EDGE = 0.5;
 const C = 0.25; // air constant 
+const PC_MAX_SPEED = 25;
+const PC_GROUND_THRUST = 20;
+const PC_AIR_THRUST = 5;
 
 /* Finds the horizontal position of the ball when it was at a given height */
 function getXAtYOverlap(ball, y) {
@@ -22,14 +26,15 @@ function getXAtYOverlap(ball, y) {
 }
 
 /**
- * N.B. for search cut off to work, platforms must be sorted by pos.y
+ * N.B. platforms must be sorted by pos.y
  * @param {*} ball 
  * @param {*} platforms 
  */
 function detectLanding(ball, platforms) {
     if (ball.currentPlatform instanceof Platform) {
         // determine if off edge of platform 
-        if (ball.pos.x < ball.currentPlatform.pos.x || ball.pos.x > ball.currentPlatform.pos.x + ball.currentPlatform.width) {
+        if (ball.pos.x > ball.currentPlatform.pos.x + ball.currentPlatform.width
+            || ball.pos.x < ball.currentPlatform.pos.x) {
             ball.offPlatform();
         }
     } else if (ball.velocity.y >= 0) {
@@ -55,5 +60,5 @@ function detectLanding(ball, platforms) {
     }
 }
 
-export { C, COR_EDGE, COR_PLATFORM, G, MU, detectLanding };
+export { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_MAX_SPEED, detectLanding };
 

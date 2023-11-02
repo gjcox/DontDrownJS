@@ -1,4 +1,4 @@
-import { C, COR_EDGE, COR_PLATFORM, G, MU } from "./physicsengine";
+import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_MAX_SPEED } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
 const PC_WEIGHT = 10;
@@ -32,6 +32,7 @@ export default class PlayerBall {
         this._velocity = p5.createVector();
         this._currentPlatform = null;
         this._droppedPlatform = null;
+        this._edgeClinging;
     }
 
     get radius() {
@@ -89,12 +90,25 @@ export default class PlayerBall {
     }
 
     offPlatform() {
-        if ((this._horizontalSteering <= 0) != (this._velocity.x <= 0)) {
-            this._velocity.mult(0, 1);
+        if ((this._horizontalSteering < 0) != (this._velocity.x < 0)
+            || this._horizontalSteering == 0) {
+            // bounce toward centre of current platform 
+            this._edgeClinging = true;
         } else {
             this._currentPlatform = null;
             // TODO coyote time        
         }
+    }
+
+    clingToEdge() {
+        if (this._edgeClinging && this._currentPlatform !== null) {
+            const centreX = this.currentPlatform.pos.x + this.currentPlatform.width / 2;
+            if ((this.velocity.x < 0) && (centreX > this.pos.x)
+            || (this.velocity.x > 0) && (centreX < this.pos.x)) {
+                this._velocity.mult(-COR_PLATFORM_EDGE, 1);
+            }
+        }
+        this._edgeClinging = false;
     }
 
     drop() {
@@ -107,7 +121,9 @@ export default class PlayerBall {
     }
 
     thrust() {
-        const thrustForce = this._mass * 2;
+        const thrustForce = this.currentPlatform !== null ?
+            PC_GROUND_THRUST
+            : PC_AIR_THRUST;
         this._resultantForce.add(this._horizontalSteering * thrustForce, 0);
     }
 
@@ -159,10 +175,18 @@ export default class PlayerBall {
             this._velocity.x = 0;
         }
 
+        // ensure max horizontal speed not exceeded 
+        if (Math.abs(this.velocity.x) > PC_MAX_SPEED) {
+            this._velocity.x = PC_MAX_SPEED * newXDirection;
+        }
+
+        // cling to edge 
+        this.clingToEdge();
+
         // bounce off edge 
         if (this._pos.x < this._radius && this._velocity.x < 0
             || this._pos.x > this.p5.width - this._radius && this._velocity.x > 0) {
-            this._velocity.mult(-COR_EDGE, 1);
+            this._velocity.mult(-COR_CAVAS_EDGE, 1);
         }
 
         // apply movement 
