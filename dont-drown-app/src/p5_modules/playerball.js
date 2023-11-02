@@ -1,4 +1,4 @@
-import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_MAX_SPEED } from "./physicsengine";
+import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
 const PC_WEIGHT = 10;
@@ -24,8 +24,8 @@ export default class PlayerBall {
             this._diameter,
             PC_DETAIL,
         );
-        this._pos = pos ?? p5.createVector();
-        this._oldPos = this._pos;
+        this._pos = pos.copy() ?? p5.createVector();
+        this._oldPos = this._pos.copy();
         this._mass = PC_WEIGHT;
         this._horizontalSteering = REST;
         this._resultantForce = p5.createVector();
@@ -33,6 +33,8 @@ export default class PlayerBall {
         this._currentPlatform = null;
         this._droppedPlatform = null;
         this._edgeClinging;
+        this._jumpForce = G * this._mass * PC_JUMP_MULT;
+        this._weight = G * this._mass;
     }
 
     get radius() {
@@ -44,7 +46,7 @@ export default class PlayerBall {
     }
 
     set pos(newPos) {
-        this._pos = newPos;
+        this._pos = newPos.copy();
     }
 
     get pos() {
@@ -77,6 +79,14 @@ export default class PlayerBall {
         return this._droppedPlatform;
     }
 
+    get jumpForce() {
+        return this._jumpForce;
+    }
+
+    get weight() {
+        return this._weight;
+    }
+
     land(platform) {
         this._droppedPlatform = null;
         this._pos.set(this._pos.x, platform.pos.y - this._radius);
@@ -104,7 +114,7 @@ export default class PlayerBall {
         if (this._edgeClinging && this._currentPlatform !== null) {
             const centreX = this.currentPlatform.pos.x + this.currentPlatform.width / 2;
             if ((this.velocity.x < 0) && (centreX > this.pos.x)
-            || (this.velocity.x > 0) && (centreX < this.pos.x)) {
+                || (this.velocity.x > 0) && (centreX < this.pos.x)) {
                 this._velocity.mult(-COR_PLATFORM_EDGE, 1);
             }
         }
@@ -128,8 +138,7 @@ export default class PlayerBall {
     }
 
     jump() {
-        const jumpForce = G * this._mass * 20;
-        this._resultantForce.sub(0, jumpForce);
+        this._resultantForce.sub(0, this.jumpForce);
         this._currentPlatform = null;
     }
 
@@ -145,7 +154,7 @@ export default class PlayerBall {
     }
 
     gravity() {
-        if (this._currentPlatform === null) { this._resultantForce.add(0, this._mass * G) }
+        if (this._currentPlatform === null) { this._resultantForce.add(0, this.weight) }
     }
 
     airResistance() {
