@@ -4,6 +4,7 @@ import PlayerBall, { LEFT, REST, RIGHT } from "./p5_modules/playerball";
 import Sketcher from "./p5_modules/sketcher";
 import Platform from "./p5_modules/platform";
 import { detectLanding } from "./p5_modules/physicsengine";
+import CrashDummy from "./p5_modules/crashdummy";
 
 /**
  * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
@@ -26,6 +27,7 @@ function sketch(p5) {
     const canvasDimensions = () => determineSizes(p5.windowWidth, p5.windowHeight).map(x => x * canvasScale);
     const background = 'lightgoldenrodyellow';
 
+    var centre; 
     var sketcher;
     var sketchedLine,
         dualWeightedLine,
@@ -34,6 +36,7 @@ function sketch(p5) {
         sketchedEllipse,
         sketchedWave;
     var pc;
+    var crashDummy;
     const platforms = [];
     var propped = undefined;
 
@@ -135,8 +138,8 @@ function sketch(p5) {
 
     p5.keyPressed = () => {
         if (p5.keyCode == 32) { // spacebar
-            pc = new PlayerBall(p5, sketcher, p5.createVector(600, 300));
-        } 
+            pc = new PlayerBall(p5, sketcher, centre);
+        }
     }
 
     function drawObjects() {
@@ -164,14 +167,16 @@ function sketch(p5) {
 
     p5.setup = () => {
         p5.createCanvas(...canvasDimensions());
+        centre = p5.createVector(p5.width / 2, p5.height / 2); 
         sketcher = new Sketcher(p5);
         sketcher.lineBreaksMax = 2;
         sketcher.lineDeviationMult = 0.6;
         p5.noStroke();
-        pc = new PlayerBall(p5, sketcher, p5.createVector(600, 300));
-        platforms.push(new Platform(p5, sketcher, p5.createVector(550, 400)));
+        pc = new PlayerBall(p5, sketcher, centre);
+        crashDummy = new CrashDummy(p5, sketcher, centre);
+        platforms.push(new Platform(p5, sketcher, centre));
         randomPlatforms(10);
-        p5.frameRate(5); 
+        p5.frameRate();
     };
 
     p5.updateWithProps = props => {
@@ -193,12 +198,18 @@ function sketch(p5) {
 
         // physics calculations 
         pc.integrate();
+        crashDummy.run();
         detectLanding(pc, platforms);
 
         // drawing 
         p5.background(background);
         platforms.forEach(p => p.draw());
         pc.draw();
+        p5.push();
+        p5.stroke('black');
+        p5.line(pc.pos.x, pc.pos.y, pc.pos.x, pc.pos.y - (crashDummy.jumpHeight * pc.increment()));
+        p5.pop(); 
+        crashDummy.draw();
         p5.push();
         p5.fill('black');
         p5.textAlign(p5.RIGHT);
