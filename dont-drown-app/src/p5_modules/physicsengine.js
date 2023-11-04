@@ -6,10 +6,12 @@ const COR_PLATFORM = 0; // coefficient of restitution
 const COR_CAVAS_EDGE = 0.8;
 const COR_PLATFORM_EDGE = 0.5;
 const C = 0.25; // air constant 
-const PC_MAX_SPEED = 25;
+const PC_MAX_SPEED = 25; // horizontal component of velocity 
 const PC_GROUND_THRUST = 20;
 const PC_AIR_THRUST = 5;
-const PC_JUMP_MULT = 20; 
+const PC_JUMP_MULT = 20;
+
+const INCREMENT_DIV = 2000; // relative to canvas width 
 
 /* Finds the horizontal position of the ball when it was at a given height */
 function getXAtYOverlap(ball, y) {
@@ -61,5 +63,9 @@ function detectLanding(ball, platforms) {
     }
 }
 
-export { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, detectLanding };
+const increment = (p5) => {
+    return p5.width / INCREMENT_DIV;
+}
+
+export { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, detectLanding, increment };
 

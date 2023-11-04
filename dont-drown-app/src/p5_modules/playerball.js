@@ -1,10 +1,8 @@
-import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED } from "./physicsengine";
+import { C, COR_CAVAS_EDGE, COR_PLATFORM, increment, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
 const PC_WEIGHT = 10;
 const PC_DETAIL = 15;
-
-const PC_INCREMENT_DIV = 2000; // relative to canvas width 
 
 const REST = 0;
 const LEFT = -1;
@@ -57,6 +55,9 @@ export default class PlayerBall {
         return this._oldPos;
     }
 
+    /**
+     * @param {number} steer
+     */
     set horizontalSteering(steer) {
         if ([REST, LEFT, RIGHT].includes(steer)) {
             this._horizontalSteering = steer;
@@ -124,10 +125,6 @@ export default class PlayerBall {
     drop() {
         this._droppedPlatform = this._currentPlatform;
         this._currentPlatform = null;
-    }
-
-    increment() {
-        return this.p5.width / PC_INCREMENT_DIV;
     }
 
     thrust() {
@@ -200,7 +197,7 @@ export default class PlayerBall {
 
         // apply movement 
         this._oldPos = this._pos.copy();
-        this._pos.add(this.p5.createVector(this.increment(), this.increment())
+        this._pos.add(this.p5.createVector(increment(this.p5), increment(this.p5))
             .mult(this._velocity));
 
         // reset resultant force
@@ -213,5 +210,5 @@ export default class PlayerBall {
 
 }
 
-export { LEFT, REST, RIGHT };
+export { LEFT, REST, RIGHT, PC_DIAMETER_DIV };
 

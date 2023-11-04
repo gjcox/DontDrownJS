@@ -1,3 +1,4 @@
+import { PC_MAX_SPEED, increment } from "./physicsengine";
 import PlayerBall from "./playerball";
 
 export default class CrashDummy extends PlayerBall {
@@ -9,29 +10,33 @@ export default class CrashDummy extends PlayerBall {
         this.jump();
     }
 
-    get jumpHeight() {
-        return this._jumpHeight;
+    get done() {
+        return this._done; 
     }
 
-    get jumpFrames() {
-        return this._jumpFrames;
+    /**
+     * @returns [this._jumpHeight, this._jumpFrames, this._jumpWidth]. 
+     */
+    get jumpInfo() {
+        return [this._jumpHeight, this._jumpFrames, this._jumpWidth];
     }
 
     run() {
-        if (!this.done) {
+        if (!this._done) {
             const rising = this._velocity.y <= 0;
             this.integrate();
             const stillRising = this._velocity.y < 0;
             if (rising != stillRising && this._jumpHeight === undefined) {
-                this._jumpHeight = Math.abs(this._initPos.y - this.pos.y) / this.increment();
+                this._jumpHeight = Math.abs(this._initPos.y - this.pos.y) / increment(this.p5);
                 this._jumpFrames = Math.abs(this._start - this.p5.frameCount) * 2;
-                this.done = true;
+                this._jumpWidth = this._jumpFrames * PC_MAX_SPEED;
+                this._done = true;
             }
         }
     }
 
     draw() {
-       if (!this.done) this.sprite.draw(this._pos);
+        if (!this.done) this.sprite.draw(this._pos);
     }
 
 }
