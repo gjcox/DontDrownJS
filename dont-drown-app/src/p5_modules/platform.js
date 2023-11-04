@@ -49,6 +49,14 @@ export default class Platform {
         this._initPos = newPos.copy();
     }
 
+    get middle() {
+        return this.pos.copy().add(this.width / 2, 0);
+    }
+
+    translate(v) {
+        this._pos.add(v); 
+    }
+
     buildSprite(sketcher) {
         const sprite = new CompositeShape();
         const groundThickness = sketcher.defLineWeight * PF_GROUND_THICKNESS_MULT;
@@ -75,8 +83,14 @@ export default class Platform {
         return sprite;
     }
 
+    onScreen() {
+        return this.pos.y <= this.p5.height && this.pos.y >= this.height;
+    }
+
     draw() {
-        this.sprite.draw(this._pos);
+        if (this.onScreen()) {
+            this.sprite.draw(this._pos);
+        }
     }
 }
 
