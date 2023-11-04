@@ -1,3 +1,4 @@
+import Level, { EASY } from "./level";
 import { increment } from "./physicsengine";
 import Platform, { PF_WIDTH_DIV } from "./platform";
 import { PC_DIAMETER_DIV } from "./playerball";
@@ -44,9 +45,8 @@ export default class LevelBuilder {
         return this.p5.createVector(x, y);
     }
 
-    buildLevel(height, hasGround, verticality) {
-        // const level = new Level(); // TODO 
-        const level = {};
+    buildLevel(difficulty) {
+        const level = new Level(this.p5, difficulty);
         const platforms = [];
 
         // level generation values
@@ -55,16 +55,13 @@ export default class LevelBuilder {
         const lowestPlatformHeight = 0.75 * this.p5.height;
         const highestPlatformHeight = page.topLineY + this.p5.height / 10;
         const playableWidth = this.p5.width - this.marginX;
-        // const height = Math.round(this.p5.height * difficulty.heightMult);
-        const panRate = height / PAN_RATE_DIV;
-        const topLimit = this.p5.height - height;
 
         var prevPlatform;
         var currentPlatform;
 
-        if (hasGround) {
+        if (difficulty.hasGround) {
             // TODO wide platforms 
-            currentPlatform = new Platform(this.p5, this.sketcher, this.p5.createVector(marginX, lowestPlatformHeight));
+            currentPlatform = new Platform(this.p5, this.sketcher, this.p5.createVector(this.marginX, lowestPlatformHeight));
             platforms.push(currentPlatform);
         } else {
             currentPlatform = new Platform(this.p5, this.sketcher,
@@ -99,7 +96,7 @@ export default class LevelBuilder {
                     goingLeft = !goingLeft;
                 }
 
-                if (!wentUp && Math.random() < verticality) {
+                if (!wentUp && Math.random() < difficulty.verticality) {
                     // vertical jump (can't have two in a row)
                     diffY = this.jumpHeight * this.p5.random(V_MIN_JUMP_HEIGHT_MULT, V_MAX_JUMP_HEIGHT_MULT);
                     diffX = this.jumpWidth * this.p5.random(V_MIN_JUMP_RANGE_MULT, V_MAX_JUMP_RANGE_MULT);
