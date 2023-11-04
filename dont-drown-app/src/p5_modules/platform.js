@@ -16,6 +16,7 @@ export default class Platform {
         this.fillColour = fillColour;
         this.sprite = this.buildSprite(sketcher);
         this._pos = pos.copy();
+        this._initPos = pos.copy();
     }
 
     get width() {
@@ -27,11 +28,25 @@ export default class Platform {
     }
 
     get pos() {
-        return this._pos;
+        return this._pos.copy();
     }
 
+    /**
+     * @param {p5.Vector} newPos 
+     */
     set pos(newPos) {
-        this._pos = newPos;
+        this._pos = newPos.copy();
+    }
+
+    get initPos() {
+        return this._initPos.copy();
+    }
+
+    /**
+     * @param {p5.Vector} newPos 
+     */
+    set initPos(newPos) {
+        this._initPos = newPos.copy();
     }
 
     buildSprite(sketcher) {
@@ -51,8 +66,8 @@ export default class Platform {
         );
         sprite.addShape(trapezium);
         const groundSurface = sketcher.buildSketchedLine(
-            this.p5.createVector(this.width, groundThickness/2),
-            this.p5.createVector(0, groundThickness/2),
+            this.p5.createVector(this.width, groundThickness / 2),
+            this.p5.createVector(0, groundThickness / 2),
             this.strokeColour,
             groundThickness
         )
@@ -64,3 +79,5 @@ export default class Platform {
         this.sprite.draw(this._pos);
     }
 }
+
+export { PF_WIDTH_DIV }; 
