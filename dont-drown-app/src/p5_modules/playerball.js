@@ -22,7 +22,7 @@ export default class PlayerBall {
             this._diameter,
             PC_DETAIL,
         );
-        this._pos = pos.copy() ?? p5.createVector();
+        this._pos = pos ? pos.copy() : p5.createVector();
         this._oldPos = this._pos.copy();
         this._mass = PC_WEIGHT;
         this._horizontalSteering = REST;
@@ -66,6 +66,10 @@ export default class PlayerBall {
 
     get velocity() {
         return this._velocity;
+    }
+
+    resetVelocity() {
+        this._velocity.mult(0); 
     }
 
     get currentPlatform() {
