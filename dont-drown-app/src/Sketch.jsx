@@ -1,14 +1,11 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
-import PlayerBall, { LEFT, REST, RIGHT } from "./p5_modules/playerball";
-import Sketcher from "./p5_modules/sketcher";
-import Platform from "./p5_modules/platform";
-import { detectLanding, increment } from "./p5_modules/physicsengine";
-import CrashDummy from "./p5_modules/crashdummy";
 import { LEVEL, LOADING } from "./p5_modules/constants";
+import CrashDummy from "./p5_modules/crashdummy";
+import { EASY } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
-import { EASY } from "./p5_modules/level";
+import Sketcher from "./p5_modules/sketcher";
 
 /**
  * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
@@ -73,7 +70,7 @@ function sketch(p5) {
 
         if (crashDummy.done) {
             const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
-            levelBuilder = new LevelBuilder(p5, sketcher, 10, jumpHeight, jumpWidth);
+            levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
             levelController = new LevelController(p5, sketcher, jumpHeight);
             levelController.level = levelBuilder.buildLevel(EASY);
             gameState = LEVEL;
