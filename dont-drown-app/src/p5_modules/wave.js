@@ -22,6 +22,10 @@ export default class Wave {
         this._pos = p5.createVector(0, p5.height);
     }
 
+    get height() {
+        return this._height; 
+    }
+
     get pos() {
         return this._pos; 
     }
@@ -34,7 +38,7 @@ export default class Wave {
     }
 
     onScreen() {
-        return this.pos.y <= this.p5.height && this.pos.y >= this.height;
+        return this.pos.y <= this.p5.height;
     }
 
     draw() {

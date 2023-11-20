@@ -1,5 +1,5 @@
 import Level from "./level";
-import { increment, detectLanding } from "./physicsengine";
+import { detectLanding, increment } from "./physicsengine";
 import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
 import Wave from "./wave";
 
@@ -36,7 +36,7 @@ export default class LevelController {
      */
     set level(level) {
         this._level = level;
-        this.reset(); 
+        this.reset();
     }
 
     get pc() {
@@ -79,11 +79,11 @@ export default class LevelController {
 
     reset() {
         this.panning = NEITHER;
-        this.level.reset(); 
-        this.pc.pos = this.level.platforms[0].middle; 
-        this.pc.land(this.level.platforms[0]); 
-        this.pc.resetVelocity(); 
-        this.wave.pos = this.p5.createVector(0, this.p5.height); 
+        this.level.reset();
+        this.pc.pos = this.level.platforms[0].middle;
+        this.pc.land(this.level.platforms[0]);
+        this.pc.resetVelocity();
+        this.wave.pos = this.p5.createVector(0, this.p5.height);
     }
 
     /**
