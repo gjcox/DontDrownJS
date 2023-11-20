@@ -2,7 +2,7 @@ import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
 import { LEVEL, LOADING } from "./p5_modules/constants";
 import CrashDummy from "./p5_modules/crashdummy";
-import { EASY } from "./p5_modules/level";
+import { EASY, HARD } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
 import Sketcher from "./p5_modules/sketcher";
@@ -72,14 +72,13 @@ function sketch(p5) {
             const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
             levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
             levelController = new LevelController(p5, sketcher, jumpHeight);
-            levelController.level = levelBuilder.buildLevel(EASY);
+            levelController.level = levelBuilder.buildLevel(HARD);
             gameState = LEVEL;
         }
     }
 
     function runLevel() {
         // drawing 
-        p5.background(background);
         levelController.integrate();
         levelController.draw();
     }

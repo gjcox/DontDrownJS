@@ -38,6 +38,7 @@ export default class Level {
         this._topLimit = p5.height - this._height;
         this._top; // the top of the level relative to the viewport
         this._waveRiseRate = p5.height / (60 * difficulty.waveRiseTime);
+        this._age = undefined;
     }
 
     get platforms() {
@@ -65,6 +66,14 @@ export default class Level {
         return this._waveRiseRate;
     }
 
+    get page() {
+        this._page;
+    }
+
+    set page(page) {
+        this._page = page;
+    }
+
     reset() {
         this._top = this.topLimit;
         this.platforms.forEach(p => p.pos = p.initPos.copy());
@@ -77,6 +86,7 @@ export default class Level {
     }
 
     draw() {
+        this._page?.draw({ x: 0, y: Math.abs(this.topLimit - this.top) });
         this._platforms.forEach(p => p.draw());
     }
 }

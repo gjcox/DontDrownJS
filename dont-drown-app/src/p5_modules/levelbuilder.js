@@ -49,6 +49,7 @@ export default class LevelBuilder {
 
         // level generation values
         const page = new Page(this.p5, difficulty.heightMult * this.p5.height);
+        level.page = page; 
         const lowestPlatformHeight = 0.75 * this.p5.height;
         const highestPlatformHeight = page.topLineY + this.p5.height / 10;
         const playableWidth = this.p5.width - page.marginX;
