@@ -5,7 +5,7 @@ const PAGE_COLOUR = 'lightgoldenrodyellow';
 const LINE_COLOUR = 'gray'; 
 const MARGIN_COLOUR = 'firebrick'; 
 const MARGIN_DIV = 10;
-const TOP_LINE_SPACE_DIV = 20;
+const TOP_LINE_SPACE_DIV = 8;
 
 export default class Page {
 
@@ -13,7 +13,7 @@ export default class Page {
         this.p5 = p5;
         this._marginX = p5.width / MARGIN_DIV;
         this._height = height;
-        this._topLineY = p5.height - height + p5.height / TOP_LINE_SPACE_DIV; // TODO make this match stress bar
+        this._topLineY = (p5.height / TOP_LINE_SPACE_DIV) + (p5.height - height); // TODO make this match stress bar
         this._lineGap = p5.width / PC_DIAMETER_DIV;
         this.generateLines(); 
     }
@@ -66,7 +66,7 @@ export default class Page {
         this._lines = new CompositeShape();
 
         // horizontal ruled lines
-        for (let i = 1; i <= this.height / this.lineGap; i++) {
+        for (let i = 0; i <= this.height / this.lineGap; i++) {
             let height = this.topLineY + i * this.lineGap;
             this._lines.addShape(
                 this.drawLine(
