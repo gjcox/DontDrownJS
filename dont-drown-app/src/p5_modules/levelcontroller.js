@@ -90,6 +90,7 @@ export default class LevelController {
 
     togglePause() {
         this._paused = !this._paused;
+        return this._paused; 
     }
 
     /**

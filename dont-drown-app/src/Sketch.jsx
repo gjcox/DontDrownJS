@@ -1,10 +1,11 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
-import { LEVEL, LOADING } from "./p5_modules/constants";
+import { LEVEL, LOADING, MAIN_MENU } from "./p5_modules/constants";
 import CrashDummy from "./p5_modules/crashdummy";
-import { EASY, HARD } from "./p5_modules/level";
+import { HARD } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
+import MainMenu from "./p5_modules/mainmenu";
 import Sketcher from "./p5_modules/sketcher";
 
 /**
@@ -17,38 +18,57 @@ function determineSizes(width, height) {
     const goldenRatio = 1.6;
     let limitingFactor = width >= goldenRatio * height ? 'h' : 'w';
     if (limitingFactor == 'w') {
-        return [width, width / goldenRatio];
+        return [width, width / goldenRatio].map(x => Math.round(x));
     } else {
-        return [height * goldenRatio, height];
+        return [height * goldenRatio, height].map(x => Math.round(x));
     }
 }
 
+/**
+ * 
+ * @param {p5} p5 
+ * @returns [width, height]
+ */
+function canvasDimensions(p5) {
+    const canvasScale = 1; // the proportion of the parent element to take up 
+    const wrapper = p5.select('.react-p5-wrapper');
+    const height = wrapper.height;
+    const width = wrapper.width;
+    return determineSizes(width, height).map(x => x * canvasScale);
+}
+
 function sketch(p5) {
-    const canvasScale = 0.8; // the proportion of the window to take up 
-    const canvasDimensions = () => determineSizes(p5.windowWidth, p5.windowHeight).map(x => x * canvasScale);
-    const background = 'lightgoldenrodyellow';
+    const background = 'mintcream';
     const centre = () => p5.createVector(p5.width / 2, p5.height / 2);
 
+    var mainMenu;
     var propped = undefined;
     var gameState = LOADING;
     var sketcher, crashDummy, levelBuilder, levelController;
 
     p5.keyPressed = () => {
-        if (p5.key == 'r') { 
+        if (p5.key == 'r') {
             levelController?.reset();
         } else if (p5.key == 'p') {
-            levelController?.togglePause(); 
+            if (levelController?.togglePause()) {
+                gameState = MAIN_MENU;
+                mainMenu.show(); 
+            } else {
+                gameState = LEVEL;
+                mainMenu?.hide(); 
+            }
         }
     }
 
     p5.setup = () => {
-        p5.createCanvas(...canvasDimensions());
+        const canvas = p5.createCanvas(...canvasDimensions(p5));
         sketcher = new Sketcher(p5);
         sketcher.lineBreaksMax = 2;
         sketcher.lineDeviationMult = 0.6;
         p5.noStroke();
         crashDummy = new CrashDummy(p5, sketcher, centre());
         p5.frameRate();
+        mainMenu = new MainMenu(p5);
     };
 
     p5.updateWithProps = props => {
@@ -76,6 +96,9 @@ function sketch(p5) {
             levelController = new LevelController(p5, sketcher, jumpHeight);
             levelController.level = levelBuilder.buildLevel(HARD);
             gameState = LEVEL;
+            // p5.clear(); 
+            // gameState = MAIN_MENU;
+            // mainMenu.show();
         }
     }
 
@@ -99,12 +122,16 @@ function sketch(p5) {
             case LEVEL:
                 runLevel();
                 break;
+            case MAIN_MENU:
+                mainMenu.draw();
+                break;
         }
     };
 
     p5.windowResized = () => {
-        p5.resizeCanvas(...canvasDimensions());
+        p5.resizeCanvas(...canvasDimensions(p5));
         // TODO resize increment 
+        mainMenu.resize();
     };
 
 }
@@ -116,4 +143,6 @@ export default ({ p5Prop: p5Prop, setP5Prop }) => {
     }, []);
 
     return (<ReactP5Wrapper sketch={sketch} propped={p5Prop} />);
-}; 
+};
+
+export { canvasDimensions };

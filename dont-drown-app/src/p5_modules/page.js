@@ -1,9 +1,10 @@
 import { PC_DIAMETER_DIV } from "./playerball";
 import { CompositeShape, Shape } from "./shapes";
 
-const PAGE_COLOUR = 'lightgoldenrodyellow'; 
-const LINE_COLOUR = 'gray'; 
-const MARGIN_COLOUR = 'firebrick'; 
+const PAGE_COLOUR = 'lightgoldenrodyellow';
+const LINE_WEIGHT = 1;
+const LINE_COLOUR = 'gray';
+const MARGIN_COLOUR = 'firebrick';
 const MARGIN_DIV = 10;
 const TOP_LINE_SPACE_DIV = 8;
 
@@ -15,7 +16,7 @@ export default class Page {
         this._height = height;
         this._topLineY = (p5.height / TOP_LINE_SPACE_DIV) + (p5.height - height); // TODO make this match stress bar
         this._lineGap = p5.width / PC_DIAMETER_DIV;
-        this.generateLines(); 
+        this.generateLines();
     }
 
     get marginX() {
@@ -35,7 +36,7 @@ export default class Page {
     }
 
     get lines() {
-        return this._lines; 
+        return this._lines;
     }
 
     /*
@@ -62,7 +63,6 @@ export default class Page {
 
     /* Places the margin and uniformly spaced horizontal lines on the page */
     generateLines() {
-        const LINE_WEIGHT = 1; 
         this._lines = new CompositeShape();
 
         // horizontal ruled lines
@@ -79,13 +79,16 @@ export default class Page {
         // vertical margin 
         this._lines.addShape(this.drawLine(
             this.p5.createVector(this.marginX, this.p5.height),
-            this.p5.createVector(this.marginX, this.p5.height - this.height), 
+            this.p5.createVector(this.marginX, this.p5.height - this.height),
             LINE_WEIGHT, MARGIN_COLOUR));
 
     }
 
-    draw(pos ) {
+    draw(pos) {
         this.p5.background(PAGE_COLOUR);
-        this.lines.draw(pos); 
+        this.lines.draw(pos);
     }
 }
+
+export { LINE_WEIGHT };
+
