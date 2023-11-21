@@ -1,4 +1,5 @@
 import Platform from "./platform";
+import PlayerBall from "./playerball";
 
 const G = 2; // gravity 
 const MU = 0.5; // coefficient of friction 
@@ -30,8 +31,8 @@ function getXAtYOverlap(ball, y) {
 
 /**
  * N.B. platforms must be sorted by pos.y
- * @param {*} ball 
- * @param {*} platforms 
+ * @param {PlayerBall} ball 
+ * @param {Array<Platform>} platforms 
  */
 function detectLanding(ball, platforms) {
     if (ball.currentPlatform instanceof Platform) {
@@ -63,9 +64,24 @@ function detectLanding(ball, platforms) {
     }
 }
 
+/**
+ * 
+ * @param {PlayerBall} ball 
+ * @param {Array<number>} leftEdges 
+ * @param {Array<number>} rightEdges 
+ */
+function detectEdgeCollision(ball, leftEdge, rightEdge) {
+    const ballLeftEdge = ball.pos.x - ball.radius;
+    const ballRightEdge = ball.pos.x + ball.radius;
+    if (leftEdge >= ballLeftEdge && ball.velocity.x < 0
+        || rightEdge <= ballRightEdge && ball.velocity.x > 0) {
+        ball.hitEdge();
+    }
+}
+
 const increment = (p5) => {
     return p5.width / INCREMENT_DIV;
 }
 
-export { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, detectLanding, increment };
+export { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, detectLanding, detectEdgeCollision, increment };
 

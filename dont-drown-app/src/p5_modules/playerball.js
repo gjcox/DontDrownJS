@@ -69,7 +69,7 @@ export default class PlayerBall {
     }
 
     resetVelocity() {
-        this._velocity.mult(0); 
+        this._velocity.mult(0);
     }
 
     get currentPlatform() {
@@ -115,12 +115,39 @@ export default class PlayerBall {
         }
     }
 
+    /**
+     * Queues a reflection of horizontal component of velocity. 
+     */
+    hitEdge() {
+        this._hitEdge = true;
+    }
+
+    /**
+     * If hitEdge() has been called, then reflect the horizontal component
+     * of velocity and apply the canvas edge coefficient of restitution. 
+     */
+    bounceOffEdge() {
+        if (this._hitEdge) {
+            this.reflect(COR_CAVAS_EDGE);
+            this._hitEdge = false;
+        }
+    }
+
+    /**
+     * Reflects the horizontal component of the ball's velocity, applying 
+     * the passed coefficient of restitution.   
+     * @param {*} cor coefficient of restitution (the proportion of speed retained)
+     */
+    reflect(cor = 1) {
+        this._velocity.mult(-cor, 1);
+    }
+
     clingToEdge() {
         if (this._edgeClinging && this._currentPlatform !== null) {
             const centreX = this.currentPlatform.pos.x + this.currentPlatform.width / 2;
             if ((this.velocity.x < 0) && (centreX > this.pos.x)
                 || (this.velocity.x > 0) && (centreX < this.pos.x)) {
-                this._velocity.mult(-COR_PLATFORM_EDGE, 1);
+                this.reflect(COR_PLATFORM_EDGE);
             }
         }
         this._edgeClinging = false;
@@ -163,7 +190,7 @@ export default class PlayerBall {
         this._resultantForce.add(0, this._velocity.y * -C);
     }
 
-    integrate() {
+    integrate(page) {
         const currentXDirection = this._velocity.x / Math.abs(this._velocity.x);
 
         // resolve horizontal forces 
@@ -190,19 +217,20 @@ export default class PlayerBall {
             this._velocity.x = PC_MAX_SPEED * newXDirection;
         }
 
+        // bounce off edge
+        this.bounceOffEdge();
+
         // cling to edge 
         this.clingToEdge();
-
-        // bounce off edge 
-        if (this._pos.x < this._radius && this._velocity.x < 0
-            || this._pos.x > this.p5.width - this._radius && this._velocity.x > 0) {
-            this._velocity.mult(-COR_CAVAS_EDGE, 1);
-        }
 
         // apply movement 
         this._oldPos = this._pos.copy();
         this._pos.add(this.p5.createVector(increment(this.p5), increment(this.p5))
             .mult(this._velocity));
+
+        // prevent clipping through edges 
+        this._pos.x = Math.max(page?.marginX + this.radius, this._pos.x);
+        this._pos.x = Math.min(this.p5.width - this.radius, this._pos.x);
 
         // reset resultant force
         this._resultantForce.set();
