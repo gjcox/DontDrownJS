@@ -44,17 +44,15 @@ export default class LevelBuilder {
     }
 
     buildLevel(difficulty) {
-        const level = new Level(this.p5, difficulty);
+        const page = new Page(this.p5, difficulty.heightMult * this.p5.height);
+        const level = new Level(this.p5, difficulty, page);
         const platforms = [];
 
         // level generation values
-        const page = new Page(this.p5, difficulty.heightMult * this.p5.height);
-        level.page = page; 
         const lowestPlatformHeight = 0.75 * this.p5.height;
         const highestPlatformHeight = page.topLineY + this.p5.height / 10;
         const playableWidth = this.p5.width - page.marginX;
 
-        var prevPlatform;
         var currentPlatform;
 
         if (difficulty.hasGround) {
@@ -115,7 +113,6 @@ export default class LevelBuilder {
             const platformPosition = this.placePlatform(page, currentPlatform, nextPlatform, diffX, diffY, highestPlatformHeight);
             nextPlatform.initPos = platformPosition;
             nextPlatform.pos = platformPosition;
-            prevPlatform = currentPlatform;
             currentPlatform = nextPlatform;
             platforms.push(currentPlatform);
 

@@ -30,7 +30,7 @@ const VERY_HARD = new Difficulty(3, false, 0.1, 14);
 
 export default class Level {
 
-    constructor(p5, difficulty) {
+    constructor(p5, difficulty, page) {
         this.p5 = p5;
         this._platforms = [];
         this._difficulty = difficulty;
@@ -39,6 +39,7 @@ export default class Level {
         this._top; // the top of the level relative to the viewport
         this._waveRiseRate = p5.height / (60 * difficulty.waveRiseTime);
         this._age = undefined;
+        this._page = page; 
     }
 
     get platforms() {
@@ -67,11 +68,7 @@ export default class Level {
     }
 
     get page() {
-        this._page;
-    }
-
-    set page(page) {
-        this._page = page;
+        return this._page;
     }
 
     reset() {
@@ -87,7 +84,7 @@ export default class Level {
 
     draw() {
         this._page?.draw({ x: 0, y: Math.abs(this.topLimit - this.top) });
-        this._platforms.forEach(p => p.draw());
+        this._platforms?.forEach(p => p.draw());
     }
 }
 
