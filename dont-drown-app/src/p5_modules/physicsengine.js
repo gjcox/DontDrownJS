@@ -14,7 +14,11 @@ const PC_JUMP_MULT = 20;
 
 const INCREMENT_DIV = 2000; // relative to canvas width 
 
-/* Finds the horizontal position of the ball when it was at a given height */
+/** 
+ * Finds the horizontal position of the ball when it was at a given height 
+ * @param {PlayerBall} ball 
+ * @param {number} y y coordinate 
+*/
 function getXAtYOverlap(ball, y) {
     const dir = ball.pos.copy().sub(ball.oldPos).normalize();
     if (dir.y != 0) {
@@ -58,8 +62,9 @@ function detectLanding(ball, platforms) {
                     ball.land(p);
                     return false;
                 }
+            } else {
+                return true;
             }
-            return true;
         });
     }
 }
