@@ -17,6 +17,7 @@ export default class LevelController {
         this._panning = NEITHER;
         this._panRate = p5.width / PAN_RATE_DIV;
         this._jumpHeight = jumpHeight;
+        this._paused = false;
     }
 
     get panning() {
@@ -84,33 +85,40 @@ export default class LevelController {
         this.pc.land(this.level.platforms[0]);
         this.pc.resetVelocity();
         this.wave.pos = this.p5.createVector(0, this.p5.height);
+        this._paused = false;
+    }
+
+    togglePause() {
+        this._paused = !this._paused;
     }
 
     /**
       * Pan level if needed and call physics engine methods. 
       */
     integrate() {
-        this.handleKeyboardInput();
+        if (!this._paused) {
+            this.handleKeyboardInput();
 
-        this.panWrapper();
+            this.panWrapper();
 
-        this.pc.integrate(this.level.page);
-        this.wave.pos.y -= this.level.waveRiseRate;
+            this.pc.integrate(this.level.page);
+            this.wave.pos.y -= this.level.waveRiseRate;
 
-        // collision detection 
-        detectLanding(this.pc, this.level.platforms);
-        detectEdgeCollision(this.pc, this.level.page.marginX, this.p5.width);
-        if (this.pc.pos.y >= this.wave.pos.y) {
-            this.reset(); 
-        }        
+            // collision detection 
+            detectLanding(this.pc, this.level.platforms);
+            detectEdgeCollision(this.pc, this.level.page.marginX, this.p5.width);
+            if (this.pc.pos.y >= this.wave.pos.y) {
+                this.reset();
+            }
 
-        // check if panning needed
-        if (this.pc.pos.y < 1.5 * this.jumpHeight) {
-            this.panning = UP;
-        } else if (this.pc.pos.y > this.p5.height - this.jumpHeight) {
-            this.panning = DOWN;
-        } else {
-            this.panning = NEITHER;
+            // check if panning needed
+            if (this.pc.pos.y < 1.5 * this.jumpHeight) {
+                this.panning = UP;
+            } else if (this.pc.pos.y > this.p5.height - this.jumpHeight) {
+                this.panning = DOWN;
+            } else {
+                this.panning = NEITHER;
+            }
         }
     }
 

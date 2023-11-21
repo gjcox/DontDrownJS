@@ -34,8 +34,10 @@ function sketch(p5) {
     var sketcher, crashDummy, levelBuilder, levelController;
 
     p5.keyPressed = () => {
-        if (p5.keyCode == 32) { // spacebar
-            levelController.reset();
+        if (p5.key == 'r') { 
+            levelController?.reset();
+        } else if (p5.key == 'p') {
+            levelController?.togglePause(); 
         }
     }
 
