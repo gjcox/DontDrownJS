@@ -100,7 +100,9 @@ export default class LevelController {
         // collision detection 
         detectLanding(this.pc, this.level.platforms);
         detectEdgeCollision(this.pc, this.level.page.marginX, this.p5.width);
-        // TODO detect landing in the wave 
+        if (this.pc.pos.y >= this.wave.pos.y) {
+            this.reset(); 
+        }        
 
         // check if panning needed
         if (this.pc.pos.y < 1.5 * this.jumpHeight) {
