@@ -8,9 +8,13 @@ const PF_STROKE_COLOUR = 'limegreen';
 const PF_FILL_COLOUR = 'chartreuse';
 
 export default class Platform {
+    static defaultWidth(p5) {
+        return p5.width / PF_WIDTH_DIV; 
+    }
+
     constructor(p5, sketcher, pos, strokeColour = PF_STROKE_COLOUR, fillColour = PF_FILL_COLOUR) {
         this.p5 = p5;
-        this._width = p5.width / PF_WIDTH_DIV;
+        this._width = Platform.defaultWidth(p5);
         this._height = p5.width / PF_HEIGHT_DIV;
         this.strokeColour = strokeColour;
         this.fillColour = fillColour;
