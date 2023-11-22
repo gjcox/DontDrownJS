@@ -52,10 +52,10 @@ function sketch(p5) {
         } else if (p5.key == 'p') {
             if (levelController?.togglePause()) {
                 gameState = MAIN_MENU;
-                mainMenu.show(); 
+                mainMenu.show();
             } else {
                 gameState = LEVEL;
-                mainMenu?.hide(); 
+                mainMenu?.hide();
             }
         }
     }
@@ -104,8 +104,8 @@ function sketch(p5) {
 
     function runLevel() {
         // drawing 
-        levelController.integrate();
-        levelController.draw();
+        levelController?.integrate();
+        levelController?.draw();
     }
 
     p5.draw = () => {
@@ -146,3 +146,4 @@ export default ({ p5Prop: p5Prop, setP5Prop }) => {
 };
 
 export { canvasDimensions };
+
