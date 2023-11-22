@@ -1,4 +1,5 @@
 import Level from "./level";
+import { marginX } from "./page";
 import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
 import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
 import Wave from "./wave";
@@ -107,7 +108,7 @@ export default class LevelController {
 
             // collision detection 
             detectLanding(this.pc, this.level.platforms);
-            detectEdgeCollision(this.pc, this.level.page.marginX, this.p5.width);
+            detectEdgeCollision(this.pc, marginX(this.p5), this.p5.width);
             if (this.pc.pos.y >= this.wave.pos.y) {
                 this.reset();
             }

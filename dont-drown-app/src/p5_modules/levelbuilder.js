@@ -1,5 +1,5 @@
 import Level from "./level";
-import Page from "./page";
+import { marginX as calcMarginX } from "./page";
 import { increment } from "./physicsengine";
 import Platform, { PF_WIDTH_DIV } from "./platform";
 import { PC_DIAMETER_DIV } from "./playerball";
@@ -35,8 +35,8 @@ export default class LevelBuilder {
      * @param {*} diffY 
      * @returns 
      */
-    placePlatform(page, currentPlatform, nextPlatform, diffX, diffY, highestPlatformHeight) {
-        var x = Math.max(page.marginX, currentPlatform.pos.x + diffX);
+    placePlatform(marginX, currentPlatform, nextPlatform, diffX, diffY, highestPlatformHeight) {
+        var x = Math.max(marginX, currentPlatform.pos.x + diffX);
         x = Math.min(x, this.p5.width - nextPlatform.width);
         var y = Math.min(this.p5.height - nextPlatform.height, currentPlatform.pos.y - diffY);
         y = Math.max(highestPlatformHeight, y);
@@ -44,24 +44,25 @@ export default class LevelBuilder {
     }
 
     buildLevel(difficulty) {
-        const page = new Page(this.p5, difficulty.heightMult * this.p5.height);
-        const level = new Level(this.p5, difficulty, page);
+        const levelHeight = difficulty.heightMult * this.p5.height;
+        const level = new Level(this.p5, difficulty);
         const platforms = [];
+        const marginX = calcMarginX(this.p5)
 
         // level generation values
         const lowestPlatformHeight = 0.75 * this.p5.height;
-        const highestPlatformHeight = page.topLineY + this.p5.height / 10;
-        const playableWidth = this.p5.width - page.marginX;
+        const highestPlatformHeight = this.p5.height + this.jumpHeight - levelHeight;
+        const playableWidth = this.p5.width - marginX;
 
         var currentPlatform;
 
         if (difficulty.hasGround) {
             // TODO wide platforms 
-            currentPlatform = new Platform(this.p5, this.sketcher, this.p5.createVector(page.marginX, lowestPlatformHeight));
+            currentPlatform = new Platform(this.p5, this.sketcher, this.p5.createVector(marginX, lowestPlatformHeight));
             platforms.push(currentPlatform);
         } else {
             currentPlatform = new Platform(this.p5, this.sketcher,
-                this.p5.createVector(page.marginX + Math.random() * (playableWidth - this.p5.width / PF_WIDTH_DIV),
+                this.p5.createVector(marginX + Math.random() * (playableWidth - this.p5.width / PF_WIDTH_DIV),
                     lowestPlatformHeight));
             platforms.push(currentPlatform);
         }
@@ -71,11 +72,11 @@ export default class LevelBuilder {
         var goingLeft = false;
 
         /* while current platform is at least a jump away from the max platform height */
-        while (currentPlatform.pos.y > highestPlatformHeight + (this.jumpHeight * V_MIN_JUMP_HEIGHT_MULT)) {
+        while (currentPlatform.pos.y > highestPlatformHeight) {
 
             const nextPlatform = new Platform(this.p5, this.sketcher, this.p5.createVector(0, 0));
             const wentUp = diffY >= this.jumpHeight * V_MIN_JUMP_HEIGHT_MULT;
-            const edgeReached = currentPlatform.pos.x < page.marginX + nextPlatform.width
+            const edgeReached = currentPlatform.pos.x < marginX + nextPlatform.width
                 || currentPlatform.pos.x > this.p5.width - currentPlatform.width - nextPlatform.width;
 
             if (edgeReached) {
@@ -110,7 +111,7 @@ export default class LevelBuilder {
             }
 
             [diffX, diffY] = [diffX, diffY].map(x => x * increment(this.p5));
-            const platformPosition = this.placePlatform(page, currentPlatform, nextPlatform, diffX, diffY, highestPlatformHeight);
+            const platformPosition = this.placePlatform(marginX, currentPlatform, nextPlatform, diffX, diffY, highestPlatformHeight);
             nextPlatform.initPos = platformPosition;
             nextPlatform.pos = platformPosition;
             currentPlatform = nextPlatform;

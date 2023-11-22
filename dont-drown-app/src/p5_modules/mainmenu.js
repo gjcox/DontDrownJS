@@ -1,32 +1,36 @@
-import { canvasDimensions } from "../Sketch";
-import Page, {LINE_WEIGHT} from "./page";
+import { marginX, renderPage, topLineGap } from "./page";
 
 export default class MainMenu {
+
+    static gameMenuID() {
+        return 'game-menu';
+    }
+
+    static titleID() {
+        return 'menu-title';
+    }
+
     constructor(p5) {
         this.p5 = p5;
         this.root = p5.createDiv();
-        this.root.id('game-menu');
-        this.page = new Page(p5, p5.height);
+        this.root.id(MainMenu.gameMenuID());
         this.resize();
         this.addTitle();
         this.hide();
     }
 
     addTitle() {
-        this.titleSlot = this.p5.createDiv(); 
-        this.titleSlot.parent(this.root); 
-        this.titleSlot.id('title-slot')
-        this.titleSlot.style('height', `${this.page.topLineY + 2*LINE_WEIGHT}px`); 
-        const title = "menu-title";
-        this.titleSlot.html(`<h1 id=${title} class="centered-text menu-text"><u>Don't Drown</u></h1>`, true);
+        this.titleSlot = this.p5.createDiv();
+        this.titleSlot.parent(this.root);
+        this.titleSlot.id('title-slot');
+        this.titleSlot.html(`<h1 id=${MainMenu.titleID()} class="centered-text menu-text"><u>Don't Drown</u></h1>`, true);
+        this.titleSlot.style('height', `${topLineGap()}px`);
     }
 
     resize() {
-        const [width, height] = canvasDimensions(this.p5);
-        this.root.style('margin-left', `${this.page.marginX}px`)
-        this.root.style('width', `${width - this.page.marginX}px`);
-        this.root.style('height', `${height}px`);
-        this.page = new Page(this.p5, this.p5.height);
+        this.root.style('margin-left', `${marginX(this.p5)}px`)
+        this.root.style('width', `${this.p5.width - marginX(this.p5)}px`);
+        this.root.style('height', `${this.p5.height}px`);
     }
 
     show() {
@@ -38,6 +42,6 @@ export default class MainMenu {
     }
 
     draw() {
-        this.page.draw();
+        renderPage(this.p5, 0);
     }
 }
