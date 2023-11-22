@@ -47,7 +47,7 @@ function sketch(p5) {
     var sketcher, crashDummy, levelBuilder, levelController;
 
     p5.keyPressed = () => {
-        if (p5.key == 'r') {
+        if (p5.key == 'r' && gameState == LEVEL) {
             levelController?.reset();
         } else if (p5.key == 'p') {
             if (levelController?.togglePause()) {
