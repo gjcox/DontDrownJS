@@ -49,6 +49,7 @@ export default class Level {
     set platforms(platforms) {
         this._platforms = platforms;
         this._platforms.sort((p1, p2) => p2.pos.y - p1.pos.y);
+        this._highestPlatform = this._platforms[this._platforms.length - 1];
     }
 
     get difficulty() {
@@ -67,6 +68,9 @@ export default class Level {
         return this._waveRiseRate;
     }
 
+    get highestPlatform() {
+        return this._highestPlatform; 
+    }
 
     reset() {
         this._top = this.topLimit;

@@ -10,7 +10,7 @@ const NEITHER = 0;
 const DOWN = 1;
 
 export default class LevelController {
-    constructor(p5, sketcher, jumpHeight) {
+    constructor(p5, sketcher, jumpHeight, completeLevel) {
         this.p5 = p5;
         this.sketcher = sketcher;
         this._pc = new PlayerBall(p5, sketcher);
@@ -19,6 +19,7 @@ export default class LevelController {
         this._panRate = p5.width / PAN_RATE_DIV;
         this._jumpHeight = jumpHeight;
         this._paused = false;
+        this.completeLevel = completeLevel; 
     }
 
     get panning() {
@@ -120,6 +121,10 @@ export default class LevelController {
             detectEdgeCollision(this.pc, marginX(this.p5), this.p5.width);
             if (this.pc.pos.y >= this.wave.pos.y) {
                 this.reset();
+            }
+
+            if (this.pc.currentPlatform == this.level.highestPlatform) {
+                this.completeLevel(); 
             }
 
             // check if panning needed

@@ -95,7 +95,7 @@ function sketch(p5) {
         if (crashDummy.done) {
             const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
             levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
-            levelController = new LevelController(p5, sketcher, jumpHeight);
+            levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
             levelController.level = levelBuilder.buildLevel(HARD);
             gameState = LEVEL;
             // p5.clear(); 
@@ -108,6 +108,10 @@ function sketch(p5) {
         // drawing 
         levelController?.integrate();
         levelController?.draw();
+    }
+
+    function completeLevel() {
+        levelController.level = levelBuilder.buildLevel(HARD);
     }
 
     p5.draw = () => {
@@ -131,9 +135,9 @@ function sketch(p5) {
     };
 
     p5.windowResized = () => {
-        p5.resizeCanvas(...canvasDimensions(p5));
-        // TODO resize increment 
-        mainMenu.resize();
+        // p5.resizeCanvas(...canvasDimensions(p5));
+        // // TODO resize increment 
+        // mainMenu.resize();
     };
 
 }
