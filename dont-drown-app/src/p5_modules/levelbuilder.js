@@ -156,7 +156,7 @@ export default class LevelBuilder {
             if (lastPlatform().pos.x < marginX + platformWidth && goingLeft
                 || lastPlatform().pos.x > width - 2 * platformWidth && !goingLeft) {
                 // edge reached - reflection jump 
-                jumpType = R_JUMP;
+                jumpType = jumpType == V_JUMP ? H_JUMP : R_JUMP;
                 goingLeft = !goingLeft;
             } else if (jumpType != R_JUMP &&
                 (lastPlatform().pos.x < marginX + minHJumpWidth && goingLeft
