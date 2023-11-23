@@ -57,6 +57,8 @@ function sketch(p5) {
                 gameState = LEVEL;
                 mainMenu?.hide();
             }
+        } else if (p5.key == 'w') {
+            levelController?.toggleWave(); 
         }
     }
 

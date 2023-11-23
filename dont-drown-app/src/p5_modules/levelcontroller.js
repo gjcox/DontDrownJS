@@ -57,6 +57,10 @@ export default class LevelController {
         return this._jumpHeight * increment(this.p5);
     }
 
+    toggleWave() {
+        this._waveMoving = !this._waveMoving;
+    }
+
     handleKeyboardInput() {
         if ((this.p5.keyIsDown(this.p5.LEFT_ARROW) || this.p5.keyIsDown(65))
             && !(this.p5.keyIsDown(this.p5.RIGHT_ARROW) || this.p5.keyIsDown(68))) {
@@ -82,11 +86,14 @@ export default class LevelController {
     reset() {
         this.panning = NEITHER;
         this.level.reset();
+        // this.pc.pos = this.level.platforms[this.level.platforms.length - 1].middle;
+        // this.pc.land(this.level.platforms[this.level.platforms.length - 1]);    
         this.pc.pos = this.level.platforms[0].middle;
         this.pc.land(this.level.platforms[0]);
         this.pc.resetVelocity();
         this.wave.pos = this.p5.createVector(0, this.p5.height);
         this._paused = false;
+        this._waveMoving = true;
     }
 
     togglePause() {
@@ -104,7 +111,9 @@ export default class LevelController {
             this.panWrapper();
 
             this.pc.integrate(this.level.page);
-            this.wave.pos.y -= this.level.waveRiseRate;
+            if (this._waveMoving) {
+                this.wave.pos.y -= this.level.waveRiseRate;
+            }
 
             // collision detection 
             detectLanding(this.pc, this.level.platforms);
