@@ -1,4 +1,4 @@
-import { marginX, renderPage, topLineGap } from "./page";
+import { lineGap, marginX, renderPage, topLineGap } from "./page";
 
 export default class MainMenu {
 
@@ -16,6 +16,7 @@ export default class MainMenu {
         this.root.id(MainMenu.gameMenuID());
         this.resize();
         this.addTitle();
+        this.addMenuItemContainer();
         this.hide();
     }
 
@@ -23,8 +24,26 @@ export default class MainMenu {
         this.titleSlot = this.p5.createDiv();
         this.titleSlot.parent(this.root);
         this.titleSlot.id('title-slot');
+        this.titleSlot.class('flex-col-cont');
         this.titleSlot.html(`<h1 id=${MainMenu.titleID()} class="centered-text menu-text"><u>Don't Drown</u></h1>`, true);
         this.titleSlot.style('height', `${topLineGap()}px`);
+    }
+
+    addMenuItemContainer() {
+        this.menuItemContainer = this.p5.createDiv();
+        this.menuItemContainer.parent(this.root);
+        this.menuItemContainer.id('menuItemCont');
+        this.menuItemContainer.class('flex-col-cont');
+        this.menuItemContainer.style('column-gap', `${lineGap()}px`);
+        this.menuItemContainer.style('margin-top', `${lineGap()}px`);
+        this.addSelectLevel();
+    }
+
+    addSelectLevel() {
+
+        ['Level selector', 'Instructions', 'Credits'].forEach(label => {
+            this.menuItemContainer.html(`<button class="menu-text menu-item-button" style="margin-bottom:${lineGap()}px">${label}</button>`, true);
+        });
     }
 
     resize() {

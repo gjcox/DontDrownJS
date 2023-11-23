@@ -46,7 +46,7 @@ canvas {
   flex-direction: column;
 }
 
-#title-slot {
+.flex-col-cont {
   display: flex;
   flex-direction: column;
 }
@@ -57,10 +57,33 @@ canvas {
 }
 
 .menu-text {
-  font-family: Copperplate, Papyrus, fantasy;
+  font-family: cursive;
   position: relative;
   color: black;
-  line-height: 90%;
+  line-height: 100%;
   margin: 0;
   margin-top: auto;
+}
+
+.menu-list {
+  list-style-position: inside;
+}
+
+#menuItemCont {
+  padding: 0% 2%;
+}
+
+.menu-item-button {
+  border: none;
+  background-color: transparent;
+  padding: 0px 1em;
+  cursor: pointer;
+  display: inline-block;
+  margin-right: auto;
+  border-radius: 0;
+}
+
+.menu-item-button:hover {
+  /* text-decoration: underline; */
+  background-color: rgba(255, 20, 147, 0.5);
 }
