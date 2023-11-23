@@ -7,10 +7,10 @@ const COR_PLATFORM = 0; // coefficient of restitution
 const COR_CAVAS_EDGE = 0.8;
 const COR_PLATFORM_EDGE = 0.5;
 const C = 0.25; // air constant 
-const PC_MAX_SPEED = 25; // horizontal component of velocity 
-const PC_GROUND_THRUST = 20;
+const PC_MAX_SPEED = 15; // horizontal component of velocity 
+const PC_GROUND_THRUST = 15;
 const PC_AIR_THRUST = 5;
-const PC_JUMP_MULT = 20;
+const PC_JUMP_MULT = 20; // jump thrust = weight * jump_mult
 
 const INCREMENT_DIV = 2000; // relative to canvas width 
 
