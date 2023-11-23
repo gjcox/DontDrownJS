@@ -32,7 +32,9 @@ function renderPage(p5, virtualTop) {
     p5.push();
     p5.stroke(LINE_COLOUR);
     p5.strokeWeight(LINE_WEIGHT);
-    const topLineY = Math.max(Math.abs(virtualTop % _lineGap), virtualTop + _topLineGap)
+    const topLineY = Math.abs(virtualTop) <= _topLineGap ?
+        virtualTop + _topLineGap :
+        _lineGap - (Math.abs(virtualTop) - _topLineGap) % _lineGap;
     var lineY = topLineY;
     while (lineY <= p5.height) {
         p5.line(0, lineY, p5.width, lineY);
