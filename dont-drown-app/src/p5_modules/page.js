@@ -1,4 +1,4 @@
-import MainMenu from "./mainmenu";
+import Menu from "./menu";
 
 const PAGE_COLOUR = 'lightgoldenrodyellow';
 const LINE_WEIGHT = 1;
@@ -7,15 +7,15 @@ const MARGIN_COLOUR = 'firebrick';
 const MARGIN_DIV = 10;
 
 function lineGap() {
-    const el = document.getElementById(MainMenu.gameMenuID());
+    const el = document.getElementById(Menu.gameMenuID());
     const fontSize = parseInt(window.getComputedStyle(el).fontSize);
-    return Math.round(fontSize);
+    return fontSize;
 }
 
 function topLineGap() {
-    const titleEl = document.getElementById(MainMenu.titleID());
+    const titleEl = document.getElementById(Menu.titleID());
     const titleFontSize = parseInt(window.getComputedStyle(titleEl).fontSize);
-    return Math.round(1.5 * titleFontSize);
+    return 1.5 * titleFontSize;
 }
 
 const marginX = (p5) => Math.round(p5.width / MARGIN_DIV);

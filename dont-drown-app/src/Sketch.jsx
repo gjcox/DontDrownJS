@@ -2,10 +2,10 @@ import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
 import { LEVEL, LOADING, MAIN_MENU } from "./p5_modules/constants";
 import CrashDummy from "./p5_modules/crashdummy";
-import { HARD } from "./p5_modules/level";
+import { EASY, HARD, MEDIUM, VERY_HARD } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
-import MainMenu from "./p5_modules/mainmenu";
+import Menu from "./p5_modules/menu";
 import Sketcher from "./p5_modules/sketcher";
 
 /**
@@ -40,29 +40,45 @@ function canvasDimensions(p5) {
 function sketch(p5) {
     const background = 'mintcream';
     const centre = () => p5.createVector(p5.width / 2, p5.height / 2);
+    const levels = [];
 
-    var mainMenu;
+    var menu;
     var propped = undefined;
-    var gameState = LOADING;
+    var _gameState = LOADING;
+    const gameState = () => _gameState;
     var sketcher, crashDummy, levelBuilder, levelController;
 
+    function setGameState(newGameState) {
+        switch (newGameState) {
+            case MAIN_MENU:
+                _gameState = MAIN_MENU;
+                menu.show();
+                break;
+            default:
+                menu.hide();
+                _gameState = newGameState;
+                break;
+        }
+    }
+
     p5.keyPressed = () => {
-        if (p5.key == 'r' && gameState == LEVEL) {
+        if (p5.key == 'r' && gameState() == LEVEL) {
             levelController?.reset();
         } else if (p5.key == 'p') {
             if (levelController?.togglePause()) {
-                gameState = MAIN_MENU;
-                mainMenu.show();
-            } else {
-                gameState = LEVEL;
-                mainMenu?.hide();
+                setGameState(MAIN_MENU);
+                menu.show();
+            } else if (levelController.level !== undefined) {
+                setGameState(LEVEL);
+                menu?.hide();
             }
         } else if (p5.key == 'w') {
-            levelController?.toggleWave(); 
+            levelController?.toggleWave();
         }
     }
 
     p5.setup = () => {
+        // N.B. this can run twice, so don't manipulate the DOM here 
         const canvas = p5.createCanvas(...canvasDimensions(p5));
         sketcher = new Sketcher(p5);
         sketcher.lineBreaksMax = 2;
@@ -70,8 +86,17 @@ function sketch(p5) {
         p5.noStroke();
         crashDummy = new CrashDummy(p5, sketcher, centre());
         p5.frameRate();
-        mainMenu = new MainMenu(p5);
     };
+
+    function gameSetup() {
+        menu = new Menu(p5);
+        const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
+        levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
+        [EASY, MEDIUM, HARD, VERY_HARD].forEach(diff => levels.push(levelBuilder.buildLevel(diff)));
+        menu.levels = levels;
+        levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
+        setGameState(MAIN_MENU);
+    }
 
     p5.updateWithProps = props => {
         if (props.propped) {
@@ -93,14 +118,7 @@ function sketch(p5) {
         crashDummy.draw();
 
         if (crashDummy.done) {
-            const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
-            levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
-            levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
-            levelController.level = levelBuilder.buildLevel(HARD);
-            gameState = LEVEL;
-            // p5.clear(); 
-            // gameState = MAIN_MENU;
-            // mainMenu.show();
+            gameSetup();
         }
     }
 
@@ -111,7 +129,8 @@ function sketch(p5) {
     }
 
     function completeLevel() {
-        levelController.level = levelBuilder.buildLevel(HARD);
+        levelController.level = undefined;
+        setGameState(MAIN_MENU);
     }
 
     p5.draw = () => {
@@ -121,7 +140,7 @@ function sketch(p5) {
          * use this to determine if a canvas needs deleting. */
         if (propped === undefined) { p5.remove(); return; };
 
-        switch (gameState) {
+        switch (gameState()) {
             case LOADING:
                 drawLoading();
                 break;
@@ -129,7 +148,7 @@ function sketch(p5) {
                 runLevel();
                 break;
             case MAIN_MENU:
-                mainMenu.draw();
+                menu.draw();
                 break;
         }
     };
