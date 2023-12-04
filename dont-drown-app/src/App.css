@@ -43,7 +43,7 @@ canvas {
 #game-menu {
   position: absolute;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .flex-col-cont {

@@ -17,8 +17,8 @@ class Navigator {
     toButton(p5, setState) {
         const button = p5.createButton(this.label);
         button.id(this.id);
-        button.class("menu-text menu-item-button");
-        button.style("margin-bottom", `${lineGap()}px`);
+        button.class('menu-text menu-item-button');
+        button.style('margin-bottom', `${lineGap()}px`);
         button.mouseClicked(() => setState(this.navigateTo));
         return button;
     }
@@ -39,12 +39,11 @@ export default class Menu {
         this.root = p5.createDiv();
         this.root.id(Menu.gameMenuID());
         this.menus = new Map();
-        this.setSize();
-        this.addTitle();
-        this.addMenuItemContainer();
-        this.addMainMenu();
-        this.addLevelSelector();
         this._menuState = MAIN;
+        this._menuHistory = [];
+        this.addLeftOfMargin();
+        this.addRightOfMargin();
+        this.setSize();
         this.hide();
     }
 
@@ -54,10 +53,64 @@ export default class Menu {
 
     set menuState(newState) {
         if (!MENU_STATES.includes(newState)) {
-            console.error(`Unrecognised menu state ${newState}`)
+            console.error(`Unrecognised menu state ${newState} in set menuState()`)
         } else {
+            this.pushMenu(this.menuState);
             this._menuState = newState;
-            this.switchMenu(); 
+            this.switchDisplayedMenu();
+        }
+    }
+
+    clearMenuHistory() {
+        this._menuHistory.length = 0;
+        console.log('menu state cleared')
+    }
+
+    pushMenu(state) {
+        if (!MENU_STATES.includes(state)) {
+            console.error(`Unrecognised menu state ${state} in pushMenu()`)
+        } else {
+            this._menuHistory.push(state);
+        }
+    }
+
+    popMenu() {
+        return this._menuHistory.pop();
+    }
+
+    addLeftOfMargin() {
+        this.leftOfMargin = this.p5.createDiv();
+        this.leftOfMargin.id('leftOfMargin');
+        this.leftOfMargin.parent(this.root);
+
+        this.leftOfMarginTopSlot = this.p5.createDiv();
+        this.leftOfMarginTopSlot.class('flex-col-cont');
+        this.leftOfMarginTopSlot.parent(this.leftOfMargin);
+
+        const backButton = this.p5.createButton('← BACK');
+        backButton.class('menu-text menu-item-button');
+        backButton.mouseClicked(() => this.revertMenuState());
+        backButton.parent(this.leftOfMarginTopSlot);
+    }
+
+    addRightOfMargin() {
+        this.rightOfMargin = this.p5.createDiv();
+        this.rightOfMargin.id('rightOfMargin');
+        this.rightOfMargin.style('flex', '1 0 auto'); // grows to fill space
+        this.rightOfMargin.class('flex-col-cont');
+        this.rightOfMargin.parent(this.root);
+
+        this.addTitle();
+        this.addMenuItemContainer();
+        this.addMainMenu();
+        this.addLevelSelector();
+    }
+
+    revertMenuState() {
+        const lastMenu = this.popMenu();
+        if (lastMenu !== undefined) {
+            this._menuState = lastMenu;
+            this.switchDisplayedMenu();
         }
     }
 
@@ -72,17 +125,16 @@ export default class Menu {
     }
 
     addTitle() {
-        this.titleSlot = this.p5.createDiv();
-        this.titleSlot.parent(this.root);
-        this.titleSlot.id('title-slot');
-        this.titleSlot.class('flex-col-cont');
-        this.titleSlot.html(`<h1 id=${Menu.titleID()} class="centered-text menu-text"><u>Don't Drown</u></h1>`, true);
-        this.titleSlot.style('height', `${topLineGap()}px`);
+        this.rightOfMarginTopSlot = this.p5.createDiv();
+        this.rightOfMarginTopSlot.parent(this.rightOfMargin);
+        this.rightOfMarginTopSlot.id('title-slot');
+        this.rightOfMarginTopSlot.class('flex-col-cont');
+        this.rightOfMarginTopSlot.html(`<h1 id=${Menu.titleID()} class="centered-text menu-text"><u>Don't Drown</u></h1>`, true);
     }
 
     addMenuItemContainer() {
         this.menuItemContainer = this.p5.createDiv();
-        this.menuItemContainer.parent(this.root);
+        this.menuItemContainer.parent(this.rightOfMargin);
         this.menuItemContainer.id('menuItemCont');
         this.menuItemContainer.style('column-gap', `${lineGap()}px`);
         this.menuItemContainer.style('margin-top', `${lineGap()}px`);
@@ -93,13 +145,13 @@ export default class Menu {
         let mainMenu = this.menus.get(MAIN);
         mainMenu.class('flex-col-cont');
         const mainMenuItems = [
-            new Navigator("Level selector", "lvl-select", LEVEL_SELECTOR), 
-            new Navigator("Instructions", "instructions", INSTRUCTIONS), 
-            new Navigator("Credits", "credits", CREDITS) 
-        ]
+            new Navigator('Level selector', 'lvl-select', LEVEL_SELECTOR),
+            new Navigator('Instructions', 'instructions', INSTRUCTIONS),
+            new Navigator('Credits', 'credits', CREDITS)
+        ];
         mainMenuItems.forEach(navigator => {
-            const button = navigator.toButton(this.p5, x => {this.menuState = x; console.log(x)}); 
-            button.parent(mainMenu); 
+            const button = navigator.toButton(this.p5, x => this.menuState = x);
+            button.parent(mainMenu);
         })
         mainMenu.parent(this.menuItemContainer);
     }
@@ -112,28 +164,32 @@ export default class Menu {
     }
 
     setSize() {
-        this.root.style('margin-left', `${marginX(this.p5)}px`)
-        this.root.style('width', `${this.p5.width - marginX(this.p5)}px`);
+        this.root.style('width', `${this.p5.width}px`);
         this.root.style('height', `${this.p5.height}px`);
+        this.leftOfMargin.style('width', `${marginX(this.p5)}px`);
+        this.leftOfMarginTopSlot.style('height', `${topLineGap()}px`);
+        this.rightOfMarginTopSlot.style('height', `${topLineGap()}px`);
     }
 
-    switchMenu() {
+    switchDisplayedMenu() {
         for (const [key, menu] of this.menus) {
             if (key !== this.menuState) {
-                menu.style("display", "none");
+                menu.style('display', 'none');
             } else {
-                menu.style("display", "flex");
+                menu.style('display', 'flex');
             }
         }
     }
 
     show() {
-        this.root.show();
-        this.switchMenu(); 
+        this.root.style('display', 'flex');
+        this.switchDisplayedMenu();
+        this.clearMenuHistory();
     }
 
     hide() {
-        this.root.hide();
+        this.root.style('display', 'none');
+        this.clearMenuHistory();
     }
 
     draw() {
