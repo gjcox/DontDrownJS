@@ -1,34 +1,20 @@
 import { renderPage } from "./page";
 
 class Difficulty {
-    constructor(heightMult, hasGround, verticality, waveRiseTime) {
-        this._heightMult = heightMult;
-        this._hasGround = hasGround;
-        this._verticality = verticality;
-        this._waveRiseTime = waveRiseTime;
-    }
-
-    get heightMult() {
-        return this._heightMult;
-    }
-
-    get hasGround() {
-        return this._hasGround;
-    }
-
-    get verticality() {
-        return this._verticality;
-    }
-
-    get waveRiseTime() {
-        return this._waveRiseTime;
+    constructor(heightMult, hasGround, verticality, waveRiseTime, string) {
+        this.heightMult = heightMult;
+        this.hasGround = hasGround;
+        this.verticality = verticality;
+        this.waveRiseTime = waveRiseTime;
+        this.string = string; 
+        Object.freeze(this); 
     }
 }
 
-const EASY = new Difficulty(1.5, true, 0.6, 14);
-const MEDIUM = new Difficulty(2, false, 0.4, 14);
-const HARD = new Difficulty(2.5, false, 0.2, 14);
-const VERY_HARD = new Difficulty(3, false, 0.1, 14);
+const EASY = new Difficulty(1.5, true, 0.6, 14, "easy");
+const MEDIUM = new Difficulty(2, false, 0.4, 14, "medium");
+const HARD = new Difficulty(2.5, false, 0.2, 14, "hard");
+const VERY_HARD = new Difficulty(3, false, 0.1, 14, "very hard");
 
 export default class Level {
 
