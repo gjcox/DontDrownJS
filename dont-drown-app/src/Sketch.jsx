@@ -93,7 +93,7 @@ function sketch(p5) {
         const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
         levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
         [EASY, MEDIUM, HARD, VERY_HARD].forEach(diff => levels.push(levelBuilder.buildLevel(diff)));
-        menu.levels = levels;
+        menu.setLevels(levels, startLevel);
         levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
         setGameState(MAIN_MENU);
     }
@@ -122,6 +122,11 @@ function sketch(p5) {
         }
     }
 
+    function startLevel(level) {
+        levelController.level = level;
+        setGameState(LEVEL); 
+    }
+
     function runLevel() {
         // drawing 
         levelController?.integrate();
@@ -129,7 +134,7 @@ function sketch(p5) {
     }
 
     function completeLevel() {
-        levelController.level = undefined;
+        // levelController.level = undefined;
         setGameState(MAIN_MENU);
     }
 

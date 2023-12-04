@@ -63,7 +63,6 @@ export default class Menu {
 
     clearMenuHistory() {
         this._menuHistory.length = 0;
-        console.log('menu state cleared')
     }
 
     pushMenu(state) {
@@ -116,11 +115,16 @@ export default class Menu {
 
     /**
      * @param {Level[]} levelArr 
+     * @param {*} startLevel 
      */
-    set levels(levelArr) {
+    setLevels(levelArr, startLevel) {
         let levelSelector = this.menus.get(LEVEL_SELECTOR);
         levelArr.forEach(level => {
-            levelSelector.html(`<button class="menu-text menu-item-button" style="margin-bottom:${lineGap()}px">${level.difficulty.string}</button>`, true);
+            const button = this.p5.createButton(level.difficulty.string);
+            button.class('menu-text menu-item-button');
+            button.style('margin-bottom', `${lineGap()}px`);
+            button.mouseClicked(() => startLevel(level));
+            button.parent(levelSelector);
         });
     }
 
@@ -181,8 +185,9 @@ export default class Menu {
         }
     }
 
-    show() {
+    show(state = MAIN) {
         this.root.style('display', 'flex');
+        this.menuState = state; 
         this.switchDisplayedMenu();
         this.clearMenuHistory();
     }
