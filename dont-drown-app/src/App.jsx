@@ -10,7 +10,7 @@ function App() {
   // p5Prop is used to detect duplicate canvases
   const [p5Prop, setP5Prop] = useState(false);
   const [canvasDims, setCanvasDims] = useState({ width: 0, height: 0 });
-  // const [marginX, setMarginX] = useState(0);
+  const [marginX, setMarginX] = useState(0);
   const [gameState, setGameState] = useState(LOADING);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function App() {
 
   function setCanvasDimsWrapper(dims) {
     setCanvasDims(dims); 
-    // setMarginX(dims.width / MARGIN_DIV); 
+    setMarginX(dims.width / MARGIN_DIV); 
   }
 
   return (
@@ -35,7 +35,7 @@ function App() {
           gameState={gameState}
           setGameState={setGameState}
           setCanvasDims={setCanvasDimsWrapper}
-          // marginX={marginX}
+          marginX={marginX}
         />
       </>
     </StrictMode>

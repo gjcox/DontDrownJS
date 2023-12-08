@@ -1,4 +1,4 @@
-import { lineGap, marginX, renderPage, topLineGap } from "./page";
+import { lineGap, renderPage, topLineGap } from "./page";
 
 const MAIN = 1;
 const LEVEL_SELECTOR = 101;
@@ -167,10 +167,13 @@ export default class Menu {
         levelSelector.parent(this.menuItemContainer);
     }
 
+    setMarginX(marginX) {
+        this.leftOfMargin.style('width', `${marginX}px`);
+    }
+
     setSize() {
         this.root.style('width', `${this.p5.width}px`);
         this.root.style('height', `${this.p5.height}px`);
-        this.leftOfMargin.style('width', `${marginX(this.p5)}px`);
         this.leftOfMarginTopSlot.style('height', `${topLineGap()}px`);
         this.rightOfMarginTopSlot.style('height', `${topLineGap()}px`);
     }
@@ -187,7 +190,7 @@ export default class Menu {
 
     show(state = MAIN) {
         this.root.style('display', 'flex');
-        this.menuState = state; 
+        this.menuState = state;
         this.switchDisplayedMenu();
         this.clearMenuHistory();
     }
@@ -197,7 +200,4 @@ export default class Menu {
         this.clearMenuHistory();
     }
 
-    draw() {
-        renderPage(this.p5, 0);
-    }
 }

@@ -7,6 +7,7 @@ import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
 import Menu from "./p5_modules/menu";
 import Sketcher from "./p5_modules/sketcher";
+import { renderPage } from "./p5_modules/page";
 
 /**
  * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
@@ -44,7 +45,7 @@ function sketch(p5) {
 
     // props 
     var propped = undefined;
-    var gameState, setGameState, setCanvasDims;
+    var gameState, setGameState, marginX;
 
     var setDims = false;
 
@@ -98,7 +99,7 @@ function sketch(p5) {
         menu = new Menu(p5);
         const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
         levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
-        [EASY, MEDIUM, HARD, VERY_HARD].forEach(diff => levels.push(levelBuilder.buildLevel(diff)));
+        [EASY, MEDIUM, HARD, VERY_HARD].forEach(diff => levels.push(levelBuilder.buildLevel(diff, marginX)));
         menu.setLevels(levels, startLevel);
         levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
         setGameState(MAIN_MENU);
@@ -113,6 +114,14 @@ function sketch(p5) {
         if (props.setCanvasDims && !setDims) {
             props.setCanvasDims({ width: p5.width, height: p5.height });
             setDims = true;
+        }
+
+        // update marginX in child components 
+        console.log(props.marginX);
+        if (marginX !== props.marginX) {
+            console.log(`marginX updated in sketch: ${marginX}`)
+            marginX = props.marginX;
+            menu?.setMarginX(marginX);
         }
 
     };
@@ -142,7 +151,7 @@ function sketch(p5) {
 
     function runLevel() {
         // drawing 
-        levelController?.integrate();
+        levelController?.integrate(marginX);
         levelController?.draw();
     }
 
@@ -166,7 +175,7 @@ function sketch(p5) {
                 runLevel();
                 break;
             case MAIN_MENU:
-                menu.draw();
+                renderPage(p5, 0, marginX); 
                 break;
         }
     };
@@ -179,7 +188,7 @@ function sketch(p5) {
 
 }
 
-export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims }) => {
+export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims, marginX }) => {
 
     useEffect(() => {
         setP5Prop(true);
@@ -192,6 +201,7 @@ export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasD
             gameState={gameState}
             setGameState={setGameState}
             setCanvasDims={setCanvasDims}
+            marginX={marginX}
         />
     );
 };

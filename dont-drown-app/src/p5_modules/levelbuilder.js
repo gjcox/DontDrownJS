@@ -1,5 +1,4 @@
 import Level from "./level";
-import { marginX as calcMarginX } from "./page";
 import { increment } from "./physicsengine";
 import Platform from "./platform";
 import { PC_DIAMETER_DIV } from "./playerball";
@@ -104,12 +103,11 @@ export default class LevelBuilder {
     }
 
 
-    buildLevel(difficulty) {
+    buildLevel(difficulty, marginX) {
         const width = this.p5.width;
         const levelHeight = difficulty.heightMult * this.p5.height;
         const lowestPlatformHeight = 0.5 * this.p5.height;
         const highestPlatformHeight = this.p5.height + this.jumpHeight - levelHeight;
-        const marginX = calcMarginX(this.p5)
         const middlePlayable = (marginX + width) / 2;
         const platformWidth = Platform.defaultWidth(this.p5);
         const minHJumpWidth = H_JUMP_MIN_X_MULT * this.jumpWidth * increment(this.p5);

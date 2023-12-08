@@ -4,7 +4,6 @@ const PAGE_COLOUR = 'lightgoldenrodyellow';
 const LINE_WEIGHT = 1;
 const LINE_COLOUR = 'gray';
 const MARGIN_COLOUR = 'firebrick';
-const MARGIN_DIV = 10;
 
 function lineGap() {
     const el = document.getElementById(Menu.gameMenuID());
@@ -18,12 +17,9 @@ function topLineGap() {
     return 1.5 * titleFontSize;
 }
 
-const marginX = (p5) => Math.round(p5.width / MARGIN_DIV);
-
-function renderPage(p5, virtualTop) {
+function renderPage(p5, virtualTop, marginX) {
     const _lineGap = lineGap();
     const _topLineGap = topLineGap();
-    const _marginX = marginX(p5);
 
     // render page colour 
     p5.background(PAGE_COLOUR);
@@ -46,9 +42,9 @@ function renderPage(p5, virtualTop) {
     p5.push();
     p5.stroke(MARGIN_COLOUR);
     p5.strokeWeight(LINE_WEIGHT);
-    p5.line(_marginX, 0, _marginX, p5.height);
+    p5.line(marginX, 0, marginX, p5.height);
     p5.pop();
 }
 
-export { LINE_WEIGHT, lineGap, marginX, renderPage, topLineGap };
+export { LINE_WEIGHT, lineGap, renderPage, topLineGap };
 
