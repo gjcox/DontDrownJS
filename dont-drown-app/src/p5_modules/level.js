@@ -69,8 +69,8 @@ export default class Level {
         this._platforms.forEach(p => p.translate(this.p5.createVector(0, y)));
     }
 
-    draw() {
-        renderPage(this.p5, this.top)
+    draw(marginX) {
+        renderPage(this.p5, this.top, marginX)
         this._platforms?.forEach(p => p.draw());
     }
 }

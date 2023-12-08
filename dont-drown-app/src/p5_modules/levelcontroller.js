@@ -137,8 +137,8 @@ export default class LevelController {
         }
     }
 
-    draw() {
-        this.level.draw();
+    draw(marginX) {
+        this.level.draw(marginX);
         this.pc.draw();
         this.wave.draw();
     }

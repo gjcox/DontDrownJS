@@ -152,7 +152,7 @@ function sketch(p5) {
     function runLevel() {
         // drawing 
         levelController?.integrate(marginX);
-        levelController?.draw();
+        levelController?.draw(marginX);
     }
 
     function completeLevel() {
