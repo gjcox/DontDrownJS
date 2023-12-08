@@ -42,22 +42,26 @@ function sketch(p5) {
     const centre = () => p5.createVector(p5.width / 2, p5.height / 2);
     const levels = [];
 
-    var menu;
+    // props 
     var propped = undefined;
-    var _gameState = LOADING;
-    const gameState = () => _gameState;
+    var gameState, setGameState, setCanvasDims;
+
+    var setDims = false;
+
+    var menu;
     var sketcher, crashDummy, levelBuilder, levelController;
 
-    function setGameState(newGameState) {
-        switch (newGameState) {
-            case MAIN_MENU:
-                _gameState = MAIN_MENU;
-                menu.show();
-                break;
-            default:
-                menu.hide();
-                _gameState = newGameState;
-                break;
+    function gameStateSetter(setGameState) {
+        return (newGameState) => {
+            setGameState(newGameState);
+            switch (newGameState) {
+                case MAIN_MENU:
+                    menu.show();
+                    break;
+                default:
+                    menu.hide();
+                    break;
+            }
         }
     }
 
@@ -79,7 +83,9 @@ function sketch(p5) {
 
     p5.setup = () => {
         // N.B. this can run twice, so don't manipulate the DOM here 
-        const canvas = p5.createCanvas(...canvasDimensions(p5));
+        const [width, height] = canvasDimensions(p5);
+        p5.createCanvas(width, height);
+
         sketcher = new Sketcher(p5);
         sketcher.lineBreaksMax = 2;
         sketcher.lineDeviationMult = 0.6;
@@ -102,6 +108,13 @@ function sketch(p5) {
         if (props.propped) {
             propped = props.propped;
         }
+        if (props.gameState) gameState = props.gameState;
+        if (props.setGameState) setGameState = gameStateSetter(props.setGameState);
+        if (props.setCanvasDims && !setDims) {
+            props.setCanvasDims({ width: p5.width, height: p5.height });
+            setDims = true;
+        }
+
     };
 
     function drawLoading() {
@@ -124,7 +137,7 @@ function sketch(p5) {
 
     function startLevel(level) {
         levelController.level = level;
-        setGameState(LEVEL); 
+        setGameState(LEVEL);
     }
 
     function runLevel() {
@@ -145,7 +158,7 @@ function sketch(p5) {
          * use this to determine if a canvas needs deleting. */
         if (propped === undefined) { p5.remove(); return; };
 
-        switch (gameState()) {
+        switch (gameState) {
             case LOADING:
                 drawLoading();
                 break;
@@ -166,13 +179,21 @@ function sketch(p5) {
 
 }
 
-export default ({ p5Prop: p5Prop, setP5Prop }) => {
+export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims }) => {
 
     useEffect(() => {
         setP5Prop(true);
     }, []);
 
-    return (<ReactP5Wrapper sketch={sketch} propped={p5Prop} />);
+    return (
+        <ReactP5Wrapper
+            sketch={sketch}
+            propped={p5Prop}
+            gameState={gameState}
+            setGameState={setGameState}
+            setCanvasDims={setCanvasDims}
+        />
+    );
 };
 
 export { canvasDimensions };
