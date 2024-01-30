@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Title from "./Title";
 import MainMenu from "../menus/MainMenu";
-import { MAIN, getFontSizeFromID, RIGHT_ID } from "./Menu";
+import { MAIN, getFontSizeFromID, RIGHT_ID } from "../Menu";
 
 export default function RightOfMargin({ currMenu, setCurrMenu, lineGap, setLineGap, topLineGap, setTopLineGap }) {
     let menu;

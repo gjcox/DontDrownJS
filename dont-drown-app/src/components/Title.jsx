@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getFontSizeFromID, TITLE_ID } from "./Menu";
+import { getFontSizeFromID, TITLE_ID } from "../Menu";
 
 const TOP_LINE_MULT = 1.5; // top line is x * title font size 
 
