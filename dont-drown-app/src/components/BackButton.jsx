@@ -1,4 +1,4 @@
-export default function ({ menuHistory, goBack }) {
+export default function BackButton({ menuHistory, goBack }) {
     return <button
         className="menu-text menu-item-button"
         style={{display: menuHistory.length == 0 ? "none" : "flex"}}
