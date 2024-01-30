@@ -46,13 +46,19 @@ function sketch(p5) {
     // props 
     var propped = undefined;
     var gameState, setGameState, marginX;
+    var setCanvasDims;
 
     var setDims = false;
 
     var menu;
     var sketcher, crashDummy, levelBuilder, levelController;
 
-    function gameStateSetter(setGameState) {
+    /**
+     * Wraps a React state setter so that the menu is hidden/shown as appropriate. 
+     * @param {*} setGameState a React state update function. 
+     * @returns a wrapped setter. 
+     */
+    function getGameStateSetter(setGameState) {
         return (newGameState) => {
             setGameState(newGameState);
             switch (newGameState) {
@@ -67,7 +73,7 @@ function sketch(p5) {
     }
 
     p5.keyPressed = () => {
-        if (p5.key == 'r' && gameState() == LEVEL) {
+        if (p5.key == 'r' && gameState == LEVEL) {
             levelController?.reset();
         } else if (p5.key == 'p') {
             if (levelController?.togglePause()) {
@@ -109,20 +115,35 @@ function sketch(p5) {
         if (props.propped) {
             propped = props.propped;
         }
-        if (props.gameState) gameState = props.gameState;
-        if (props.setGameState) setGameState = gameStateSetter(props.setGameState);
-        if (props.setCanvasDims && !setDims) {
-            props.setCanvasDims({ width: p5.width, height: p5.height });
-            setDims = true;
+
+        // Wrap setters from props  
+        if (props.setCanvasDims && typeof setCanvasDims !== 'function') {
+            /*  Set the app-evel canvas dimensions to reflect the actual canvas
+                and update the setDims flag to prevent repeated calls. 
+            */
+            setCanvasDims = () => {
+                props.setCanvasDims({ width: p5.width, height: p5.height });
+                setDims = true;
+            }
+        }
+        if (props.setGameState && typeof setGameState !== 'function') {
+            setGameState = getGameStateSetter(props.setGameState);
+        }
+        // End of setters 
+
+        // Update sketch values from props 
+        if (gameState !== props.gameState) { 
+            // N.B. setGameState is not used because that would be circular 
+            gameState = props.gameState; 
         }
 
-        // update marginX in child components 
-        console.log(props.marginX);
         if (marginX !== props.marginX) {
-            console.log(`marginX updated in sketch: ${marginX}`)
+            // update marginX in child components 
             marginX = props.marginX;
             menu?.setMarginX(marginX);
         }
+        // End of values  
+
 
     };
 
@@ -166,6 +187,7 @@ function sketch(p5) {
          * the first canvas does not get passed props properly, so we can
          * use this to determine if a canvas needs deleting. */
         if (propped === undefined) { p5.remove(); return; };
+        if (!setDims) { setCanvasDims() };
 
         switch (gameState) {
             case LOADING:
@@ -175,7 +197,7 @@ function sketch(p5) {
                 runLevel();
                 break;
             case MAIN_MENU:
-                renderPage(p5, 0, marginX); 
+                renderPage(p5, 0, marginX);
                 break;
         }
     };
