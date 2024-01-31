@@ -1,13 +1,13 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
 
-import { LEVEL, LOADING, MAIN_MENU as IN_MENU } from "./p5_modules/constants";
+import { MAIN_MENU as IN_MENU, LEVEL, LOADING } from "./p5_modules/constants";
 import CrashDummy from "./p5_modules/crashdummy";
 import { EASY, HARD, MEDIUM, VERY_HARD } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
-import Sketcher from "./p5_modules/sketcher";
 import { renderPage } from "./p5_modules/page";
+import Sketcher from "./p5_modules/sketcher";
 
 /**
  * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
@@ -49,7 +49,7 @@ function sketch(p5) {
     // Props 
     var propped = undefined;
     var setCanvasDims, marginX, lineGap, topLineGap;
-    var gameState, setGameState, setGetLevels;
+    var gameState, setGameState, setGetLevels, setStartLevel;
 
     p5.keyPressed = () => {
         if (p5.key == 'r' && gameState == LEVEL) {
@@ -88,15 +88,13 @@ function sketch(p5) {
 
         // Build level controller 
         levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
-
-        setGetLevels(() => () => levels); 
     }
 
     p5.updateWithProps = props => {
         if (props.propped) {
             propped = props.propped;
         }
-        console.log(`updateWithProps - ${Object.entries(props)}`); 
+        console.log(`updateWithProps - ${Object.entries(props)}`);
 
         // Wrap setters from props  
         if (props.setCanvasDims && typeof setCanvasDims !== 'function') {
@@ -113,6 +111,9 @@ function sketch(p5) {
         }
         if (props.setGetLevels && typeof setGetLevels !== 'function') {
             setGetLevels = props.setGetLevels;
+        }
+        if (props.setStartLevel && typeof setStartLevel !== 'function') {
+            setStartLevel = props.setStartLevel;
         }
         // End of setters 
 
@@ -139,8 +140,10 @@ function sketch(p5) {
         crashDummy.run();
         crashDummy.draw();
 
-        if (crashDummy.done ) {
-            generateLevels(); 
+        if (crashDummy.done) {
+            generateLevels();
+            setGetLevels(() => () => levels);
+            setStartLevel(() => startLevel);
             setGameState(IN_MENU);
         }
     }
@@ -193,7 +196,7 @@ function sketch(p5) {
 }
 
 export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims,
-    marginX, lineGap, topLineGap, setGetLevels }) => {
+    marginX, lineGap, topLineGap, setGetLevels, setStartLevel }) => {
 
     useEffect(() => {
         setP5Prop(true);
@@ -210,6 +213,7 @@ export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasD
             lineGap={lineGap}
             topLineGap={topLineGap}
             setGetLevels={setGetLevels}
+            setStartLevel={setStartLevel}
         />
     );
 };

@@ -1,8 +1,8 @@
-import { useState, useEffect, StrictMode } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import './App.css';
+import Menu from './Menu';
 import Sketch from './Sketch';
 import { LOADING } from './p5_modules/constants';
-import Menu from './Menu';
 
 const MARGIN_DIV = 10;
 
@@ -27,6 +27,7 @@ function App() {
   // Game state 
   const [gameState, setGameState] = useState(LOADING);
   const [getLevels, setGetLevels] = useState(() => console.warn("getLevels undefined"));
+  const [startLevel, setStartLevel] = useState(() => console.warn("startLevel undefined"));
 
   useEffect(() => {
     console.log(`gameState: ${gameState}`);
@@ -59,6 +60,7 @@ function App() {
           lineGap={lineGap}
           topLineGap={topLineGap}
           setGetLevels={setGetLevels}
+          setStartLevel={setStartLevel}
         />
         <Menu
           gameState={gameState}
@@ -69,6 +71,7 @@ function App() {
           topLineGap={topLineGap}
           setTopLineGap={setTopLineGap}
           getLevels={getLevels}
+          startLevel={startLevel}
         />
       </>
     </StrictMode>

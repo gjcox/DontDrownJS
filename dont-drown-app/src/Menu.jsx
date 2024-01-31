@@ -1,7 +1,8 @@
-import { useState } from "react"
-import { MAIN_MENU as IN_MENU } from './p5_modules/constants';
+import { useState } from "react";
+
 import LeftOfMargin from "./components/LeftOfMargin";
 import RightOfMargin from "./components/RightOfMargin";
+import { MAIN_MENU as IN_MENU } from './p5_modules/constants';
 
 const MAIN = 100;
 const LEVEL_SELECTOR = 101;
@@ -20,7 +21,7 @@ export function getFontSizeFromID(id) {
 }
 
 export default function Menu({ gameState, canvasDims, marginX,
-    lineGap, setLineGap, topLineGap, setTopLineGap }) {
+    lineGap, setLineGap, topLineGap, setTopLineGap, getLevels, startLevel }) {
     const [currMenu, setCurrMenu] = useState(MAIN);
     const [menuHistory, setMenuHistory] = useState([]);
 
@@ -29,7 +30,7 @@ export default function Menu({ gameState, canvasDims, marginX,
         if (!MENU_STATES.includes(newState)) {
             console.error(`Unrecognised menu state ${newState}`)
         } else {
-            setMenuHistory([...menuHistory, newState]);
+            setMenuHistory([...menuHistory, currMenu]);
             setCurrMenu(newState);
         }
     }
@@ -63,6 +64,8 @@ export default function Menu({ gameState, canvasDims, marginX,
                         setLineGap={setLineGap}
                         topLineGap={topLineGap}
                         setTopLineGap={setTopLineGap}
+                        getLevels={getLevels}
+                        startLevel={startLevel}
                     />
                 </div>
             }
@@ -70,4 +73,4 @@ export default function Menu({ gameState, canvasDims, marginX,
 
 }
 
-export { MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS, RIGHT_ID, TITLE_ID }; 
+export { CREDITS, INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID, TITLE_ID };
