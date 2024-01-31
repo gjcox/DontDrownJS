@@ -1,5 +1,4 @@
 export default function Instructions({ lineGap }) {
-    console.log(lineGap);
     function Line({ children }) {
         return <p className="menu__text menu__instruction" style={{ paddingTop: `${lineGap}px` }}>{children}</p>
     }
