@@ -26,8 +26,8 @@ function App() {
 
   // Game state 
   const [gameState, setGameState] = useState(LOADING);
-  const [getLevels, setGetLevels] = useState(() => console.warn("getLevels undefined"));
-  const [startLevel, setStartLevel] = useState(() => console.warn("startLevel undefined"));
+  const [getLevels, setGetLevels] = useState(() => {() => console.warn("getLevels undefined")});
+  const [startLevel, setStartLevel] = useState(() => {() => console.warn("startLevel undefined")});
 
   useEffect(() => {
     console.log(`gameState: ${gameState}`);
