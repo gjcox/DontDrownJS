@@ -10,10 +10,10 @@ export default function Title({ topLineGap, setTopLineGap }) {
         setTopLineGap(getFontSizeFromID(TITLE_ID) * TOP_LINE_MULT);
     }, []);
 
-    return <div className="flex-col-cont" style={{ height: `${topLineGap}px` }}>
+    return <div className="menu__col-container" style={{ height: `${topLineGap}px` }}>
         <h1
             id={TITLE_ID}
-            className="centered-text menu-text">
+            className="menu__title menu__text">
             <u>Don't Drown</u>
         </h1>
     </div>;

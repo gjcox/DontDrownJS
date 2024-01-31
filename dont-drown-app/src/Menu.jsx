@@ -10,8 +10,8 @@ const INSTRUCTIONS = 102;
 const CREDITS = 103;
 const MENU_STATES = [MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS];
 
-const MENU_ID = "game-menu";
-const RIGHT_ID = "right-of-margin";
+const MENU_ID = "menu__root";
+const RIGHT_ID = "menu__right-of-margin";
 const TITLE_ID = "menu-title";
 
 export function getFontSizeFromID(id) {
@@ -49,7 +49,7 @@ export default function Menu({ gameState, canvasDims, marginX,
             {gameState === IN_MENU &&
                 <div
                     id={MENU_ID}
-                    style={{ ...canvasDims, display: 'flex' }}
+                    style={{ ...canvasDims }}
                 >
                     <LeftOfMargin
                         marginX={marginX}
@@ -58,6 +58,7 @@ export default function Menu({ gameState, canvasDims, marginX,
                         goBack={goBack}
                     />
                     <RightOfMargin
+                        width={canvasDims.width - marginX}
                         currMenu={currMenu}
                         setCurrMenu={setCurrMenuWrapper}
                         lineGap={lineGap}

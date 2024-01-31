@@ -7,7 +7,7 @@ export default function LevelSelector({ getLevels, startLevel, lineGap }) {
         navigate={() => startLevel(level)}
         lineGap={lineGap} />);
 
-    return <div className="flex-col-cont">
+    return <div className="menu__col-container">
         {levelButtons}
     </div>;
 }

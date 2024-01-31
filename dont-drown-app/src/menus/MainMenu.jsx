@@ -20,7 +20,7 @@ export default function MainMenu({ setCurrMenu, lineGap }) {
         navigate={props.navigate}
         lineGap={lineGap} />);
 
-    return <div className="flex-col-cont">
+    return <div className="menu__col-container">
         {navigators}
     </div>;
 }

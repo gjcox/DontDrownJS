@@ -40,23 +40,29 @@ canvas {
   position: absolute;
 }
 
-#game-menu {
+#menu__root {
   position: absolute;
   display: flex;
   flex-direction: row;
+  max-width: 100%;
 }
 
-.flex-col-cont {
+#menu__right-of-margin {
+  display: flex;
+  flex: 1 0 auto;
+}
+
+.menu__col-container {
   display: flex;
   flex-direction: column;
 }
 
-.centered-text {
+.menu__title {
   width: 100%;
   text-align: center;
 }
 
-.menu-text {
+.menu__text {
   font-family: cursive;
   position: relative;
   color: black;
@@ -65,15 +71,11 @@ canvas {
   margin-top: auto;
 }
 
-.menu-list {
-  list-style-position: inside;
+.menu__instruction {
+  text-indent: 1em;
 }
 
-#menuItemCont {
-  padding: 0% 2%;
-}
-
-.menu-item-button {
+.menu__button {
   border: none;
   background-color: transparent;
   padding: 0px 1em;
@@ -83,7 +85,12 @@ canvas {
   border-radius: 0;
 }
 
-.menu-item-button:hover {
+.menu__back-button {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.menu__button:hover {
   /* text-decoration: underline; */
   background-color: rgba(255, 20, 147, 0.5);
 }
