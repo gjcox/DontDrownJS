@@ -94,7 +94,6 @@ function sketch(p5) {
         if (props.propped) {
             propped = props.propped;
         }
-        console.log(`updateWithProps - ${Object.entries(props)}`);
 
         // Wrap setters from props  
         if (props.setCanvasDims && typeof setCanvasDims !== 'function') {
