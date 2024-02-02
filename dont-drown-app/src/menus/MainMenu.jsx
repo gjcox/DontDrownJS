@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 import MenuNavigator from "../components/MenuNavigator";
-import { INSTRUCTIONS, LEVEL_SELECTOR } from "../Menu";
+import { INSTRUCTIONS, LEVEL_SELECTOR } from "../utils/constants";
 
 export default function MainMenu({ setCurrMenu, lineGap }) {
     MainMenu.propTypes = {

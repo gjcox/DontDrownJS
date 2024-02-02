@@ -3,7 +3,7 @@ import { StrictMode, useEffect, useState } from 'react';
 import './App.css';
 import Menu from './Menu';
 import Sketch from './Sketch';
-import { LOADING } from './p5_modules/constants';
+import { LOADING } from './utils/constants';
 
 const MARGIN_DIV = 10;
 

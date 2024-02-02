@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import PropTypes from 'prop-types';
 
-import { getFontSizeFromID, TITLE_ID } from "../Menu";
+import { TITLE_ID } from "../utils/constants";
+import { getFontSizeFromID } from '../utils/functions';
 
 const TOP_LINE_MULT = 1.5; // top line is x * title font size 
 

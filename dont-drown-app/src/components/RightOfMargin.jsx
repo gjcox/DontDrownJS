@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import { useEffect } from "react";
 
-import { INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID, getFontSizeFromID } from "../Menu";
 import Instructions from "../menus/Instructions";
 import LevelSelector from "../menus/LevelSelector";
 import MainMenu from "../menus/MainMenu";
+import { INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID } from "../utils/constants";
+import { getFontSizeFromID } from '../utils/functions';
 import Title from "./Title";
 
 export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap, setLineGap,
@@ -54,3 +55,4 @@ export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap, s
         {menu}
     </div>);
 }
+

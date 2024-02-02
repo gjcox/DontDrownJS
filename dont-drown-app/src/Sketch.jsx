@@ -2,7 +2,7 @@ import { ReactP5Wrapper } from "@p5-wrapper/react";
 import PropTypes from 'prop-types';
 import { useEffect } from "react";
 
-import { MAIN_MENU as IN_MENU, LEVEL, LOADING } from "./p5_modules/constants";
+import { IN_MENU, MID_LEVEL, LOADING } from "./utils/constants";
 import CrashDummy from "./p5_modules/crashdummy";
 import { EASY, HARD, MEDIUM, VERY_HARD } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
@@ -53,13 +53,13 @@ function sketch(p5) {
     var gameState, setGameState, setGetLevels, setStartLevel;
 
     p5.keyPressed = () => {
-        if (p5.key == 'r' && gameState == LEVEL) {
+        if (p5.key == 'r' && gameState == MID_LEVEL) {
             levelController?.reset();
         } else if (p5.key == 'p') {
             if (levelController?.togglePause()) {
                 setGameState(IN_MENU);
             } else if (levelController.level !== undefined) {
-                setGameState(LEVEL);
+                setGameState(MID_LEVEL);
             }
         } else if (p5.key == 'w') {
             levelController?.toggleWave();
@@ -150,7 +150,7 @@ function sketch(p5) {
 
     function startLevel(level) {
         levelController.level = level;
-        setGameState(LEVEL);
+        setGameState(MID_LEVEL);
     }
 
     function runLevel() {
@@ -176,7 +176,7 @@ function sketch(p5) {
             case LOADING:
                 drawLoading();
                 break;
-            case LEVEL:
+            case MID_LEVEL:
                 runLevel();
                 break;
             case IN_MENU:

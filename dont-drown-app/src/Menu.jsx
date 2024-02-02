@@ -1,25 +1,9 @@
+import PropTypes from 'prop-types';
 import { useState } from "react";
-import PropTypes from 'prop-types'; 
 
 import LeftOfMargin from "./components/LeftOfMargin";
 import RightOfMargin from "./components/RightOfMargin";
-import { MAIN_MENU as IN_MENU } from './p5_modules/constants';
-
-const MAIN = 100;
-const LEVEL_SELECTOR = 101;
-const INSTRUCTIONS = 102;
-const CREDITS = 103;
-const MENU_STATES = [MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS];
-
-const MENU_ID = "menu__root";
-const RIGHT_ID = "menu__right-of-margin";
-const TITLE_ID = "menu-title";
-
-export function getFontSizeFromID(id) {
-    const el = document.getElementById(id);
-    const fontSize = parseInt(window.getComputedStyle(el).fontSize);
-    return fontSize;
-}
+import { IN_MENU, MAIN, MENU_ID, MENU_STATES } from './utils/constants';
 
 export default function Menu({ gameState, canvasDims, marginX,
     lineGap, setLineGap, topLineGap, setTopLineGap, getLevels, startLevel }) {
@@ -87,4 +71,3 @@ export default function Menu({ gameState, canvasDims, marginX,
 
 }
 
-export { CREDITS, INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID, TITLE_ID };
