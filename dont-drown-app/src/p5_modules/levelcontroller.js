@@ -17,7 +17,7 @@ export default class LevelController {
         this._panRate = p5.width / PAN_RATE_DIV;
         this._jumpHeight = jumpHeight;
         this._paused = false;
-        this.completeLevel = completeLevel; 
+        this.completeLevel = completeLevel;
     }
 
     get panning() {
@@ -97,7 +97,7 @@ export default class LevelController {
 
     togglePause() {
         this._paused = !this._paused;
-        return this._paused; 
+        return this._paused;
     }
 
     /**
@@ -122,7 +122,7 @@ export default class LevelController {
             }
 
             if (this.pc.currentPlatform == this.level.highestPlatform) {
-                this.completeLevel(); 
+                this.completeLevel();
             }
 
             // check if panning needed
