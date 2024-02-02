@@ -1,5 +1,4 @@
 import Level from "./level";
-import { marginX } from "./page";
 import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
 import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
 import Wave from "./wave";
@@ -105,20 +104,20 @@ export default class LevelController {
     /**
       * Pan level if needed and call physics engine methods. 
       */
-    integrate() {
+    integrate(marginX) {
         if (!this._paused) {
             this.handleKeyboardInput();
 
             this.panWrapper();
 
-            this.pc.integrate(this.level.page);
+            this.pc.integrate(marginX);
             if (this._waveMoving) {
                 this.wave.pos.y -= this.level.waveRiseRate;
             }
 
             // collision detection 
             detectLanding(this.pc, this.level.platforms);
-            detectEdgeCollision(this.pc, marginX(this.p5), this.p5.width);
+            detectEdgeCollision(this.pc, marginX, this.p5.width);
             if (this.pc.pos.y >= this.wave.pos.y) {
                 this.reset();
             }
@@ -138,8 +137,8 @@ export default class LevelController {
         }
     }
 
-    draw() {
-        this.level.draw();
+    draw(marginX, lineGap, topLineGap) {
+        this.level.draw(marginX, lineGap, topLineGap);
         this.pc.draw();
         this.wave.draw();
     }

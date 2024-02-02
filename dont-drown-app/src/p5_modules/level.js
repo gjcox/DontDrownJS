@@ -69,10 +69,10 @@ export default class Level {
         this._platforms.forEach(p => p.translate(this.p5.createVector(0, y)));
     }
 
-    draw() {
-        renderPage(this.p5, this.top)
+    draw(marginX, lineGap, topLineGap) {
+        renderPage(this.p5, marginX, lineGap, topLineGap, this.top);
         this._platforms?.forEach(p => p.draw());
-    }
+    } 
 }
 
 export { EASY, HARD, MEDIUM, VERY_HARD };

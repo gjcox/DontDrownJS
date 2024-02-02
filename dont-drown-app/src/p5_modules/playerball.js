@@ -1,4 +1,3 @@
-import { marginX } from "./page";
 import { C, COR_CAVAS_EDGE, COR_PLATFORM, increment, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
@@ -191,7 +190,7 @@ export default class PlayerBall {
         this._resultantForce.add(0, this._velocity.y * -C);
     }
 
-    integrate() {
+    integrate(marginX) {
         const currentXDirection = this._velocity.x / Math.abs(this._velocity.x);
 
         // resolve horizontal forces 
@@ -230,7 +229,7 @@ export default class PlayerBall {
             .mult(this._velocity));
 
         // prevent clipping through edges 
-        this._pos.x = Math.max(marginX(this.p5) + this.radius, this._pos.x);
+        this._pos.x = Math.max(marginX + this.radius, this._pos.x);
         this._pos.x = Math.min(this.p5.width - this.radius, this._pos.x);
 
         // reset resultant force

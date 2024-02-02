@@ -1,11 +1,12 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import { useEffect } from "react";
-import { LEVEL, LOADING, MAIN_MENU } from "./p5_modules/constants";
+
+import { MAIN_MENU as IN_MENU, LEVEL, LOADING } from "./p5_modules/constants";
 import CrashDummy from "./p5_modules/crashdummy";
 import { EASY, HARD, MEDIUM, VERY_HARD } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
-import Menu from "./p5_modules/menu";
+import { renderPage } from "./p5_modules/page";
 import Sketcher from "./p5_modules/sketcher";
 
 /**
@@ -40,37 +41,24 @@ function canvasDimensions(p5) {
 function sketch(p5) {
     const background = 'mintcream';
     const centre = () => p5.createVector(p5.width / 2, p5.height / 2);
-    const levels = [];
 
-    var menu;
+    // Sketch-only variables 
+    var setDims = false;
+    var sketcher, crashDummy, levelBuilder, levelController, levels;
+
+    // Props 
     var propped = undefined;
-    var _gameState = LOADING;
-    const gameState = () => _gameState;
-    var sketcher, crashDummy, levelBuilder, levelController;
-
-    function setGameState(newGameState) {
-        switch (newGameState) {
-            case MAIN_MENU:
-                _gameState = MAIN_MENU;
-                menu.show();
-                break;
-            default:
-                menu.hide();
-                _gameState = newGameState;
-                break;
-        }
-    }
+    var setCanvasDims, marginX, lineGap, topLineGap;
+    var gameState, setGameState, setGetLevels, setStartLevel;
 
     p5.keyPressed = () => {
-        if (p5.key == 'r' && gameState() == LEVEL) {
+        if (p5.key == 'r' && gameState == LEVEL) {
             levelController?.reset();
         } else if (p5.key == 'p') {
             if (levelController?.togglePause()) {
-                setGameState(MAIN_MENU);
-                menu.show();
+                setGameState(IN_MENU);
             } else if (levelController.level !== undefined) {
                 setGameState(LEVEL);
-                menu?.hide();
             }
         } else if (p5.key == 'w') {
             levelController?.toggleWave();
@@ -79,7 +67,9 @@ function sketch(p5) {
 
     p5.setup = () => {
         // N.B. this can run twice, so don't manipulate the DOM here 
-        const canvas = p5.createCanvas(...canvasDimensions(p5));
+        const [width, height] = canvasDimensions(p5);
+        p5.createCanvas(width, height);
+
         sketcher = new Sketcher(p5);
         sketcher.lineBreaksMax = 2;
         sketcher.lineDeviationMult = 0.6;
@@ -88,20 +78,53 @@ function sketch(p5) {
         p5.frameRate();
     };
 
-    function gameSetup() {
-        menu = new Menu(p5);
+    function generateLevels() {
+        // Get values for level-generation from crash dummy 
         const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
+
+        // Generate  levels 
         levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
-        [EASY, MEDIUM, HARD, VERY_HARD].forEach(diff => levels.push(levelBuilder.buildLevel(diff)));
-        menu.setLevels(levels, startLevel);
+        levels = [EASY, MEDIUM, HARD, VERY_HARD].map(diff => levelBuilder.buildLevel(diff, marginX));
+
+        // Build level controller 
         levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
-        setGameState(MAIN_MENU);
     }
 
     p5.updateWithProps = props => {
         if (props.propped) {
             propped = props.propped;
         }
+        console.log(`updateWithProps - ${Object.entries(props)}`);
+
+        // Wrap setters from props  
+        if (props.setCanvasDims && typeof setCanvasDims !== 'function') {
+            /*  Set the app-level canvas dimensions to reflect the actual canvas
+                and update the setDims flag to prevent repeated calls. 
+            */
+            setCanvasDims = () => {
+                props.setCanvasDims({ width: p5.width, height: p5.height });
+                setDims = true;
+            }
+        }
+        if (props.setGameState && typeof setGameState !== 'function') {
+            setGameState = props.setGameState;
+        }
+        if (props.setGetLevels && typeof setGetLevels !== 'function') {
+            setGetLevels = props.setGetLevels;
+        }
+        if (props.setStartLevel && typeof setStartLevel !== 'function') {
+            setStartLevel = props.setStartLevel;
+        }
+        // End of setters 
+
+        // Update sketch values from props 
+        if (gameState !== props.gameState) { gameState = props.gameState; }
+        if (marginX !== props.marginX) { marginX = props.marginX; }
+        if (lineGap !== props.lineGap) { lineGap = props.lineGap; }
+        if (topLineGap !== props.topLineGap) { topLineGap = props.topLineGap; }
+        // End of values  
+
+
     };
 
     function drawLoading() {
@@ -118,24 +141,27 @@ function sketch(p5) {
         crashDummy.draw();
 
         if (crashDummy.done) {
-            gameSetup();
+            generateLevels();
+            setGetLevels(() => () => levels);
+            setStartLevel(() => startLevel);
+            setGameState(IN_MENU);
         }
     }
 
     function startLevel(level) {
         levelController.level = level;
-        setGameState(LEVEL); 
+        setGameState(LEVEL);
     }
 
     function runLevel() {
         // drawing 
-        levelController?.integrate();
-        levelController?.draw();
+        levelController?.integrate(marginX);
+        levelController?.draw(marginX, lineGap, topLineGap);
     }
 
     function completeLevel() {
         // levelController.level = undefined;
-        setGameState(MAIN_MENU);
+        setGameState(IN_MENU);
     }
 
     p5.draw = () => {
@@ -144,17 +170,20 @@ function sketch(p5) {
          * the first canvas does not get passed props properly, so we can
          * use this to determine if a canvas needs deleting. */
         if (propped === undefined) { p5.remove(); return; };
+        if (!setDims) { setCanvasDims() };
 
-        switch (gameState()) {
+        switch (gameState) {
             case LOADING:
                 drawLoading();
                 break;
             case LEVEL:
                 runLevel();
                 break;
-            case MAIN_MENU:
-                menu.draw();
+            case IN_MENU:
+                renderPage(p5, marginX, lineGap, topLineGap);
                 break;
+            default:
+                console.log("Something went wrong!")
         }
     };
 
@@ -166,13 +195,27 @@ function sketch(p5) {
 
 }
 
-export default ({ p5Prop: p5Prop, setP5Prop }) => {
+export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims,
+    marginX, lineGap, topLineGap, setGetLevels, setStartLevel }) => {
 
     useEffect(() => {
         setP5Prop(true);
     }, []);
 
-    return (<ReactP5Wrapper sketch={sketch} propped={p5Prop} />);
+    return (
+        <ReactP5Wrapper
+            sketch={sketch}
+            propped={p5Prop}
+            gameState={gameState}
+            setGameState={setGameState}
+            setCanvasDims={setCanvasDims}
+            marginX={marginX}
+            lineGap={lineGap}
+            topLineGap={topLineGap}
+            setGetLevels={setGetLevels}
+            setStartLevel={setStartLevel}
+        />
+    );
 };
 
 export { canvasDimensions };
