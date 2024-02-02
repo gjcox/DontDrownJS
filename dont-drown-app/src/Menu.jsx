@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from 'prop-types'; 
 
 import LeftOfMargin from "./components/LeftOfMargin";
 import RightOfMargin from "./components/RightOfMargin";
@@ -22,6 +23,18 @@ export function getFontSizeFromID(id) {
 
 export default function Menu({ gameState, canvasDims, marginX,
     lineGap, setLineGap, topLineGap, setTopLineGap, getLevels, startLevel }) {
+        Menu.propTypes = {
+            gameState: PropTypes.number.isRequired,
+            canvasDims: PropTypes.objectOf(PropTypes.number), 
+            marginX: PropTypes.number.isRequired,
+            lineGap: PropTypes.number.isRequired,
+            setLineGap: PropTypes.func.isRequired,
+            topLineGap: PropTypes.number.isRequired,
+            setTopLineGap: PropTypes.func.isRequired,
+            getLevels: PropTypes.func.isRequired,
+            startLevel: PropTypes.func.isRequired
+        };
+
     const [currMenu, setCurrMenu] = useState(MAIN);
     const [menuHistory, setMenuHistory] = useState([]);
 
