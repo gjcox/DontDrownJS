@@ -1,4 +1,5 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
+import PropTypes from 'prop-types';
 import { useEffect } from "react";
 
 import { MAIN_MENU as IN_MENU, LEVEL, LOADING } from "./p5_modules/constants";
@@ -168,8 +169,8 @@ function sketch(p5) {
          * canvases are sometimes generated. Seemingly when this happens 
          * the first canvas does not get passed props properly, so we can
          * use this to determine if a canvas needs deleting. */
-        if (propped === undefined) { p5.remove(); return; };
-        if (!setDims) { setCanvasDims() };
+        if (propped === undefined) { p5.remove(); return; }
+        if (!setDims) { setCanvasDims() }
 
         switch (gameState) {
             case LOADING:
@@ -194,12 +195,24 @@ function sketch(p5) {
 
 }
 
-export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims,
-    marginX, lineGap, topLineGap, setGetLevels, setStartLevel }) => {
+export default function Sketch({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims,
+    marginX, lineGap, topLineGap, setGetLevels, setStartLevel }) {
+    Sketch.propTypes = {
+        p5Prop: PropTypes.bool,
+        setP5Prop: PropTypes.func,
+        gameState: PropTypes.number.isRequired,
+        setGameState: PropTypes.func.isRequired,
+        setCanvasDims: PropTypes.func.isRequired,
+        marginX: PropTypes.number.isRequired,
+        lineGap: PropTypes.number.isRequired,
+        topLineGap: PropTypes.number.isRequired,
+        setGetLevels: PropTypes.func.isRequired,
+        setStartLevel: PropTypes.func.isRequired
+    };
 
     useEffect(() => {
         setP5Prop(true);
-    }, []);
+    });
 
     return (
         <ReactP5Wrapper
@@ -215,7 +228,4 @@ export default ({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasD
             setStartLevel={setStartLevel}
         />
     );
-};
-
-export { canvasDimensions };
-
+}

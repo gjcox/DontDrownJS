@@ -1,7 +1,18 @@
+import PropTypes from 'prop-types';
+
 export default function Instructions({ lineGap }) {
+    Instructions.propTypes = {
+        lineGap: PropTypes.number.isRequired
+    };
+
+
     function Line({ children }) {
         return <p className="menu__text menu__instruction" style={{ paddingTop: `${lineGap}px` }}>{children}</p>
     }
+
+    Line.propTypes = {
+        children: PropTypes.arrayOf(PropTypes.elementType)
+    };
 
     const instructions = [
         "UP to jump when on a platform",
@@ -17,7 +28,7 @@ export default function Instructions({ lineGap }) {
         "Once per level you can briefly pause the wave with SPACEBAR, but once the unpauses it will briefly move faster to make up for it"
     ].map((txt, index) =>
         <div key={index}>
-            {txt.length ? <Line>•  {txt}</Line> : <Line/>}
+            {txt.length ? <Line>•  {txt}</Line> : <Line />}
         </div>
     );
     return <div className="menu__col-container">

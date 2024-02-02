@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect } from "react";
 
 import { INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID, getFontSizeFromID } from "../Menu";
@@ -8,6 +9,18 @@ import Title from "./Title";
 
 export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap, setLineGap,
     topLineGap, setTopLineGap, getLevels, startLevel }) {
+    RightOfMargin.propTypes = {
+        width: PropTypes.number.isRequired,
+        currMenu: PropTypes.number.isRequired,
+        setCurrMenu: PropTypes.func.isRequired,
+        lineGap: PropTypes.number.isRequired,
+        setLineGap: PropTypes.func.isRequired,
+        topLineGap: PropTypes.number.isRequired,
+        setTopLineGap: PropTypes.func.isRequired,
+        getLevels: PropTypes.func.isRequired,
+        startLevel: PropTypes.func.isRequired
+    };
+
     let menu;
     switch (currMenu) {
         case LEVEL_SELECTOR:
@@ -31,7 +44,7 @@ export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap, s
     useEffect(() => {
         // set line gap based on font size 
         setLineGap(getFontSizeFromID(RIGHT_ID));
-    }, []);
+    });
 
     return (<div
         id={RIGHT_ID}

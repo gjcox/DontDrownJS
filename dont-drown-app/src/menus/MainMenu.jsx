@@ -1,7 +1,14 @@
+import PropTypes from 'prop-types';
+
 import MenuNavigator from "../components/MenuNavigator";
-import { LEVEL_SELECTOR, INSTRUCTIONS, CREDITS } from "../Menu";
+import { INSTRUCTIONS, LEVEL_SELECTOR } from "../Menu";
 
 export default function MainMenu({ setCurrMenu, lineGap }) {
+    MainMenu.propTypes = {
+        setCurrMenu: PropTypes.func.isRequired,
+        lineGap: PropTypes.number.isRequired
+    };
+
     const navigators = [{
         id: 0,
         label: "Level selector",
@@ -14,10 +21,10 @@ export default function MainMenu({ setCurrMenu, lineGap }) {
         id: 2,
         label: "Credits",
         navigate: () => setCurrMenu(CREDITS)
-    }*/].map(props => <MenuNavigator
-        key={props.id}
-        label={props.label}
-        navigate={props.navigate}
+    }*/].map(navigatorProps => <MenuNavigator
+        key={navigatorProps.id}
+        label={navigatorProps.label}
+        navigate={navigatorProps.navigate}
         lineGap={lineGap} />);
 
     return <div className="menu__col-container">
