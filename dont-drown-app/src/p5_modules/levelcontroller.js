@@ -1,5 +1,6 @@
 import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
 import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
+import StressTracker from "./stresstracker";
 import Wave from "./wave";
 
 const PAN_RATE_DIV = PC_DIAMETER_DIV * 10;
@@ -17,6 +18,8 @@ export default class LevelController {
         this._panRate = p5.width / PAN_RATE_DIV;
         this._jumpHeight = jumpHeight;
         this._paused = false;
+        this._stressIndex; 
+        this._stressTracker = new StressTracker(value => this._stressIndex = Math.round(value), jumpHeight * 1.5); 
         this.completeLevel = completeLevel;
     }
 
@@ -93,6 +96,7 @@ export default class LevelController {
         this.wave.pos = this.p5.createVector(0, this.p5.height);
         this._paused = false;
         this._waveMoving = true;
+        this._stressTracker.reset(); 
     }
 
     togglePause() {
@@ -113,6 +117,9 @@ export default class LevelController {
             if (this._waveMoving) {
                 this.wave.pos.y -= this.level.waveRiseRate;
             }
+
+            // stress management
+            this._stressTracker.updateStress(Math.abs(this.pc.pos.y - this.wave.pos.y)); 
 
             // collision detection 
             detectLanding(this.pc, this.level.platforms);
@@ -140,6 +147,11 @@ export default class LevelController {
         this.level.draw(marginX, lineGap, topLineGap);
         this.pc.draw();
         this.wave.draw();
+
+        // temporary   
+        this.p5.push(); 
+        this.p5.text(this._stressIndex, 10, 10); 
+        this.p5.pop(); 
     }
 
     panWrapper() {
