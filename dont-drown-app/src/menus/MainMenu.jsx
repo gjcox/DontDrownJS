@@ -10,11 +10,11 @@ export default function MainMenu({ setCurrMenu, lineGap }) {
         id: 1,
         label: "Instructions",
         navigate: () => setCurrMenu(INSTRUCTIONS)
-    }, {
+    }/*, {
         id: 2,
         label: "Credits",
         navigate: () => setCurrMenu(CREDITS)
-    }].map(props => <MenuNavigator
+    }*/].map(props => <MenuNavigator
         key={props.id}
         label={props.label}
         navigate={props.navigate}
