@@ -1,4 +1,3 @@
-import Level from "./level";
 import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
 import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
 import Wave from "./wave";

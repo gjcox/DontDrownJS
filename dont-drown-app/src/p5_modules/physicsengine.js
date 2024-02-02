@@ -1,5 +1,4 @@
 import Platform from "./platform";
-import PlayerBall from "./playerball";
 
 const G = 2; // gravity 
 const MU = 0.5; // coefficient of friction 
