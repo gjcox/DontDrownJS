@@ -1,4 +1,4 @@
-import { CompositeShape, Ellipse, Shape } from "./shapes";
+import { CompositeShape, Shape } from "./shapes";
 
 const DEF_LINE_WEIGHT_DIV = 500; // default rough stroke weight divider relative to canvas width
 const LINE_DEV_MULT_MIN = 0.15; // min magnitude of breaks as proportion of line thickness
@@ -15,7 +15,7 @@ export default class Sketcher {
     }
 
     get defLineWeight() {
-        return this._defLineWeight; 
+        return this._defLineWeight;
     }
 
     set lineDeviationMult(value) {
@@ -99,7 +99,7 @@ export default class Sketcher {
         }
 
         return jaggedEdgeVertices;
-    };
+    }
 
     /**
      * Builds a jagged quasi-quadrilateral to act as a sketched line.
