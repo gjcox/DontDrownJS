@@ -1,4 +1,4 @@
-import { C, COR_CAVAS_EDGE, COR_PLATFORM, increment, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED } from "./physicsengine";
+import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, increment } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
 const PC_WEIGHT = 10;
@@ -242,5 +242,5 @@ export default class PlayerBall {
 
 }
 
-export { LEFT, REST, RIGHT, PC_DIAMETER_DIV };
+export { LEFT, PC_DIAMETER_DIV, REST, RIGHT };
 
