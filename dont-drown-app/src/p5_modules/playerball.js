@@ -2,7 +2,6 @@ import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUS
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
 const PC_WEIGHT = 10;
-const PC_DETAIL = 15;
 
 const REST = 0;
 const LEFT = -1;
@@ -13,15 +12,7 @@ export default class PlayerBall {
         this.p5 = p5;
         this._diameter = p5.width / PC_DIAMETER_DIV;
         this._radius = this._diameter / 2;
-        this.sprite = sketcher.buildSketchedEllipse(
-            p5.color('hsl(280, 20%, 50%)'),
-            p5.color('hsl(280, 20%, 90%)'),
-            0,
-            0,
-            this._diameter,
-            this._diameter,
-            PC_DETAIL,
-        );
+        // MOVED TO sprites.js
         this._pos = pos ? pos.copy() : p5.createVector();
         this._oldPos = this._pos.copy();
         this._mass = PC_WEIGHT;
@@ -237,7 +228,8 @@ export default class PlayerBall {
     }
 
     draw() {
-        this.sprite.draw(this._pos);
+        // this.sprite.draw(this._pos);
+        // TODO 
     }
 
 }

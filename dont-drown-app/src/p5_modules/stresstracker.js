@@ -37,3 +37,5 @@ export default class StressTracker {
         this.setStressIndex(this._stress);
     }
 }
+
+export { STRESS_LIMITS };

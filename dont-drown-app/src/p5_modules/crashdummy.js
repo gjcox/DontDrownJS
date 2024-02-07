@@ -35,8 +35,5 @@ export default class CrashDummy extends PlayerBall {
         }
     }
 
-    draw() {
-        if (!this.done) this.sprite.draw(this._pos);
-    }
 
 }

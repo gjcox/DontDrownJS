@@ -1,5 +1,6 @@
 import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
 import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
+import { drawPC, generatePCSprites } from "./sprites";
 import StressTracker from "./stresstracker";
 import Wave from "./wave";
 
@@ -21,6 +22,11 @@ export default class LevelController {
         this._stressIndex; 
         this._stressTracker = new StressTracker(value => this._stressIndex = Math.round(value), jumpHeight * 1.5); 
         this.completeLevel = completeLevel;
+        this.generateSprites(); 
+    }
+
+    generateSprites() {
+        generatePCSprites(this.p5, this.sketcher, this._pc.diameter); 
     }
 
     get panning() {
@@ -145,7 +151,7 @@ export default class LevelController {
 
     draw(marginX, lineGap, topLineGap) {
         this.level.draw(marginX, lineGap, topLineGap);
-        this.pc.draw();
+        drawPC(this.pc.pos, this._stressIndex); 
         this.wave.draw();
 
         // temporary   

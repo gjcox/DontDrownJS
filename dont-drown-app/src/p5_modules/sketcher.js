@@ -18,12 +18,12 @@ export default class Sketcher {
         return this._defLineWeight;
     }
 
-    set lineDeviationMult(value) {
+    set lineDeviationMult(value = LINE_DEV_MULT_MIN) {
         this._lineDeviationMult = Math.min(LINE_DEV_MULT_MAX,
             Math.max(LINE_DEV_MULT_MIN, value));
     }
 
-    set lineBreaksMax(value) {
+    set lineBreaksMax(value = LINE_BREAKS_MIN) {
         this._lineBreaksUpperBound = Math.min(LINE_BREAKS_MAX,
             Math.max(LINE_BREAKS_MIN, value));
     }

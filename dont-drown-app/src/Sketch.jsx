@@ -138,7 +138,6 @@ function sketch(p5) {
         p5.pop();
 
         crashDummy.run();
-        crashDummy.draw();
 
         if (crashDummy.done) {
             generateLevels();
