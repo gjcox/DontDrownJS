@@ -20,3 +20,6 @@ export {
     MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS, MENU_STATES, 
     MENU_ID, RIGHT_ID, TITLE_ID, 
  };
+export const REST = 0;
+    export const LEFT = -1;
+    export const RIGHT = 1;

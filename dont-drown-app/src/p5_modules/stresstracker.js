@@ -2,13 +2,16 @@ const STRESS_LIMITS = { min: 0, max: 100, changeRate: 0.75 };
 Object.freeze(STRESS_LIMITS);
 
 export default class StressTracker {
+    #setStressIndex;
+    #stressfulWaveDistance;
+
     /**
      * 
      * @param {*} setStressIndex a function to set the stress index (int 0-100) for sprite rendering. 
      */
     constructor(setStressIndex, stressfulWaveDistance) {
-        this.setStressIndex = setStressIndex;
-        this._stressfulWaveDistance = stressfulWaveDistance;
+        this.#setStressIndex = setStressIndex;
+        this.#stressfulWaveDistance = stressfulWaveDistance;
     }
 
     reset() {
@@ -17,12 +20,12 @@ export default class StressTracker {
         // Stress does not impact gameplay when below the threshold 
         this._stressEffectThreshold = STRESS_LIMITS.max / 5;
         this._stressRange = STRESS_LIMITS.max - this._stressEffectThreshold;
-        this.setStressIndex(this._stress);
+        this.#setStressIndex(this._stress);
     }
 
     updateStress(waveDistance) {
         // const waveDistance = Math.abs(sketch.risingWave.pos.y - sketch.pc.pos.y);
-        const stressDistance = this._stressfulWaveDistance;
+        const stressDistance = this.#stressfulWaveDistance;
 
         // Stress increases/decreases based on how far the wave is from the PC 
         const stressChange = waveDistance <= stressDistance ?
@@ -34,7 +37,7 @@ export default class StressTracker {
         this._stress = Math.max(STRESS_LIMITS.min, this._stress);
         this._stress = Math.min(STRESS_LIMITS.max, this._stress);
 
-        this.setStressIndex(this._stress);
+        this.#setStressIndex(this._stress);
     }
 }
 

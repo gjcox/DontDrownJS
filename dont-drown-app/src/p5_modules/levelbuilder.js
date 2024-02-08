@@ -40,12 +40,16 @@ function jumpCode(code) {
 }
 
 export default class LevelBuilder {
-    constructor(p5, sketcher, jumpHeight, jumpWidth) {
-        this.p5 = p5;
-        this.sketcher = sketcher;
-        this.jumpHeight = jumpHeight * increment(p5);
-        this.jumpWidth = jumpWidth * increment(p5) + Platform.defaultWidth(p5);
-        this.tokenElevation = 0.75 * p5.width / PC_DIAMETER_DIV;
+    #p5;
+    #jumpHeight;
+    #jumpWidth;
+    #tokenElevation;
+
+    constructor(p5, jumpHeight, jumpWidth) {
+        this.#p5 = p5;
+        this.#jumpHeight = jumpHeight * increment(p5);
+        this.#jumpWidth = jumpWidth * increment(p5) + Platform.defaultWidth(p5);
+        this.#tokenElevation = 0.75 * p5.width / PC_DIAMETER_DIV;
     }
 
     calcMaxYatX(x) {
@@ -68,10 +72,10 @@ export default class LevelBuilder {
      */
     placePlatform(marginX, currentPlatform, nextPlatform, diffX, diffY, highestPlatformHeight) {
         var x = Math.max(marginX, currentPlatform.pos.x + diffX);
-        x = Math.min(x, this.p5.width - nextPlatform.width);
-        var y = Math.min(this.p5.height - nextPlatform.height, currentPlatform.pos.y - diffY);
+        x = Math.min(x, this.#p5.width - nextPlatform.width);
+        var y = Math.min(this.#p5.height - nextPlatform.height, currentPlatform.pos.y - diffY);
         y = Math.max(highestPlatformHeight, y);
-        return this.p5.createVector(x, y);
+        return this.#p5.createVector(x, y);
     }
 
     /**
@@ -85,16 +89,16 @@ export default class LevelBuilder {
 
         switch (jumpType) {
             case H_JUMP:
-                x = this.p5.random(H_JUMP_MIN_X_MULT, Math.min(maxXMult, H_JUMP_MAX_X_MULT));
-                y = this.p5.random(H_JUMP_MIN_Y_MULT, this.calcMaxYatX(x));
+                x = this.#p5.random(H_JUMP_MIN_X_MULT, Math.min(maxXMult, H_JUMP_MAX_X_MULT));
+                y = this.#p5.random(H_JUMP_MIN_Y_MULT, this.calcMaxYatX(x));
                 break;
             case R_JUMP:
-                x = this.p5.random(R_JUMP_MIN_X_MULT, Math.min(maxXMult, R_JUMP_MAX_X_MULT));
-                y = this.p5.random(R_JUMP_MIN_Y_MULT, this.calcMaxYatX(x));
+                x = this.#p5.random(R_JUMP_MIN_X_MULT, Math.min(maxXMult, R_JUMP_MAX_X_MULT));
+                y = this.#p5.random(R_JUMP_MIN_Y_MULT, this.calcMaxYatX(x));
                 break;
             case V_JUMP:
-                x = this.p5.random(V_JUMP_MIN_X_MULT, Math.min(maxXMult, V_JUMP_MAX_X_MULT));
-                y = this.p5.random(V_JUMP_MIN_Y_MULT, this.calcMaxYatX(x));
+                x = this.#p5.random(V_JUMP_MIN_X_MULT, Math.min(maxXMult, V_JUMP_MAX_X_MULT));
+                y = this.#p5.random(V_JUMP_MIN_Y_MULT, this.calcMaxYatX(x));
                 break;
             default:
                 throw new Error(`Unrecognised jumpType '${jumpType}' in randomJump()`);
@@ -104,13 +108,13 @@ export default class LevelBuilder {
 
 
     buildLevel(difficulty, marginX) {
-        const width = this.p5.width;
-        const levelHeight = difficulty.heightMult * this.p5.height;
-        const lowestPlatformHeight = 0.5 * this.p5.height;
-        const highestPlatformHeight = this.p5.height + this.jumpHeight - levelHeight;
+        const width = this.#p5.width;
+        const levelHeight = difficulty.heightMult * this.#p5.height;
+        const lowestPlatformHeight = 0.5 * this.#p5.height;
+        const highestPlatformHeight = this.#p5.height + this.#jumpHeight - levelHeight;
         const middlePlayable = (marginX + width) / 2;
-        const platformWidth = Platform.defaultWidth(this.p5);
-        const minHJumpWidth = H_JUMP_MIN_X_MULT * this.jumpWidth * increment(this.p5);
+        const platformWidth = Platform.defaultWidth(this.#p5);
+        const minHJumpWidth = H_JUMP_MIN_X_MULT * this.#jumpWidth * increment(this.#p5);
 
         function applyBounds(platformPos) {
             platformPos.x = Math.max(marginX, platformPos.x);
@@ -119,11 +123,11 @@ export default class LevelBuilder {
 
         const platforms = [];
         const jumps = [];
-        const topPlatformPos = this.p5.createVector(
-            this.p5.random(marginX, width - platformWidth),
+        const topPlatformPos = this.#p5.createVector(
+            this.#p5.random(marginX, width - platformWidth),
             highestPlatformHeight
         );
-        const topPlatform = new Platform(this.p5, topPlatformPos);
+        const topPlatform = new Platform(this.#p5, topPlatformPos);
         platforms.push(topPlatform);
 
         const lastPlatform = () => platforms[platforms.length - 1];
@@ -138,17 +142,17 @@ export default class LevelBuilder {
             const distanceToEdge = goingLeft ?
                 nextPlatformPos.x - marginX :
                 (width - platformWidth) - nextPlatformPos.x;
-            const maxXMult = distanceToEdge / this.jumpWidth;
+            const maxXMult = distanceToEdge / this.#jumpWidth;
 
             // simulate a jump to place a reachable next platform 
-            const [xMult, yMult] = this.randomJump(jumpType, maxXMult); 
-            const x = xMult * this.jumpWidth;
-            const y = yMult * this.jumpHeight;
+            const [xMult, yMult] = this.randomJump(jumpType, maxXMult);
+            const x = xMult * this.#jumpWidth;
+            const y = yMult * this.#jumpHeight;
             nextPlatformPos.add(goingLeft ? -x : x, y);
             applyBounds(nextPlatformPos);
 
             // add next platform 
-            platforms.push(new Platform(this.p5,  nextPlatformPos));
+            platforms.push(new Platform(this.#p5, nextPlatformPos));
             jumps.push(`${jumpCode(jumpType)} ${goingLeft ? 'left' : 'right'} [${xMult}, ${yMult}]`);
 
             if (lastPlatform().pos.x < marginX + platformWidth && goingLeft
@@ -189,7 +193,7 @@ export default class LevelBuilder {
 
         // console.log(jumps.join("\n"));
 
-        const level = new Level(this.p5, difficulty);
+        const level = new Level(this.#p5, difficulty);
         level.platforms = platforms;
         return level;
     }

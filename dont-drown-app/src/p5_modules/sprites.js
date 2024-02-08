@@ -55,8 +55,6 @@ function generateSprites(sketcher, generateSprite) {
 }
 
 export default class SpriteManager {
-
-
     #p5;
     #smoothedStress; // to prevent 1 redraw per frame  
     #variant;
@@ -67,7 +65,7 @@ export default class SpriteManager {
 
     constructor(p5, sketcher, pcDiameter, platformWidth, platformHeight) {
         this.#p5 = p5;
-        this.reset(); 
+        this.reset();
         this.#generatePCSprites(p5, sketcher, pcDiameter);
         this.#generatePlatformSprites(p5, sketcher, platformWidth, platformHeight);
     }
@@ -147,7 +145,7 @@ export default class SpriteManager {
         }
 
         if (platforms) {
-            for (let {i, pos} of platforms) {
+            for (let { i, pos } of platforms) {
                 let adjustedVariant = (this.#variant + i) % SPRITE_VARIANTS_PER_STRESS;
                 this.#platformSprites[this.#smoothedStress][adjustedVariant].draw(pos);
             }
