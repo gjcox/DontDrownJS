@@ -1,6 +1,7 @@
 import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
 import Platform from "./platform";
-import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
+import PlayerBall, { PC_DIAMETER_DIV } from "./playerball";
+import { LEFT, REST, RIGHT } from "../utils/constants";
 import SpriteManager from "./sprites";
 import StressTracker from "./stresstracker";
 import Wave from "./wave";

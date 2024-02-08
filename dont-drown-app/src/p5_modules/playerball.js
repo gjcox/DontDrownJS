@@ -1,11 +1,8 @@
+import { REST, LEFT, RIGHT } from "../utils/constants";
 import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, increment } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
 const PC_WEIGHT = 10;
-
-const REST = 0;
-const LEFT = -1;
-const RIGHT = 1;
 
 export default class PlayerBall {
     constructor(p5, pos) {
@@ -228,5 +225,5 @@ export default class PlayerBall {
 
 }
 
-export { LEFT, PC_DIAMETER_DIV, REST, RIGHT };
+export { PC_DIAMETER_DIV };
 
