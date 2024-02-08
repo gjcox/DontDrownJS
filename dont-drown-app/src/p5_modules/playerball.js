@@ -1,45 +1,60 @@
-import { REST, LEFT, RIGHT } from "../utils/constants";
+import { LEFT, REST, RIGHT } from "../utils/constants";
 import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, increment } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
-const PC_WEIGHT = 10;
+const PC_MASS = 10;
 
 export default class PlayerBall {
+    #p5;
+    #diameter;
+    #radius;
+    #pos;
+    #oldPos;
+    #mass;
+    #horizontalSteering;
+    #resultantForce;
+    #velocity;
+    #currentPlatform;
+    #droppedPlatform;
+    #edgeClinging;
+    #jumpForce;
+    #weight;
+
     constructor(p5, pos) {
-        this.p5 = p5;
-        this._diameter = p5.width / PC_DIAMETER_DIV;
-        this._radius = this._diameter / 2;
-        this._pos = pos ? pos.copy() : p5.createVector();
-        this._oldPos = this._pos.copy();
-        this._mass = PC_WEIGHT;
-        this._horizontalSteering = REST;
-        this._resultantForce = p5.createVector();
-        this._velocity = p5.createVector();
-        this._currentPlatform = null;
-        this._droppedPlatform = null;
-        this._edgeClinging;
-        this._jumpForce = G * this._mass * PC_JUMP_MULT;
-        this._weight = G * this._mass;
+        this.#p5 = p5;
+        this.#diameter = p5.width / PC_DIAMETER_DIV;
+        this.#radius = this.#diameter / 2;
+        this.#pos = pos ? pos.copy() : p5.createVector();
+        this.#oldPos = this.#pos.copy();
+        this.#mass = PC_MASS;
+        this.#horizontalSteering = REST;
+        this.#resultantForce = p5.createVector();
+        this.#velocity = p5.createVector();
+        this.#currentPlatform = null;
+        this.#droppedPlatform = null;
+        this.#edgeClinging;
+        this.#jumpForce = G * this.#mass * PC_JUMP_MULT;
+        this.#weight = G * this.#mass;
     }
 
     get radius() {
-        return this._radius;
+        return this.#radius;
     }
 
     get diameter() {
-        return this._diameter;
+        return this.#diameter;
     }
 
     set pos(newPos) {
-        this._pos = newPos.copy();
+        this.#pos = newPos.copy();
     }
 
     get pos() {
-        return this._pos;
+        return this.#pos;
     }
 
     get oldPos() {
-        return this._oldPos;
+        return this.#oldPos;
     }
 
     /**
@@ -47,57 +62,45 @@ export default class PlayerBall {
      */
     set horizontalSteering(steer) {
         if ([REST, LEFT, RIGHT].includes(steer)) {
-            this._horizontalSteering = steer;
+            this.#horizontalSteering = steer;
         }
     }
 
     get velocity() {
-        return this._velocity;
+        return this.#velocity;
     }
 
     resetVelocity() {
-        this._velocity.mult(0);
+        this.#velocity.mult(0);
     }
 
     get currentPlatform() {
-        return this._currentPlatform;
-    }
-
-    set currentPlatform(platform) {
-        this._currentPlatform = platform ?? null;
+        return this.#currentPlatform;
     }
 
     get droppedPlatform() {
-        return this._droppedPlatform;
-    }
-
-    get jumpForce() {
-        return this._jumpForce;
-    }
-
-    get weight() {
-        return this._weight;
+        return this.#droppedPlatform;
     }
 
     land(platform) {
-        this._droppedPlatform = null;
-        this._pos.set(this._pos.x, platform.pos.y - this._radius);
-        this._currentPlatform = platform;
-        this._velocity.mult(1, -COR_PLATFORM);
-        if (Math.abs(this._velocity.y) < 1) {
-            this._velocity.mult(1, 0);
+        this.#droppedPlatform = null;
+        this.#pos.set(this.#pos.x, platform.pos.y - this.#radius);
+        this.#currentPlatform = platform;
+        this.#velocity.mult(1, -COR_PLATFORM);
+        if (Math.abs(this.#velocity.y) < 1) {
+            this.#velocity.mult(1, 0);
         } else {
-            this._currentPlatform = null;
+            this.#currentPlatform = null;
         }
     }
 
     offPlatform() {
-        if ((this._horizontalSteering < 0) != (this._velocity.x < 0)
-            || this._horizontalSteering == 0) {
+        if ((this.#horizontalSteering < 0) != (this.#velocity.x < 0)
+            || this.#horizontalSteering == 0) {
             // bounce toward centre of current platform 
-            this._edgeClinging = true;
+            this.#edgeClinging = true;
         } else {
-            this._currentPlatform = null;
+            this.#currentPlatform = null;
             // TODO coyote time        
         }
     }
@@ -126,59 +129,59 @@ export default class PlayerBall {
      * @param {*} cor coefficient of restitution (the proportion of speed retained)
      */
     reflect(cor = 1) {
-        this._velocity.mult(-cor, 1);
+        this.#velocity.mult(-cor, 1);
     }
 
     clingToEdge() {
-        if (this._edgeClinging && this._currentPlatform !== null) {
-            const centreX = this.currentPlatform.pos.x + this.currentPlatform.width / 2;
+        if (this.#edgeClinging && this.#currentPlatform !== null) {
+            const centreX = this.#currentPlatform.pos.x + this.#currentPlatform.width / 2;
             if ((this.velocity.x < 0) && (centreX > this.pos.x)
                 || (this.velocity.x > 0) && (centreX < this.pos.x)) {
                 this.reflect(COR_PLATFORM_EDGE);
             }
         }
-        this._edgeClinging = false;
+        this.#edgeClinging = false;
     }
 
     drop() {
-        this._droppedPlatform = this._currentPlatform;
-        this._currentPlatform = null;
+        this.#droppedPlatform = this.#currentPlatform;
+        this.#currentPlatform = null;
     }
 
     thrust() {
-        const thrustForce = this.currentPlatform !== null ?
+        const thrustForce = this.#currentPlatform !== null ?
             PC_GROUND_THRUST
             : PC_AIR_THRUST;
-        this._resultantForce.add(this._horizontalSteering * thrustForce, 0);
+        this.#resultantForce.add(this.#horizontalSteering * thrustForce, 0);
     }
 
     jump() {
-        this._resultantForce.sub(0, this.jumpForce);
-        this._currentPlatform = null;
+        this.#resultantForce.sub(0, this.#jumpForce);
+        this.#currentPlatform = null;
     }
 
     friction() {
-        const direction = this._velocity.x / Math.abs(this._velocity.x);
-        if (direction != 0 & this._currentPlatform !== null) {
+        const direction = this.#velocity.x / Math.abs(this.#velocity.x);
+        if (direction != 0 & this.#currentPlatform !== null) {
             // friction = mu * normal reaction force
             // (assumes that platform is level) 
             // reaction force = mass * g 
-            const friction = this._mass * G * MU;
-            this._resultantForce.add(-direction * friction, 0);
+            const friction = this.#mass * G * MU;
+            this.#resultantForce.add(-direction * friction, 0);
         }
     }
 
     gravity() {
-        if (this._currentPlatform === null) { this._resultantForce.add(0, this.weight) }
+        if (this.#currentPlatform === null) { this.#resultantForce.add(0, this.#weight) }
     }
 
     airResistance() {
         // F_air = -c * v
-        this._resultantForce.add(0, this._velocity.y * -C);
+        this.#resultantForce.add(0, this.#velocity.y * -C);
     }
 
     integrate(marginX) {
-        const currentXDirection = this._velocity.x / Math.abs(this._velocity.x);
+        const currentXDirection = this.#velocity.x / Math.abs(this.#velocity.x);
 
         // resolve horizontal forces 
         this.thrust();
@@ -189,19 +192,19 @@ export default class PlayerBall {
         this.airResistance();
 
         // acceleration 
-        this._velocity.add(this._resultantForce.copy().div(this._mass));
-        const newXDirection = this._velocity.x / Math.abs(this._velocity.x);
+        this.#velocity.add(this.#resultantForce.copy().div(this.#mass));
+        const newXDirection = this.#velocity.x / Math.abs(this.#velocity.x);
 
         // ensure that friction doesn't reverse direction of motion 
-        const justFriction = ((this._horizontalSteering < 0) !=
-            (this._resultantForce.x < 0));
+        const justFriction = ((this.#horizontalSteering < 0) !=
+            (this.#resultantForce.x < 0));
         if (justFriction && newXDirection != currentXDirection) {
-            this._velocity.x = 0;
+            this.#velocity.x = 0;
         }
 
         // ensure max horizontal speed not exceeded 
         if (Math.abs(this.velocity.x) > PC_MAX_SPEED) {
-            this._velocity.x = PC_MAX_SPEED * newXDirection;
+            this.#velocity.x = PC_MAX_SPEED * newXDirection;
         }
 
         // bounce off edge
@@ -211,16 +214,16 @@ export default class PlayerBall {
         this.clingToEdge();
 
         // apply movement 
-        this._oldPos = this._pos.copy();
-        this._pos.add(this.p5.createVector(increment(this.p5), increment(this.p5))
-            .mult(this._velocity));
+        this.#oldPos = this.#pos.copy();
+        this.#pos.add(this.#p5.createVector(increment(this.#p5), increment(this.#p5))
+            .mult(this.#velocity));
 
         // prevent clipping through edges 
-        this._pos.x = Math.max(marginX + this.radius, this._pos.x);
-        this._pos.x = Math.min(this.p5.width - this.radius, this._pos.x);
+        this.#pos.x = Math.max(marginX + this.radius, this.#pos.x);
+        this.#pos.x = Math.min(this.#p5.width - this.radius, this.#pos.x);
 
         // reset resultant force
-        this._resultantForce.set();
+        this.#resultantForce.set();
     }
 
 }
