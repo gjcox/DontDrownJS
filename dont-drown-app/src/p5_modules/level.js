@@ -71,7 +71,6 @@ export default class Level {
 
     draw(marginX, lineGap, topLineGap) {
         renderPage(this.p5, marginX, lineGap, topLineGap, this.top);
-        this._platforms?.forEach(p => p.draw());
     } 
 }
 

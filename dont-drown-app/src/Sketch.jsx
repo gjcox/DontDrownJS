@@ -73,7 +73,7 @@ function sketch(p5) {
 
         sketcher = new Sketcher(p5);
         p5.noStroke();
-        crashDummy = new CrashDummy(p5, sketcher, centre());
+        crashDummy = new CrashDummy(p5, centre());
         p5.frameRate();
     };
 

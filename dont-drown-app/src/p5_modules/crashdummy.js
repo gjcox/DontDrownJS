@@ -3,8 +3,8 @@ import PlayerBall from "./playerball";
 
 export default class CrashDummy extends PlayerBall {
 
-    constructor(p5, sketcher, pos) {
-        super(p5, sketcher, pos);
+    constructor(p5, pos) {
+        super(p5, pos);
         this._initPos = pos.copy();
         this._start = p5.frameCount;
         this.jump();

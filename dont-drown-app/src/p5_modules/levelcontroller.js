@@ -1,4 +1,5 @@
 import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
+import Platform from "./platform";
 import PlayerBall, { LEFT, PC_DIAMETER_DIV, REST, RIGHT } from "./playerball";
 import SpriteManager from "./sprites";
 import StressTracker from "./stresstracker";
@@ -15,7 +16,7 @@ export default class LevelController {
     constructor(p5, sketcher, jumpHeight, completeLevel) {
         this.p5 = p5;
         this.sketcher = sketcher;
-        this._pc = new PlayerBall(p5, sketcher);
+        this._pc = new PlayerBall(p5);
         this._wave = new Wave(p5, sketcher);
         this._panning = NEITHER;
         this._panRate = p5.width / PAN_RATE_DIV;
@@ -25,7 +26,10 @@ export default class LevelController {
         this._stressTracker = new StressTracker(value => this._stressIndex = Math.round(value), jumpHeight * 1.5);
         this.completeLevel = completeLevel;
 
-        this.#spriteManager = new SpriteManager(p5, sketcher, this.pc.diameter);
+        this.#spriteManager = new SpriteManager(p5, sketcher,
+            this.pc.diameter,
+            Platform.defaultWidth(p5), Platform.defaultHeight(p5)
+        );
     }
 
 
@@ -103,6 +107,7 @@ export default class LevelController {
         this._paused = false;
         this._waveMoving = true;
         this._stressTracker.reset();
+        this.#spriteManager.reset(); 
     }
 
     togglePause() {
@@ -151,7 +156,12 @@ export default class LevelController {
 
     draw(marginX, lineGap, topLineGap) {
         this.level.draw(marginX, lineGap, topLineGap);
-        this.#spriteManager.drawSprites(this._stressIndex, { pcPos: this.pc.pos })
+        this.#spriteManager.drawSprites(this._stressIndex, {
+            pcPos: this.pc.pos,
+            platforms: this.level.platforms
+                .map((p, i) => { return { i: i, pos: p.pos, onScreen: p.onScreen() } })
+                .filter((p) => p.onScreen)
+        });
         this.wave.draw();
 
         // temporary   

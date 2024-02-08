@@ -123,7 +123,7 @@ export default class LevelBuilder {
             this.p5.random(marginX, width - platformWidth),
             highestPlatformHeight
         );
-        const topPlatform = new Platform(this.p5, this.sketcher, topPlatformPos);
+        const topPlatform = new Platform(this.p5, topPlatformPos);
         platforms.push(topPlatform);
 
         const lastPlatform = () => platforms[platforms.length - 1];
@@ -148,7 +148,7 @@ export default class LevelBuilder {
             applyBounds(nextPlatformPos);
 
             // add next platform 
-            platforms.push(new Platform(this.p5, this.sketcher, nextPlatformPos));
+            platforms.push(new Platform(this.p5,  nextPlatformPos));
             jumps.push(`${jumpCode(jumpType)} ${goingLeft ? 'left' : 'right'} [${xMult}, ${yMult}]`);
 
             if (lastPlatform().pos.x < marginX + platformWidth && goingLeft
