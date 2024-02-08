@@ -8,11 +8,10 @@ const LEFT = -1;
 const RIGHT = 1;
 
 export default class PlayerBall {
-    constructor(p5, sketcher, pos) {
+    constructor(p5, pos) {
         this.p5 = p5;
         this._diameter = p5.width / PC_DIAMETER_DIV;
         this._radius = this._diameter / 2;
-        // MOVED TO sprites.js
         this._pos = pos ? pos.copy() : p5.createVector();
         this._oldPos = this._pos.copy();
         this._mass = PC_WEIGHT;
@@ -225,11 +224,6 @@ export default class PlayerBall {
 
         // reset resultant force
         this._resultantForce.set();
-    }
-
-    draw() {
-        // this.sprite.draw(this._pos);
-        // TODO 
     }
 
 }

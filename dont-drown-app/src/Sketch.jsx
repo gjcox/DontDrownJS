@@ -72,8 +72,6 @@ function sketch(p5) {
         p5.createCanvas(width, height);
 
         sketcher = new Sketcher(p5);
-        sketcher.lineBreaksMax = 2;
-        sketcher.lineDeviationMult = 0.6;
         p5.noStroke();
         crashDummy = new CrashDummy(p5, sketcher, centre());
         p5.frameRate();
