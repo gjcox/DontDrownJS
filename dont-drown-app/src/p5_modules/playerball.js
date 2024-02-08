@@ -57,6 +57,10 @@ export default class PlayerBall {
         return this.#oldPos;
     }
 
+    get velocity() {
+        return this.#velocity; 
+    }
+
     /**
      * @param {number} steer
      */
@@ -64,10 +68,6 @@ export default class PlayerBall {
         if ([REST, LEFT, RIGHT].includes(steer)) {
             this.#horizontalSteering = steer;
         }
-    }
-
-    get velocity() {
-        return this.#velocity;
     }
 
     resetVelocity() {

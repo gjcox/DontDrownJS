@@ -2,35 +2,43 @@ import { PC_MAX_SPEED, increment } from "./physicsengine";
 import PlayerBall from "./playerball";
 
 export default class CrashDummy extends PlayerBall {
+    #p5;
+    #initPos;
+    #start;
+    #jumpHeight;
+    #jumpFrames;
+    #jumpWidth;
+    #done;
 
     constructor(p5, pos) {
         super(p5, pos);
-        this._initPos = pos.copy();
-        this._start = p5.frameCount;
+        this.#p5 = p5;
+        this.#initPos = pos.copy();
+        this.#start = p5.frameCount;
         this.jump();
     }
 
     get done() {
-        return this._done; 
+        return this.#done;
     }
 
     /**
-     * @returns [this._jumpHeight, this._jumpFrames, this._jumpWidth]. 
+     * @returns [jumpHeight, jumpFrames, jumpWidth]. 
      */
     get jumpInfo() {
-        return [this._jumpHeight, this._jumpFrames, this._jumpWidth];
+        return [this.#jumpHeight, this.#jumpFrames, this.#jumpWidth];
     }
 
     run() {
-        if (!this._done) {
-            const rising = this._velocity.y <= 0;
+        if (!this.#done) {
+            const rising = this.velocity.y <= 0;
             this.integrate();
-            const stillRising = this._velocity.y < 0;
-            if (rising != stillRising && this._jumpHeight === undefined) {
-                this._jumpHeight = Math.abs(this._initPos.y - this.pos.y) / increment(this.p5);
-                this._jumpFrames = Math.abs(this._start - this.p5.frameCount) * 2;
-                this._jumpWidth = this._jumpFrames * PC_MAX_SPEED;
-                this._done = true;
+            const stillRising = this.velocity.y < 0;
+            if (rising != stillRising && this.#jumpHeight === undefined) {
+                this.#jumpHeight = Math.abs(this.#initPos.y - this.pos.y) / increment(this.#p5);
+                this.#jumpFrames = Math.abs(this.#start - this.#p5.frameCount) * 2;
+                this.#jumpWidth = this.#jumpFrames * PC_MAX_SPEED;
+                this.#done = true;
             }
         }
     }
