@@ -12,18 +12,18 @@ const NEITHER = 0;
 const DOWN = 1;
 
 export default class LevelController {
-    #p5; 
-    #pc; 
-    #level; 
-    #wave; 
-    #panning; 
+    #p5;
+    #pc;
+    #level;
+    #wave;
+    #panning;
     #waveMoving;
-    #panRate; 
+    #panRate;
     #jumpHeight;
-    #paused; 
-    #stressIndex; 
+    #paused;
+    #stressIndex;
     #stressTracker;
-    #completeLevel; 
+    #completeLevel;
     #spriteManager;
 
     constructor(p5, sketcher, jumpHeight, completeLevel) {
@@ -47,7 +47,7 @@ export default class LevelController {
      * @param {number} value
      */
     set stressIndex(value) {
-        this.#stressIndex = Math.round(value); 
+        this.#stressIndex = Math.round(value);
     }
 
     get level() {
@@ -100,7 +100,7 @@ export default class LevelController {
         this.#paused = false;
         this.#waveMoving = true;
         this.#stressTracker.reset();
-        this.#spriteManager.reset(); 
+        this.#spriteManager.reset();
     }
 
     togglePause() {
@@ -119,7 +119,7 @@ export default class LevelController {
 
             this.#pc.integrate(marginX);
             if (this.#waveMoving) {
-                this.#wave.pos.y -= this.level.waveRiseRate;
+                this.#wave.translate({ y: -this.level.waveRiseRate });
             }
 
             // stress management
@@ -167,7 +167,7 @@ export default class LevelController {
         const pan = (y) => {
             this.level.pan(y);
             this.#pc.pos.y += y;
-            this.#wave.pos.y += y;
+            this.#wave.translate({ y: y });
         };
 
         if (this.#panning == UP) {
