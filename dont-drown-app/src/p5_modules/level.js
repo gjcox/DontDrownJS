@@ -17,60 +17,68 @@ const HARD = new Difficulty(2.5, false, 0.2, 14, "hard");
 const VERY_HARD = new Difficulty(3, false, 0.1, 14, "very hard");
 
 export default class Level {
+    #p5; 
+    #platforms; 
+    #highestPlatform;
+    #difficulty; 
+    #height; 
+    #topLimit; 
+    #top;
+    #waveRiseRate; 
 
     constructor(p5, difficulty) {
-        this.p5 = p5;
-        this._platforms = [];
-        this._difficulty = difficulty;
-        this._height = Math.round(p5.height * difficulty.heightMult);
-        this._topLimit = p5.height - this._height;
-        this._top; // the top of the level relative to the viewport
-        this._waveRiseRate = p5.height / (60 * difficulty.waveRiseTime);
+        this.#p5 = p5;
+        this.#platforms = [];
+        this.#difficulty = difficulty;
+        this.#height = Math.round(p5.height * difficulty.heightMult);
+        this.#topLimit = p5.height - this.#height;
+        this.#top; // the top of the level relative to the viewport
+        this.#waveRiseRate = p5.height / (60 * difficulty.waveRiseTime);
     }
 
     get platforms() {
-        return this._platforms;
+        return this.#platforms;
     }
 
     set platforms(platforms) {
-        this._platforms = platforms;
-        this._platforms.sort((p1, p2) => p2.pos.y - p1.pos.y);
-        this._highestPlatform = this._platforms[this._platforms.length - 1];
+        this.#platforms = platforms;
+        this.#platforms.sort((p1, p2) => p2.pos.y - p1.pos.y);
+        this.#highestPlatform = this.#platforms[this.#platforms.length - 1];
     }
 
     get difficulty() {
-        return this._difficulty;
+        return this.#difficulty;
     }
 
     get top() {
-        return this._top;
+        return this.#top;
     }
 
     get topLimit() {
-        return this._topLimit;
+        return this.#topLimit;
     }
 
     get waveRiseRate() {
-        return this._waveRiseRate;
+        return this.#waveRiseRate;
     }
 
     get highestPlatform() {
-        return this._highestPlatform; 
+        return this.#highestPlatform; 
     }
 
     reset() {
-        this._top = this.topLimit;
+        this.#top = this.topLimit;
         this.platforms.forEach(p => p.pos = p.initPos.copy());
     }
 
     /* Move all level elements up or down (incl. PC and wave) */
     pan(y) {
-        this._top += y;
-        this._platforms.forEach(p => p.translate(this.p5.createVector(0, y)));
+        this.#top += y;
+        this.#platforms.forEach(p => p.translate(this.#p5.createVector(0, y)));
     }
 
     draw(marginX, lineGap, topLineGap) {
-        renderPage(this.p5, marginX, lineGap, topLineGap, this.top);
+        renderPage(this.#p5, marginX, lineGap, topLineGap, this.top);
     } 
 }
 
