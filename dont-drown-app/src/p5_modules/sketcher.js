@@ -7,24 +7,29 @@ const LINE_BREAKS_MIN = 1; // minimum number of breaks in sketched line
 const LINE_BREAKS_MAX = 5; // maximum number of breaks in sketched line 
 
 export default class Sketcher {
+    #p5; 
+    #defaultLineWeight; 
+    #lineDeviationMult;
+    #lineBreaksUpperBound;
+
     constructor(p5) {
-        this.p5 = p5;
-        this._defLineWeight = p5.width / DEF_LINE_WEIGHT_DIV; // default mean thickness of sketched lines 
-        this._lineDeviationMult = LINE_DEV_MULT_MIN; // [0..lineDeviationMult] magnitude of breaks as proportion of line thickness 
-        this._lineBreaksUpperBound = LINE_BREAKS_MIN; // [0.._lineBreaksUpperBound] breaks in sketched lines 
+        this.#p5 = p5;
+        this.#defaultLineWeight = p5.width / DEF_LINE_WEIGHT_DIV; // default mean thickness of sketched lines 
+        this.#lineDeviationMult = LINE_DEV_MULT_MIN; // [0..lineDeviationMult] magnitude of breaks as proportion of line thickness 
+        this.#lineBreaksUpperBound = LINE_BREAKS_MIN; // [0.._lineBreaksUpperBound] breaks in sketched lines 
     }
 
     get defLineWeight() {
-        return this._defLineWeight;
+        return this.#defaultLineWeight;
     }
 
-    set lineDeviationMult(fraction =0 ) {
-        this._lineDeviationMult = LINE_DEV_MULT_MIN +
+    set lineDeviationMult(fraction = 0) {
+        this.#lineDeviationMult = LINE_DEV_MULT_MIN +
             fraction * (LINE_DEV_MULT_MAX - LINE_DEV_MULT_MIN);
     }
 
-    set lineBreaksMax(fraction =0) {
-        this._lineBreaksUpperBound = LINE_BREAKS_MIN +
+    set lineBreaksMax(fraction = 0) {
+        this.#lineBreaksUpperBound = LINE_BREAKS_MIN +
             fraction * (LINE_BREAKS_MAX - LINE_BREAKS_MIN);
     }
 
@@ -32,10 +37,10 @@ export default class Sketcher {
     /**
      * A random distance to offset a vertex in a jagged line
      * @param {*} lineWeight 
-     * @returns random value from [-lineWeight * this.lineDeviationMult..-lineWeight * this.lineDeviationMult]
+     * @returns random value from [-lineWeight * this.#lineDeviationMult..-lineWeight * this.#lineDeviationMult]
      */
-    deviation = (lineWeight = this.defLineWeight) => {
-        let maxDeviation = this._lineDeviationMult * lineWeight;
+    deviation = (lineWeight = this.#defaultLineWeight) => {
+        let maxDeviation = this.#lineDeviationMult * lineWeight;
         return -maxDeviation + Math.random() * 2 * maxDeviation;
     };
 
@@ -49,7 +54,7 @@ export default class Sketcher {
      */
     buildDualWeightedLine(start, end, startWeight, endWeight) {
         // perpendicular to line direction 
-        const paddingDirection = start.copy().sub(end).rotate(this.p5.HALF_PI).normalize();
+        const paddingDirection = start.copy().sub(end).rotate(this.#p5.HALF_PI).normalize();
 
         const startPadding = paddingDirection.copy().mult(startWeight);
         const endPadding = paddingDirection.copy().mult(endWeight);
@@ -61,7 +66,7 @@ export default class Sketcher {
 
         const corners = [topLeft, topRight, bottomRight, bottomLeft];
 
-        const line = new Shape(this.p5);
+        const line = new Shape(this.#p5);
         corners.forEach((v) => line.addVertex(v));
         return line;
     }
@@ -81,15 +86,15 @@ export default class Sketcher {
         const smoothLine = end.copy().sub(start);
         const smoothLineLength = smoothLine.mag();
         const direction = smoothLine.normalize();
-        const offsetDirection = direction.copy().rotate(this.p5.HALF_PI);
-        const nBreaks = Math.round(Math.random() * this._lineBreaksUpperBound);
+        const offsetDirection = direction.copy().rotate(this.#p5.HALF_PI);
+        const nBreaks = Math.round(Math.random() * this.#lineBreaksUpperBound);
         const jaggedEdgeVertices = [];
 
         var nextVertex = start.copy();
         for (let i = 0; i < nBreaks; i++) {
             // set nextVertex to next point on straight line 
             nextVertex.add(
-                direction.copy().mult(this.p5.random(0, smoothLineLength / nBreaks))
+                direction.copy().mult(this.#p5.random(0, smoothLineLength / nBreaks))
             );
             // offset it perpendicular to the straight line 
             const offset = offsetDirection.copy().mult(this.deviation(lineWeight));
@@ -111,11 +116,11 @@ export default class Sketcher {
      * @param {*} lineWeight the thickness of the line at the smooth edges 
      * @returns a Shape object 
      */
-    buildSketchedLine(start, end, colour, lineWeight = this.defLineWeight) {
+    buildSketchedLine(start, end, colour, lineWeight = this.#defaultLineWeight) {
         // the padding vector is essentially the straight edges at the start and end of the line 
-        const padding = start.copy().sub(end).rotate(this.p5.HALF_PI).normalize().mult(lineWeight);
+        const padding = start.copy().sub(end).rotate(this.#p5.HALF_PI).normalize().mult(lineWeight);
 
-        const sketchedLine = new Shape(this.p5, colour);
+        const sketchedLine = new Shape(this.#p5, colour);
 
         /* topLeft is not necessarily the top left corner, but it's easier to keep track
         * of than just numbering the corners */
@@ -150,11 +155,11 @@ export default class Sketcher {
      * @param {p5.Vector[]} corners four p5.Vectors 
      * @returns 
      */
-    buildSketchedQuad(strokeColour, fillColour, corners, lineWeight = this.defLineWeight) {
+    buildSketchedQuad(strokeColour, fillColour, corners, lineWeight = this.#defaultLineWeight) {
         const quad = new CompositeShape();
 
         // add the fill
-        const quadFill = new Shape(this.p5, fillColour);
+        const quadFill = new Shape(this.#p5, fillColour);
         for (let corner of corners) {
             quadFill.addVertex(corner);
         }
@@ -185,14 +190,14 @@ export default class Sketcher {
      * @param {*} lineWeight 
      * @returns 
      */
-    buildSketchedRect(strokeColour, fillColour, x, y, w, h, lineWeight = this.defLineWeight) {
+    buildSketchedRect(strokeColour, fillColour, x, y, w, h, lineWeight = this.#defaultLineWeight) {
         return this.buildSketchedQuad(
             strokeColour,
             fillColour,
-            [this.p5.createVector(x, y),
-            this.p5.createVector(x + w, y),
-            this.p5.createVector(x + w, y + h),
-            this.p5.createVector(x, y + h)],
+            [this.#p5.createVector(x, y),
+            this.#p5.createVector(x + w, y),
+            this.#p5.createVector(x + w, y + h),
+            this.#p5.createVector(x, y + h)],
             lineWeight
         );
     }
@@ -208,7 +213,7 @@ export default class Sketcher {
      * @param {*} detail number of sides/vertices 
      * @param {*} lineWeight 
      */
-    buildSketchedEllipse(strokeColour, fillColour, x, y, w, h, detail, lineWeight = this.defLineWeight) {
+    buildSketchedEllipse(strokeColour, fillColour, x, y, w, h, detail, lineWeight = this.#defaultLineWeight) {
         const ellipse = new CompositeShape();
 
         const fillVertices = [];
@@ -220,19 +225,19 @@ export default class Sketcher {
         /* build three ellipses (fill, outer and inner) as series of 
            straight lines */
         for (let i = 0; i < detail; i++) {
-            const angle = (i * this.p5.TAU) / detail;
+            const angle = (i * this.#p5.TAU) / detail;
             // generate a smooth polygon around the origin 
-            const centredVertex = this.p5.createVector(
-                outerHalfW * this.p5.cos(angle),
-                outerHalfH * this.p5.sin(angle)
+            const centredVertex = this.#p5.createVector(
+                outerHalfW * this.#p5.cos(angle),
+                outerHalfH * this.#p5.sin(angle)
             );
 
             /* for the fill, just change the centre to x,y */
-            fillVertices.push(this.p5.createVector(x, y).add(centredVertex));
+            fillVertices.push(this.#p5.createVector(x, y).add(centredVertex));
 
             /* for the outer edge of the outline, change the centre to x,y 
                and add random deviation */
-            outerVertices.push(this.p5.createVector(
+            outerVertices.push(this.#p5.createVector(
                 x + this.deviation(lineWeight) / 2,
                 y + this.deviation(lineWeight) / 2).add(centredVertex));
 
@@ -241,20 +246,20 @@ export default class Sketcher {
             const outerRadius = centredVertex.mag();
             const innerRadius = outerRadius - lineWeight;
             centredVertex.limit(innerRadius);
-            innerVertices.push(this.p5.createVector(
+            innerVertices.push(this.#p5.createVector(
                 x + this.deviation(lineWeight) / 2,
                 y + this.deviation(lineWeight) / 2).add(centredVertex));
         }
 
         // add the fill 
-        const fill = new Shape(this.p5, fillColour);
+        const fill = new Shape(this.#p5, fillColour);
         fillVertices.forEach(v => fill.addVertex(v));
         ellipse.addShape(fill);
 
         // add the outline 
         /* construct filled outline shape as a techincally open loop, 
            but the two ends touch to appear like a closed loop */
-        const outline = new Shape(this.p5, strokeColour);
+        const outline = new Shape(this.#p5, strokeColour);
         outerVertices.forEach(v => outline.addVertex(v));
         outerVertices.slice(0, 1).forEach(v => outline.addVertex(v))
         innerVertices.slice(0, 1).forEach(v => outline.addVertex(v))
@@ -271,11 +276,11 @@ export default class Sketcher {
         let vertices = [];
         let xIncr = waveWidth / (nVertices - 1);
         for (let i = 0; i < nVertices; i++) {
-            vertices.push(this.p5.createVector(
+            vertices.push(this.#p5.createVector(
                 i * xIncr,
                 crestHeight *
-                this.p5.sin(
-                    this.p5.TAU *
+                this.#p5.sin(
+                    this.#p5.TAU *
                     (((i + startOffset) % (2 * detail)) /
                         (2 * detail))
                 )
@@ -297,7 +302,7 @@ export default class Sketcher {
      * @param {*} lineWeight 
      * @returns 
      */
-    buildSketchedWave(strokeColour, fillColour, w, h, nCrests, crestHeight, detail, startOffset, lineWeight = this.defLineWeight) {
+    buildSketchedWave(strokeColour, fillColour, w, h, nCrests, crestHeight, detail, startOffset, lineWeight = this.#defaultLineWeight) {
         const sketchedWave = new CompositeShape();
         const smoothWaveVertices = this.buildSinWave(
             w,
@@ -308,10 +313,10 @@ export default class Sketcher {
         );
 
         // add fill 
-        const waveFill = new Shape(this.p5, fillColour);
+        const waveFill = new Shape(this.#p5, fillColour);
         smoothWaveVertices.forEach(v => waveFill.addVertex(v))
-        waveFill.addVertex(this.p5.createVector(w, h)); // bottom right corner 
-        waveFill.addVertex(this.p5.createVector(0, h)); // bottom left corner 
+        waveFill.addVertex(this.#p5.createVector(w, h)); // bottom right corner 
+        waveFill.addVertex(this.#p5.createVector(0, h)); // bottom left corner 
         sketchedWave.addShape(waveFill);
 
         // add sketched top line 
@@ -321,7 +326,7 @@ export default class Sketcher {
             v.copy().add(0, lineWeight)
                 .add(this.deviation(lineWeight) / 2, this.deviation(lineWeight) / 2));
         lowerEdge.reverse();
-        const sketchedLine = new Shape(this.p5, strokeColour);
+        const sketchedLine = new Shape(this.#p5, strokeColour);
         upperEdge.forEach(v => sketchedLine.addVertex(v));
         lowerEdge.forEach(v => sketchedLine.addVertex(v));
         sketchedWave.addShape(sketchedLine);
