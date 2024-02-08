@@ -72,10 +72,8 @@ function sketch(p5) {
         p5.createCanvas(width, height);
 
         sketcher = new Sketcher(p5);
-        sketcher.lineBreaksMax = 2;
-        sketcher.lineDeviationMult = 0.6;
         p5.noStroke();
-        crashDummy = new CrashDummy(p5, sketcher, centre());
+        crashDummy = new CrashDummy(p5, centre());
         p5.frameRate();
     };
 
@@ -138,7 +136,6 @@ function sketch(p5) {
         p5.pop();
 
         crashDummy.run();
-        crashDummy.draw();
 
         if (crashDummy.done) {
             generateLevels();

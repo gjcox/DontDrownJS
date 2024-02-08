@@ -1,27 +1,17 @@
-import { C, COR_CAVAS_EDGE, COR_PLATFORM, increment, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED } from "./physicsengine";
+import { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, increment } from "./physicsengine";
 
 const PC_DIAMETER_DIV = 30; // relative to canvas width
 const PC_WEIGHT = 10;
-const PC_DETAIL = 15;
 
 const REST = 0;
 const LEFT = -1;
 const RIGHT = 1;
 
 export default class PlayerBall {
-    constructor(p5, sketcher, pos) {
+    constructor(p5, pos) {
         this.p5 = p5;
         this._diameter = p5.width / PC_DIAMETER_DIV;
         this._radius = this._diameter / 2;
-        this.sprite = sketcher.buildSketchedEllipse(
-            p5.color('hsl(280, 20%, 50%)'),
-            p5.color('hsl(280, 20%, 90%)'),
-            0,
-            0,
-            this._diameter,
-            this._diameter,
-            PC_DETAIL,
-        );
         this._pos = pos ? pos.copy() : p5.createVector();
         this._oldPos = this._pos.copy();
         this._mass = PC_WEIGHT;
@@ -236,11 +226,7 @@ export default class PlayerBall {
         this._resultantForce.set();
     }
 
-    draw() {
-        this.sprite.draw(this._pos);
-    }
-
 }
 
-export { LEFT, REST, RIGHT, PC_DIAMETER_DIV };
+export { LEFT, PC_DIAMETER_DIV, REST, RIGHT };
 

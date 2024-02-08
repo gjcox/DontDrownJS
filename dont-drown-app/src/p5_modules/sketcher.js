@@ -15,17 +15,17 @@ export default class Sketcher {
     }
 
     get defLineWeight() {
-        return this._defLineWeight; 
+        return this._defLineWeight;
     }
 
-    set lineDeviationMult(value) {
-        this._lineDeviationMult = Math.min(LINE_DEV_MULT_MAX,
-            Math.max(LINE_DEV_MULT_MIN, value));
+    set lineDeviationMult(fraction =0 ) {
+        this._lineDeviationMult = LINE_DEV_MULT_MIN +
+            fraction * (LINE_DEV_MULT_MAX - LINE_DEV_MULT_MIN);
     }
 
-    set lineBreaksMax(value) {
-        this._lineBreaksUpperBound = Math.min(LINE_BREAKS_MAX,
-            Math.max(LINE_BREAKS_MIN, value));
+    set lineBreaksMax(fraction =0) {
+        this._lineBreaksUpperBound = LINE_BREAKS_MIN +
+            fraction * (LINE_BREAKS_MAX - LINE_BREAKS_MIN);
     }
 
     /* */
