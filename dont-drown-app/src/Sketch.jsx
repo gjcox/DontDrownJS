@@ -82,7 +82,7 @@ function sketch(p5) {
         const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
 
         // Generate  levels 
-        levelBuilder = new LevelBuilder(p5, sketcher, jumpHeight, jumpWidth);
+        levelBuilder = new LevelBuilder(p5, jumpHeight, jumpWidth);
         levels = [EASY, MEDIUM, HARD, VERY_HARD].map(diff => levelBuilder.buildLevel(diff, marginX));
 
         // Build level controller 
