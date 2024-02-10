@@ -1,14 +1,25 @@
+import { CREST_HEIGHT_DIV } from "../utils/constants";
 import { CompositeShape } from "./shapes";
 import { STRESS_LIMITS } from "./stresstracker";
 
-const SPRITE_VARIANTS_PER_STRESS = 15;
+const SPRITE_VARIANTS_PER_STRESS = 5;
 const MAX_FRAMES_PER_VARIANT = 60;
 const MIN_FRAMES_PER_VARIANT = 10;
 
 const PC_DETAIL = 25; // vertices in PC 'circle' 
+
 const PF_GROUND_THICKNESS_MULT = 3; // relative to sketcher.defLineWeight     
 const PF_STROKE_COLOUR = 'limegreen';
 const PF_FILL_COLOUR = 'chartreuse';
+
+const WAVE_FOAM_COLOUR = 'lightskyblue';
+const WAVE_WATER_COLOUR = 'mediumblue';
+const N_CRESTS = 12;
+const WAVE_DETAIL = 5; // vertices per crest  
+const ASSUMED_FRAMERATE = 60;
+const SECONDS_PER_CREST = 2;
+const WAVE_VARIANTS = WAVE_DETAIL * 2;
+const WAVE_FPS = WAVE_VARIANTS / SECONDS_PER_CREST;
 
 function stressColour(stressFraction, fill = true) {
     // N.B. MAX and MIN are relative to stress rather than HSL 
@@ -32,7 +43,7 @@ function calcStressFraction(stress) {
         (STRESS_LIMITS.max - STRESS_LIMITS.min);
 }
 
-function generateSprites(sketcher, generateSprite) {
+function generateSprites(sketcher, generateSprite, variants = SPRITE_VARIANTS_PER_STRESS) {
     const sprites = [];
     for (let stress = STRESS_LIMITS.min; stress <= STRESS_LIMITS.max; stress++) {
         sprites[stress] = [];
@@ -42,8 +53,9 @@ function generateSprites(sketcher, generateSprite) {
         sketcher.lineBreaksMax = stressFraction;
         sketcher.lineDeviationMult = stressFraction;
 
-        for (let variant = 0; variant < SPRITE_VARIANTS_PER_STRESS; variant++) {
-            sprites[stress][variant] = generateSprite(stressFraction);
+        for (let variant = 0; variant < variants; variant++) {
+            const args = { stressFraction: stressFraction, variant: variant };
+            sprites[stress][variant] = generateSprite(args);
         }
     }
 
@@ -62,12 +74,19 @@ export default class SpriteManager {
     #lastFrameCount;
     #pcSprites;
     #platformSprites;
+    #waveSprites;
+    #waveVariant;
 
     constructor(p5, sketcher, pcDiameter, platformWidth, platformHeight) {
         this.#p5 = p5;
         this.reset();
+        console.log(`Generating PC sprites`);
         this.#generatePCSprites(p5, sketcher, pcDiameter);
+        console.log(`Generating platform sprites`);
         this.#generatePlatformSprites(p5, sketcher, platformWidth, platformHeight);
+        console.log(`Generating wave sprites`);
+        this.#generateWaveSprites(p5, sketcher);
+        console.log(`All sprites generated`);
     }
 
     reset() {
@@ -75,10 +94,11 @@ export default class SpriteManager {
         this.#smoothedStress = STRESS_LIMITS.min;
         this.#lastFrameCount = this.#p5.frameCount;
         this.#framesPerVariant = MAX_FRAMES_PER_VARIANT;
+        this.#waveVariant = 0;
     }
 
     #generatePCSprites(p5, sketcher, pcDiameter) {
-        function generatePCSprite(stressFraction) {
+        function generatePCSprite({ stressFraction }) {
             const strokeColour = stressColour(stressFraction, false);
             const fillColour = stressColour(stressFraction);
 
@@ -126,7 +146,28 @@ export default class SpriteManager {
         this.#platformSprites = generateSprites(sketcher, generatePlatformSprite);
     }
 
-    drawSprites(stress, { pcPos, platforms }) {
+    #generateWaveSprites(p5, sketcher) {
+        const crestHeight = p5.height / CREST_HEIGHT_DIV;
+
+        function generateWaveSprite({ variant }) {
+            const foamWeight = sketcher.defLineWeight * 3;
+            return sketcher.buildSketchedWave(
+                WAVE_FOAM_COLOUR,
+                WAVE_WATER_COLOUR,
+                p5.width,
+                p5.height,
+                N_CRESTS,
+                crestHeight,
+                WAVE_DETAIL,
+                variant,
+                foamWeight
+            );
+        }
+
+        this.#waveSprites = generateSprites(sketcher, generateWaveSprite, WAVE_VARIANTS);
+    }
+
+    drawSprites(stress, { pcPos, platforms, wavePos }) {
         // Frames per variant is inversely proportional to stress 
         this.#framesPerVariant = Math.max(MIN_FRAMES_PER_VARIANT,
             Math.round(MAX_FRAMES_PER_VARIANT * (1 - calcStressFraction(stress))));
@@ -140,6 +181,12 @@ export default class SpriteManager {
             this.#lastFrameCount = this.#p5.frameCount;
         }
 
+        // If enough time has passed...
+        if (this.#p5.frameCount % Math.floor(ASSUMED_FRAMERATE / WAVE_FPS) == 0) {
+            // ... increment wave variant 
+            this.#waveVariant = (this.#waveVariant + 1) % WAVE_VARIANTS;
+        }
+
         if (pcPos) {
             this.#pcSprites[this.#smoothedStress][this.#variant].draw(pcPos);
         }
@@ -149,6 +196,10 @@ export default class SpriteManager {
                 let adjustedVariant = (this.#variant + i) % SPRITE_VARIANTS_PER_STRESS;
                 this.#platformSprites[this.#smoothedStress][adjustedVariant].draw(pos);
             }
+        }
+
+        if (wavePos) {
+            this.#waveSprites[this.#smoothedStress][this.#waveVariant].draw(wavePos);
         }
     }
 }
