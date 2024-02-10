@@ -153,9 +153,9 @@ export default class LevelController {
             pcPos: this.#pc.pos,
             platforms: this.level.platforms
                 .map((p, i) => { return { i: i, pos: p.pos, onScreen: p.onScreen() } })
-                .filter((p) => p.onScreen)
+                .filter((p) => p.onScreen),
+            wavePos: this.#wave.onScreen() ? this.#wave.pos : undefined
         });
-        this.#wave.draw();
 
         // temporary   
         this.#p5.push();
