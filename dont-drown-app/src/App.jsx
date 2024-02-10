@@ -8,14 +8,16 @@ import { LOADING } from './utils/constants';
 const MARGIN_DIV = 10;
 
 function App() {
-  // p5Prop is used to detect duplicate canvases
-  const [p5Prop, setP5Prop] = useState(false);
-
   // Scaling/rendering values 
   const [canvasDims, setCanvasDims] = useState({ width: 0, height: 0 });
   const [marginX, setMarginX] = useState(0);
   const [lineGap, setLineGap] = useState(0);
   const [topLineGap, setTopLineGap] = useState(0);
+
+  function setCanvasDimsWrapper(dims) {
+    setCanvasDims(dims);
+    setMarginX(dims.width / MARGIN_DIV);
+  }
 
   useEffect(() => {
     console.log(`canvasDims: {${Object.entries(canvasDims)}}`)
@@ -38,22 +40,21 @@ function App() {
     if (typeof getLevels === 'function') {
       console.log(`levels: ${getLevels().length}`);
     } else {
-      console.warn('getLevels is not a function');
-      console.log(getLevels);
+      console.warn(`getLevels is not a function: ${getLevels}`);
     }
   }, [getLevels])
 
-  function setCanvasDimsWrapper(dims) {
-    setCanvasDims(dims);
-    setMarginX(dims.width / MARGIN_DIV);
-  }
+  useEffect(() => {
+    if (typeof startLevel !== 'function') {
+      console.warn(`startLevel is not a function: ${startLevel}`);
+    }
+  }, [startLevel])
+
 
   return (
     <StrictMode>
       <>
-        <Sketch
-          p5Prop={p5Prop}
-          setP5Prop={setP5Prop}
+        <Sketch 
           gameState={gameState}
           setGameState={setGameState}
           setCanvasDims={setCanvasDimsWrapper}

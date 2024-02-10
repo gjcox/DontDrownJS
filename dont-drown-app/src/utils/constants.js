@@ -14,6 +14,7 @@ const MENU_STATES = [MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS];
 const MENU_ID = "menu__root";
 const RIGHT_ID = "menu__right-of-margin";
 const TITLE_ID = "menu-title";
+const CANVAS_ID = "defaultCanvas0";
 
 /* Sketch sizing */
 const CREST_HEIGHT_DIV = 50;
@@ -26,7 +27,7 @@ const RIGHT = 1;
 export {
     LOADING, MID_LEVEL, IN_MENU,
     MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS, MENU_STATES,
-    MENU_ID, RIGHT_ID, TITLE_ID,
+    MENU_ID, RIGHT_ID, TITLE_ID, CANVAS_ID,
     CREST_HEIGHT_DIV,
     REST, LEFT, RIGHT,
 };

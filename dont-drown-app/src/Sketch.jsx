@@ -1,14 +1,13 @@
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import PropTypes from 'prop-types';
-import { useEffect } from "react";
 
-import { IN_MENU, MID_LEVEL, LOADING } from "./utils/constants";
 import CrashDummy from "./p5_modules/crashdummy";
 import { EASY, HARD, MEDIUM, VERY_HARD } from "./p5_modules/level";
 import LevelBuilder from "./p5_modules/levelbuilder";
 import LevelController from "./p5_modules/levelcontroller";
 import { renderPage } from "./p5_modules/page";
 import Sketcher from "./p5_modules/sketcher";
+import { CANVAS_ID, IN_MENU, LOADING, MID_LEVEL } from "./utils/constants";
 
 /**
  * Finds the maximum width and height of a canvas in a given window size such that width:height is 1.6:1. 
@@ -44,11 +43,11 @@ function sketch(p5) {
     const centre = () => p5.createVector(p5.width / 2, p5.height / 2);
 
     // Sketch-only variables 
+    var canvasID;
     var setDims = false;
     var sketcher, crashDummy, levelBuilder, levelController, levels;
 
     // Props 
-    var propped = undefined;
     var setCanvasDims, marginX, lineGap, topLineGap;
     var gameState, setGameState, setGetLevels, setStartLevel;
 
@@ -69,12 +68,13 @@ function sketch(p5) {
     p5.setup = () => {
         // N.B. this can run twice, so don't manipulate the DOM here 
         const [width, height] = canvasDimensions(p5);
-        p5.createCanvas(width, height);
+        const renderer = p5.createCanvas(width, height);
+        canvasID = renderer.canvas.id;
 
         sketcher = new Sketcher(p5);
         p5.noStroke();
         crashDummy = new CrashDummy(p5, centre());
-        p5.frameRate();
+        p5.frameRate(60);
     };
 
     function generateLevels() {
@@ -90,10 +90,6 @@ function sketch(p5) {
     }
 
     p5.updateWithProps = props => {
-        if (props.propped) {
-            propped = props.propped;
-        }
-
         // Wrap setters from props  
         if (props.setCanvasDims && typeof setCanvasDims !== 'function') {
             /*  Set the app-level canvas dimensions to reflect the actual canvas
@@ -163,10 +159,14 @@ function sketch(p5) {
 
     p5.draw = () => {
         /* React strict-mode calls useEffect twice, which means two 
-         * canvases are sometimes generated. Seemingly when this happens 
-         * the first canvas does not get passed props properly, so we can
-         * use this to determine if a canvas needs deleting. */
-        if (propped === undefined) { p5.remove(); return; }
+         * canvases are sometimes generated. When this happens the second
+         * canvas will be named differently. I use this to prompt self-
+         * destruction. */
+        if (canvasID !== CANVAS_ID) {
+            console.log(`${canvasID} will now self-destruct`);
+            p5.remove();
+            return;
+        }
         if (!setDims) { setCanvasDims() }
 
         switch (gameState) {
@@ -192,11 +192,9 @@ function sketch(p5) {
 
 }
 
-export default function Sketch({ p5Prop: p5Prop, setP5Prop, gameState, setGameState, setCanvasDims,
+export default function Sketch({ gameState, setGameState, setCanvasDims,
     marginX, lineGap, topLineGap, setGetLevels, setStartLevel }) {
     Sketch.propTypes = {
-        p5Prop: PropTypes.bool,
-        setP5Prop: PropTypes.func,
         gameState: PropTypes.number.isRequired,
         setGameState: PropTypes.func.isRequired,
         setCanvasDims: PropTypes.func.isRequired,
@@ -207,14 +205,9 @@ export default function Sketch({ p5Prop: p5Prop, setP5Prop, gameState, setGameSt
         setStartLevel: PropTypes.func.isRequired
     };
 
-    useEffect(() => {
-        setP5Prop(true);
-    });
-
     return (
         <ReactP5Wrapper
             sketch={sketch}
-            propped={p5Prop}
             gameState={gameState}
             setGameState={setGameState}
             setCanvasDims={setCanvasDims}
