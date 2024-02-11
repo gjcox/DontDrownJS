@@ -1,21 +1,11 @@
-import { useEffect } from "react";
 import PropTypes from 'prop-types';
 
 import { TITLE_ID } from "../utils/constants";
-import { getFontSizeFromID } from '../utils/functions';
 
-const TOP_LINE_MULT = 1.5; // top line is x * title font size 
-
-export default function Title({ topLineGap, setTopLineGap }) {
+export default function Title({ topLineGap }) {
     Title.propTypes = {
         topLineGap: PropTypes.number.isRequired,
-        setTopLineGap: PropTypes.func.isRequired
     };
-
-    useEffect(() => {
-        // set top line gap based on title font size 
-        setTopLineGap(getFontSizeFromID(TITLE_ID) * TOP_LINE_MULT);
-    });
 
     return <div className="menu__col-container" style={{ height: `${topLineGap}px` }}>
         <h1

@@ -11,6 +11,6 @@ export default function BackButton({ menuHistory, goBack }) {
         style={{ display: menuHistory.length == 0 ? "none" : "flex" }}
         onClick={() => goBack()}
     >
-        ← BACK
+        ←
     </button>
 }
