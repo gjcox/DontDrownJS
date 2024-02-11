@@ -1,26 +1,40 @@
 import PropTypes from 'prop-types';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import LeftOfMargin from "./components/LeftOfMargin";
 import RightOfMargin from "./components/RightOfMargin";
-import { IN_MENU, MAIN, MENU_ID, MENU_STATES } from './utils/constants';
+import { IN_MENU, LARGE_FONT, MAIN, MEDIUM_FONT, MENU_ID, MENU_STATES, SMALL_FONT } from './utils/constants';
 
 export default function Menu({ gameState, canvasDims, marginX,
-    lineGap, setLineGap, topLineGap, setTopLineGap, getLevels, startLevel }) {
-        Menu.propTypes = {
-            gameState: PropTypes.number.isRequired,
-            canvasDims: PropTypes.objectOf(PropTypes.number), 
-            marginX: PropTypes.number.isRequired,
-            lineGap: PropTypes.number.isRequired,
-            setLineGap: PropTypes.func.isRequired,
-            topLineGap: PropTypes.number.isRequired,
-            setTopLineGap: PropTypes.func.isRequired,
-            getLevels: PropTypes.func.isRequired,
-            startLevel: PropTypes.func.isRequired
-        };
+    lineGap, setLineGap, topLineGap, getLevels, startLevel }) {
+    Menu.propTypes = {
+        gameState: PropTypes.number.isRequired,
+        canvasDims: PropTypes.objectOf(PropTypes.number),
+        marginX: PropTypes.number.isRequired,
+        lineGap: PropTypes.number.isRequired,
+        setLineGap: PropTypes.func.isRequired,
+        topLineGap: PropTypes.number.isRequired,
+        getLevels: PropTypes.func.isRequired,
+        startLevel: PropTypes.func.isRequired
+    };
 
     const [currMenu, setCurrMenu] = useState(MAIN);
     const [menuHistory, setMenuHistory] = useState([]);
+    const [fontStyle, setFontStyle] = useState();
+
+    useEffect(() => {
+        switch (lineGap) {
+            case SMALL_FONT:
+                setFontStyle('menu-font--small');
+                break;
+            case MEDIUM_FONT:
+                setFontStyle('menu-font--medium');
+                break;
+            case LARGE_FONT:
+                setFontStyle('menu-font--large');
+                break;
+        }
+    }, [lineGap]);
 
     const setCurrMenuWrapper = (newState) => {
         /* Changes menu state, adding the previous menu to a history stack */
@@ -47,6 +61,7 @@ export default function Menu({ gameState, canvasDims, marginX,
                 <div
                     id={MENU_ID}
                     style={{ ...canvasDims }}
+                    className={fontStyle}
                 >
                     <LeftOfMargin
                         marginX={marginX}
@@ -61,7 +76,6 @@ export default function Menu({ gameState, canvasDims, marginX,
                         lineGap={lineGap}
                         setLineGap={setLineGap}
                         topLineGap={topLineGap}
-                        setTopLineGap={setTopLineGap}
                         getLevels={getLevels}
                         startLevel={startLevel}
                     />

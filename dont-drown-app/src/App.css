@@ -94,3 +94,19 @@ canvas {
   /* text-decoration: underline; */
   background-color: rgba(255, 20, 147, 0.5);
 }
+
+.menu-font--small {
+  font-size: 16px;
+}
+
+.menu-font--medium {
+  font-size: 24px;
+}
+
+.menu-font--large {
+  font-size: 32px;
+}
+
+#menu__root h1 {
+  font-size: 2.5em; 
+}
