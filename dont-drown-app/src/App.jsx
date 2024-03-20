@@ -26,9 +26,9 @@ function App() {
     console.log(`canvasDims: {${Object.entries(canvasDims)}}`)
   }, [canvasDims]);
 
-  useEffect(() => {
-    console.log(`topLineGap: ${topLineGap}`)
-  }, [topLineGap]);
+  // useEffect(() => {
+  //   console.log(`topLineGap: ${topLineGap}`)
+  // }, [topLineGap]);
 
   // Game state 
   const [gameState, setGameState] = useState(LOADING);
@@ -78,6 +78,7 @@ function App() {
           getLevels={getLevels}
           startLevel={startLevel}
           setMenuScrollOffset={setMenuScrollOffset}
+          setFontSize={setFontSize}
         />
       </>
     </StrictMode>

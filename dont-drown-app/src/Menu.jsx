@@ -7,7 +7,8 @@ import { IN_MENU, LARGE_FONT, MAIN, MEDIUM_FONT, MENU_ID, MENU_STATES, SMALL_FON
 import { getScrollbarWidth } from './utils/functions';
 
 export default function Menu({ gameState, canvasDims, marginX,
-    lineGap, setLineGap, topLineGap, getLevels, startLevel, setMenuScrollOffset }) {
+    lineGap, setLineGap, topLineGap, getLevels, startLevel, setMenuScrollOffset,
+setFontSize }) {
     Menu.propTypes = {
         gameState: PropTypes.number.isRequired,
         canvasDims: PropTypes.objectOf(PropTypes.number),
@@ -17,7 +18,9 @@ export default function Menu({ gameState, canvasDims, marginX,
         topLineGap: PropTypes.number.isRequired,
         getLevels: PropTypes.func.isRequired,
         startLevel: PropTypes.func.isRequired,
-        setMenuScrollOffset: PropTypes.func.isRequired
+        setMenuScrollOffset: PropTypes.func.isRequired, 
+        setFontSize: PropTypes.func.isRequired
+
     };
 
     const scrollRef = useRef(null);
@@ -93,6 +96,7 @@ export default function Menu({ gameState, canvasDims, marginX,
                             topLineGap={topLineGap}
                             getLevels={getLevels}
                             startLevel={startLevel}
+                            setFontSize={setFontSize}
                         />
                     </div>
                 </div>

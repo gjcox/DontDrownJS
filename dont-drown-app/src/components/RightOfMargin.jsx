@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import Instructions from "../menus/Instructions";
 import LevelSelector from "../menus/LevelSelector";
 import MainMenu from "../menus/MainMenu";
-import { INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID } from "../utils/constants";
+import { INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID, SETTINGS } from "../utils/constants";
 import Title from "./Title";
+import Settings from '../menus/Settings';
 
 export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap,
-    topLineGap, getLevels, startLevel }) {
+    topLineGap, getLevels, startLevel, setFontSize }) {
     RightOfMargin.propTypes = {
         width: PropTypes.number.isRequired,
         currMenu: PropTypes.number.isRequired,
@@ -15,10 +16,9 @@ export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap,
         lineGap: PropTypes.number.isRequired,
         topLineGap: PropTypes.number.isRequired,
         getLevels: PropTypes.func.isRequired,
-        startLevel: PropTypes.func.isRequired
+        startLevel: PropTypes.func.isRequired,
+        setFontSize: PropTypes.func.isRequired
     };
-
-
 
     let menu;
     switch (currMenu) {
@@ -30,7 +30,12 @@ export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap,
             break;
         case INSTRUCTIONS:
             menu = <Instructions
-                lineGap={lineGap} />
+                lineGap={lineGap} />;
+            break;
+        case SETTINGS:
+            menu = <Settings
+                setFontSize={setFontSize}
+                lineGap={lineGap} />;
             break;
         case MAIN:
         default:

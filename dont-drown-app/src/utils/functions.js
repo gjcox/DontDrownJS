@@ -1,3 +1,5 @@
+import { LARGE_FONT, MEDIUM_FONT, SMALL_FONT } from '../utils/constants';
+
 function getFontSizeFromID(id) {
     const el = document.getElementById(id);
     const fontSize = parseInt(window.getComputedStyle(el).fontSize);
@@ -24,4 +26,23 @@ function getScrollbarWidth() {
     return scrollbarWidth;
 }
 
-export { getFontSizeFromID, getScrollbarWidth }; 
+/**
+ * Determines what percentage of the slider a thumb or mark should be offset
+ * from the left based on its value. 
+ * @param {*} value the font size indicated by the mark or thumb. 
+ * @returns 0% for SMALL_FONT, 50% for MEDIUM_FONT, 100% for LARGE_FONT.
+ */
+function getLeft(value) {
+    switch (value) {
+        case SMALL_FONT:
+            return '0%';
+        case MEDIUM_FONT:
+            return '50%';
+        case LARGE_FONT:
+            return '100%';
+        default:
+            throw new Error(`${value} passed to getLeft should be one of [${SMALL_FONT}, ${MEDIUM_FONT}, ${LARGE_FONT}]`);
+    }
+}
+
+export { getFontSizeFromID, getLeft, getScrollbarWidth };
