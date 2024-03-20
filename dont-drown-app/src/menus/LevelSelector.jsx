@@ -15,7 +15,7 @@ export default function LevelSelector({ getLevels, startLevel, lineGap }) {
         navigate={() => startLevel(level)}
         lineGap={lineGap} />);
 
-    return <div className="menu__col-container">
+    return <div className="menu__col-container--padded">
         {levelButtons}
     </div>;
 }

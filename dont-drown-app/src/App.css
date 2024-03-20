@@ -45,16 +45,28 @@ canvas {
   display: flex;
   flex-direction: row;
   max-width: 100%;
+  overflow: hidden;
 }
 
 #menu__right-of-margin {
   display: flex;
-  flex: 1 0 auto;
+  /* flex: 1 0 auto; */
+}
+
+.menu__scroll-pane {
+  all: inherit; 
+  overflow-y: auto;
 }
 
 .menu__col-container {
   display: flex;
   flex-direction: column;
+}
+
+.menu__col-container--padded {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2em;
 }
 
 .menu__title {
@@ -72,7 +84,7 @@ canvas {
 }
 
 .menu__instruction {
-  text-indent: 1em;
+  padding: 0 0.5em;
 }
 
 .menu__button {
@@ -108,5 +120,5 @@ canvas {
 }
 
 #menu__root h1 {
-  font-size: 2.5em; 
+  font-size: 2.5em;
 }

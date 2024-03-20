@@ -3,7 +3,7 @@ import { StrictMode, useEffect, useState } from 'react';
 import './App.css';
 import Menu from './Menu';
 import Sketch from './Sketch';
-import { H1_FONT, LOADING, MEDIUM_FONT, TOP_LINE_MULT, MARGIN_DIV } from './utils/constants';
+import { H1_FONT, LOADING, MARGIN_DIV, MEDIUM_FONT, TOP_LINE_MULT } from './utils/constants';
 
 function App() {
   // Scaling/rendering values 
@@ -11,6 +11,7 @@ function App() {
   const [marginX, setMarginX] = useState(0);
   const [fontSize, setFontSize] = useState(MEDIUM_FONT);
   const [topLineGap, setTopLineGap] = useState(MEDIUM_FONT * H1_FONT * TOP_LINE_MULT);
+  const [menuScrollOffset, setMenuScrollOffset] = useState(0);
 
   function setCanvasDimsWrapper(dims) {
     setCanvasDims(dims);
@@ -65,6 +66,7 @@ function App() {
           topLineGap={topLineGap}
           setGetLevels={setGetLevels}
           setStartLevel={setStartLevel}
+          menuScrollOffset={menuScrollOffset}
         />
         <Menu
           gameState={gameState}
@@ -75,6 +77,7 @@ function App() {
           topLineGap={topLineGap}
           getLevels={getLevels}
           startLevel={startLevel}
+          setMenuScrollOffset={setMenuScrollOffset}
         />
       </>
     </StrictMode>

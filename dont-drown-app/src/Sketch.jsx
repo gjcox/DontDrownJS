@@ -48,7 +48,7 @@ function sketch(p5) {
     var sketcher, crashDummy, levelBuilder, levelController, levels;
 
     // Props 
-    var setCanvasDims, marginX, lineGap, topLineGap;
+    var setCanvasDims, marginX, lineGap, topLineGap, menuScrollOffset;
     var gameState, setGameState, setGetLevels, setStartLevel;
 
     p5.keyPressed = () => {
@@ -116,6 +116,7 @@ function sketch(p5) {
         if (marginX !== props.marginX) { marginX = props.marginX; }
         if (lineGap !== props.lineGap) { lineGap = props.lineGap; }
         if (topLineGap !== props.topLineGap) { topLineGap = props.topLineGap; }
+        if (menuScrollOffset !== props.menuScrollOffset) { menuScrollOffset = props.menuScrollOffset; }
         // End of values  
 
 
@@ -177,7 +178,7 @@ function sketch(p5) {
                 runLevel();
                 break;
             case IN_MENU:
-                renderPage(p5, marginX, lineGap, topLineGap);
+                renderPage(p5, marginX, lineGap, topLineGap, menuScrollOffset);
                 break;
             default:
                 console.log("Something went wrong!")
@@ -193,7 +194,7 @@ function sketch(p5) {
 }
 
 export default function Sketch({ gameState, setGameState, setCanvasDims,
-    marginX, lineGap, topLineGap, setGetLevels, setStartLevel }) {
+    marginX, lineGap, topLineGap, setGetLevels, setStartLevel, menuScrollOffset }) {
     Sketch.propTypes = {
         gameState: PropTypes.number.isRequired,
         setGameState: PropTypes.func.isRequired,
@@ -202,7 +203,8 @@ export default function Sketch({ gameState, setGameState, setCanvasDims,
         lineGap: PropTypes.number.isRequired,
         topLineGap: PropTypes.number.isRequired,
         setGetLevels: PropTypes.func.isRequired,
-        setStartLevel: PropTypes.func.isRequired
+        setStartLevel: PropTypes.func.isRequired,
+        menuScrollOffset: PropTypes.number.isRequired
     };
 
     return (
@@ -216,6 +218,7 @@ export default function Sketch({ gameState, setGameState, setCanvasDims,
             topLineGap={topLineGap}
             setGetLevels={setGetLevels}
             setStartLevel={setStartLevel}
+            menuScrollOffset={menuScrollOffset}
         />
     );
 }

@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import LeftOfMargin from "./components/LeftOfMargin";
 import RightOfMargin from "./components/RightOfMargin";
 import { IN_MENU, LARGE_FONT, MAIN, MEDIUM_FONT, MENU_ID, MENU_STATES, SMALL_FONT } from './utils/constants';
+import { getScrollbarWidth } from './utils/functions';
 
 export default function Menu({ gameState, canvasDims, marginX,
-    lineGap, setLineGap, topLineGap, getLevels, startLevel }) {
+    lineGap, setLineGap, topLineGap, getLevels, startLevel, setMenuScrollOffset }) {
     Menu.propTypes = {
         gameState: PropTypes.number.isRequired,
         canvasDims: PropTypes.objectOf(PropTypes.number),
@@ -15,8 +16,17 @@ export default function Menu({ gameState, canvasDims, marginX,
         setLineGap: PropTypes.func.isRequired,
         topLineGap: PropTypes.number.isRequired,
         getLevels: PropTypes.func.isRequired,
-        startLevel: PropTypes.func.isRequired
+        startLevel: PropTypes.func.isRequired,
+        setMenuScrollOffset: PropTypes.func.isRequired
     };
+
+    const scrollRef = useRef(null);
+    const scrollBarWidth = getScrollbarWidth();
+    const handleScroll = () => {
+        // Scrolling down raises the virtual top of the page 
+        setMenuScrollOffset(-scrollRef.current.scrollTop);
+    };
+
 
     const [currMenu, setCurrMenu] = useState(MAIN);
     const [menuHistory, setMenuHistory] = useState([]);
@@ -63,22 +73,28 @@ export default function Menu({ gameState, canvasDims, marginX,
                     style={{ ...canvasDims }}
                     className={fontStyle}
                 >
-                    <LeftOfMargin
-                        marginX={marginX}
-                        topLineGap={topLineGap}
-                        menuHistory={menuHistory}
-                        goBack={goBack}
-                    />
-                    <RightOfMargin
-                        width={canvasDims.width - marginX}
-                        currMenu={currMenu}
-                        setCurrMenu={setCurrMenuWrapper}
-                        lineGap={lineGap}
-                        setLineGap={setLineGap}
-                        topLineGap={topLineGap}
-                        getLevels={getLevels}
-                        startLevel={startLevel}
-                    />
+                    <div
+                        ref={scrollRef}
+                        onScroll={handleScroll}
+                        className={`menu__scroll-pane`}
+                    >
+                        <LeftOfMargin
+                            marginX={marginX}
+                            topLineGap={topLineGap}
+                            menuHistory={menuHistory}
+                            goBack={goBack}
+                        />
+                        <RightOfMargin
+                            width={canvasDims.width - marginX - scrollBarWidth}
+                            currMenu={currMenu}
+                            setCurrMenu={setCurrMenuWrapper}
+                            lineGap={lineGap}
+                            setLineGap={setLineGap}
+                            topLineGap={topLineGap}
+                            getLevels={getLevels}
+                            startLevel={startLevel}
+                        />
+                    </div>
                 </div>
             }
         </>)

@@ -6,18 +6,19 @@ import MainMenu from "../menus/MainMenu";
 import { INSTRUCTIONS, LEVEL_SELECTOR, MAIN, RIGHT_ID } from "../utils/constants";
 import Title from "./Title";
 
-export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap, setLineGap,
+export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap,
     topLineGap, getLevels, startLevel }) {
     RightOfMargin.propTypes = {
         width: PropTypes.number.isRequired,
         currMenu: PropTypes.number.isRequired,
         setCurrMenu: PropTypes.func.isRequired,
         lineGap: PropTypes.number.isRequired,
-        setLineGap: PropTypes.func.isRequired,
         topLineGap: PropTypes.number.isRequired,
         getLevels: PropTypes.func.isRequired,
         startLevel: PropTypes.func.isRequired
     };
+
+
 
     let menu;
     switch (currMenu) {
@@ -39,12 +40,14 @@ export default function RightOfMargin({ width, currMenu, setCurrMenu, lineGap, s
             break;
     }
 
-    return (<div
-        id={RIGHT_ID}
-        className="menu__col-container"
-        style={{ width: width }}>
-        <Title topLineGap={topLineGap} />
-        {menu}
-    </div>);
+    return (
+        <div
+            id={RIGHT_ID}
+            className="menu__col-container"
+            style={{ width: width }}
+        >
+            <Title topLineGap={topLineGap} />
+            {menu}
+        </div>);
 }
 

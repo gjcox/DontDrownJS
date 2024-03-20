@@ -31,7 +31,7 @@ export default function Instructions({ lineGap }) {
             {txt.length ? <Line>•  {txt}</Line> : <Line />}
         </div>
     );
-    return <div className="menu__col-container">
+    return <div className="menu__col-container--padded">
         {instructions}
     </div>
 }

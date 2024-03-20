@@ -27,7 +27,7 @@ export default function MainMenu({ setCurrMenu, lineGap }) {
         navigate={navigatorProps.navigate}
         lineGap={lineGap} />);
 
-    return <div className="menu__col-container">
+    return <div className="menu__col-container--padded">
         {navigators}
     </div>;
 }

@@ -9,10 +9,12 @@ export default function LeftOfMargin({ marginX, topLineGap, menuHistory, goBack 
         menuHistory: PropTypes.arrayOf(PropTypes.number).isRequired,
         goBack: PropTypes.func.isRequired
     };
-    
+
+    const width = `${marginX}px`;
+
     return <div
         className="menu__col-container"
-        style={{ width: `${marginX}px`, height: `${topLineGap}px` }}
+        style={{ width: width, minWidth: width, height: `${topLineGap}px` }}
     >
         <BackButton
             menuHistory={menuHistory}

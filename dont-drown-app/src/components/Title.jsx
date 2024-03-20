@@ -7,7 +7,9 @@ export default function Title({ topLineGap }) {
         topLineGap: PropTypes.number.isRequired,
     };
 
-    return <div className="menu__col-container" style={{ height: `${topLineGap}px` }}>
+    const height = `${topLineGap}px`; 
+
+    return <div className="menu__col-container" style={{ height: height, minHeight: height }}>
         <h1
             id={TITLE_ID}
             className="menu__title menu__text">
