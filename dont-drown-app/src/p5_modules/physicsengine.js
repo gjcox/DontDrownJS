@@ -46,24 +46,23 @@ function detectLanding(ball, platforms) {
         }
     } else if (ball.velocity.y >= 0) {
         // determine if fallen onto a platform 
-        platforms.every(p => {
-            if (p.pos.y < ball.oldPos.y) {
+        platforms.every(platform => {
+            if (platform.pos.y < ball.oldPos.y) {
                 // platform too high
-                // cut off search
+                // cut off search 
                 return false;
-            } else if (p.pos.y > (ball.pos.y + ball.radius)) {
+            } else if (platform.pos.y > (ball.pos.y + ball.radius)) {
                 // platform too low
-                // continue search
-                return true;
-            } else if (p !== ball.droppedPlatform) {
-                const xIntercept = getXAtYOverlap(ball, p.pos.y);
-                if (xIntercept >= p.pos.x && xIntercept <= p.pos.x + p.width) {
-                    ball.land(p);
+            } else if (platform !== ball.droppedPlatform) {
+                const xIntercept = getXAtYOverlap(ball, platform.pos.y);
+                if (xIntercept >= platform.pos.x && xIntercept <= platform.pos.x + platform.width) {
+                    ball.land(platform);
                     return false;
                 }
-            } else {
-                return true;
             }
+                            
+            // continue search
+            return true;
         });
     }
 }
