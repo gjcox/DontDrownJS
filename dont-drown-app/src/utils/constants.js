@@ -23,8 +23,8 @@ const MARGIN_DIV = 10;
 
 /* Font sizing */
 const FONT_STEP = 8; 
-const SMALL_FONT = MEDIUM_FONT - FONT_STEP; // px
 const MEDIUM_FONT = 24; // px
+const SMALL_FONT = MEDIUM_FONT - FONT_STEP; // px
 const LARGE_FONT = MEDIUM_FONT + FONT_STEP; // px 
 const H1_FONT = 2.5; // em 
 const TOP_LINE_MULT = 1.5; // * H1 font size = top line gap 
