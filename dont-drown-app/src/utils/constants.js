@@ -8,7 +8,7 @@ const MAIN = 100;
 const LEVEL_SELECTOR = 101;
 const INSTRUCTIONS = 102;
 const CREDITS = 103;
-const SETTINGS = 104; 
+const SETTINGS = 104;
 const MENU_STATES = [MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS, SETTINGS];
 
 /* DOM element IDs */
@@ -21,8 +21,9 @@ const CANVAS_ID = "defaultCanvas0";
 const CREST_HEIGHT_DIV = 50;
 const MARGIN_DIV = 10;
 
+
 /* Font sizing */
-const FONT_STEP = 8; 
+const FONT_STEP = 8;
 const MEDIUM_FONT = 24; // px
 const SMALL_FONT = MEDIUM_FONT - FONT_STEP; // px
 const LARGE_FONT = MEDIUM_FONT + FONT_STEP; // px 
@@ -34,6 +35,9 @@ const REST = 0;
 const LEFT = -1;
 const RIGHT = 1;
 
+/* p5.fill()-compliant colours */
+const TRANSPARENT = 'rgba(0,0,0,0)';
+
 export {
     LOADING, MID_LEVEL, IN_MENU,
     MAIN, LEVEL_SELECTOR, INSTRUCTIONS, CREDITS, SETTINGS, MENU_STATES,
@@ -41,5 +45,6 @@ export {
     CREST_HEIGHT_DIV, MARGIN_DIV,
     FONT_STEP, SMALL_FONT, MEDIUM_FONT, LARGE_FONT, H1_FONT, TOP_LINE_MULT,
     REST, LEFT, RIGHT,
+    TRANSPARENT,
 };
 

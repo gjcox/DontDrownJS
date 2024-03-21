@@ -154,7 +154,10 @@ export default class LevelController {
             platforms: this.level.platforms
                 .map((p, i) => { return { i: i, pos: p.pos, onScreen: p.onScreen() } })
                 .filter((p) => p.onScreen),
-            wavePos: this.#wave.onScreen() ? this.#wave.pos : undefined
+            wavePos: this.#wave.onScreen() ? this.#wave.pos : undefined,
+            stressBarPos: this.#p5.createVector(
+                (this.#p5.width + marginX - this.#spriteManager.stressBarWidth(this.#p5)) / 2,
+                this.#spriteManager.stressBarHeight(this.#p5) / 2)
         });
 
         // temporary   

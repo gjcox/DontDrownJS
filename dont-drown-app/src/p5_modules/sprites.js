@@ -1,4 +1,4 @@
-import { CREST_HEIGHT_DIV } from "../utils/constants";
+import { CREST_HEIGHT_DIV, TRANSPARENT } from "../utils/constants";
 import { CompositeShape } from "./shapes";
 import { STRESS_LIMITS } from "./stresstracker";
 
@@ -21,7 +21,12 @@ const SECONDS_PER_CREST = 2;
 const WAVE_VARIANTS = WAVE_DETAIL * 2;
 const WAVE_FPS = WAVE_VARIANTS / SECONDS_PER_CREST;
 
-function stressColour(stressFraction, fill = true) {
+const STRESS_BAR_WIDTH_DIV = 2;
+const STRESS_BAR_HEIGHT_DIV = 10;
+const STRESS_BAR_STROKE_COLOUR = 'black';
+const STRESS_BAR_FILL_ALPHA = 0.75;
+
+function stressColour(stressFraction, fill = true, alpha = 1) {
     // N.B. MAX and MIN are relative to stress rather than HSL 
     const MIN_H = 280;
     const MAX_H = 360;
@@ -35,7 +40,7 @@ function stressColour(stressFraction, fill = true) {
     var L = Math.round(MIN_L + stressFraction * (MAX_L - MIN_L));
     if (!fill) L = (L - 40);
 
-    return `hsl(${H}, ${S}%, ${L}%)`;
+    return `hsla(${H}, ${S}%, ${L}%, ${alpha})`;
 }
 
 function calcStressFraction(stress) {
@@ -76,6 +81,8 @@ export default class SpriteManager {
     #platformSprites;
     #waveSprites;
     #waveVariant;
+    #stressBarOutlineSprites;
+    #stressBarFillSprites;
 
     constructor(p5, sketcher, pcDiameter, platformWidth, platformHeight) {
         this.#p5 = p5;
@@ -86,6 +93,8 @@ export default class SpriteManager {
         this.#generatePlatformSprites(p5, sketcher, platformWidth, platformHeight);
         console.log(`Generating wave sprites`);
         this.#generateWaveSprites(p5, sketcher);
+        console.log(`Generating stress bar sprites`);
+        this.#generateStressBarSprites(p5, sketcher);
         console.log(`All sprites generated`);
     }
 
@@ -95,6 +104,14 @@ export default class SpriteManager {
         this.#lastFrameCount = this.#p5.frameCount;
         this.#framesPerVariant = MAX_FRAMES_PER_VARIANT;
         this.#waveVariant = 0;
+    }
+
+    stressBarWidth(p5) {
+        return p5.width / STRESS_BAR_WIDTH_DIV;
+    }
+
+    stressBarHeight(p5) {
+        return this.stressBarWidth(p5) / STRESS_BAR_HEIGHT_DIV;
     }
 
     #generatePCSprites(p5, sketcher, pcDiameter) {
@@ -167,7 +184,41 @@ export default class SpriteManager {
         this.#waveSprites = generateSprites(sketcher, generateWaveSprite, WAVE_VARIANTS);
     }
 
-    drawSprites(stress, { pcPos, platforms, wavePos }) {
+    #generateStressBarSprites(p5, sketcher) {
+        const barWidth = this.stressBarWidth(p5);
+        const barHeight = this.stressBarHeight(p5);
+        // bar fill is offset from inner corners of outline
+        const fillOffset = sketcher.defLineWeight * 2;
+        const innerWidth = barWidth - fillOffset * 2;
+        const innerHeight = barHeight - fillOffset * 2;
+
+        function generateStressBarOutlineSprite() {
+            return sketcher.buildSketchedRect(
+                STRESS_BAR_STROKE_COLOUR,
+                p5.color(TRANSPARENT),
+                0, 0,
+                barWidth, barHeight
+            );
+        }
+        this.#stressBarOutlineSprites = generateSprites(sketcher, generateStressBarOutlineSprite);
+
+        function generateStressBarFillSprite({ stressFraction }) {
+            // bar fill and colour reflects current stress 
+            const fillColour = stressColour(stressFraction, true, STRESS_BAR_FILL_ALPHA);
+            const fillWidth = stressFraction * innerWidth;
+            return sketcher.buildSketchedRect(
+                fillColour,
+                fillColour,
+                fillOffset, fillOffset,
+                fillWidth, innerHeight
+            );
+        }
+
+        this.#stressBarFillSprites = generateSprites(sketcher, generateStressBarFillSprite);
+
+    }
+
+    drawSprites(stress, { pcPos, platforms, wavePos, stressBarPos }) {
         // Frames per variant is inversely proportional to stress 
         this.#framesPerVariant = Math.max(MIN_FRAMES_PER_VARIANT,
             Math.round(MAX_FRAMES_PER_VARIANT * (1 - calcStressFraction(stress))));
@@ -200,6 +251,11 @@ export default class SpriteManager {
 
         if (wavePos) {
             this.#waveSprites[this.#smoothedStress][this.#waveVariant].draw(wavePos);
+        }
+
+        if (stressBarPos) {
+            this.#stressBarOutlineSprites[this.#smoothedStress][this.#variant].draw(stressBarPos);
+            this.#stressBarFillSprites[stress][this.#variant].draw(stressBarPos);
         }
     }
 }
