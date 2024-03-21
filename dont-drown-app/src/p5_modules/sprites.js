@@ -12,6 +12,10 @@ const PF_GROUND_THICKNESS_MULT = 3; // relative to sketcher.defLineWeight
 const PF_STROKE_COLOUR = 'limegreen';
 const PF_FILL_COLOUR = 'chartreuse';
 
+const TOKEN_STROKE_COLOUR = 'goldenrod';
+const TOKEN_FILL_COLOUR = 'gold';
+const TOKEN_SIDES = 4; // number of sides of token shape 
+
 const WAVE_FOAM_COLOUR = 'lightskyblue';
 const WAVE_WATER_COLOUR = 'mediumblue';
 const N_CRESTS = 12;
@@ -79,18 +83,21 @@ export default class SpriteManager {
     #lastFrameCount;
     #pcSprites;
     #platformSprites;
+    #tokenSprites;
     #waveSprites;
     #waveVariant;
     #stressBarOutlineSprites;
     #stressBarFillSprites;
 
-    constructor(p5, sketcher, pcDiameter, platformWidth, platformHeight) {
+    constructor(p5, sketcher, pcDiameter, platformWidth, platformHeight, tokenDiameter) {
         this.#p5 = p5;
         this.reset();
         console.log(`Generating PC sprites`);
         this.#generatePCSprites(p5, sketcher, pcDiameter);
         console.log(`Generating platform sprites`);
         this.#generatePlatformSprites(p5, sketcher, platformWidth, platformHeight);
+        console.log(`Generating token sprites`);
+        this.#generateTokenSprites(p5, sketcher, tokenDiameter);
         console.log(`Generating wave sprites`);
         this.#generateWaveSprites(p5, sketcher);
         console.log(`Generating stress bar sprites`);
@@ -163,6 +170,22 @@ export default class SpriteManager {
         this.#platformSprites = generateSprites(sketcher, generatePlatformSprite);
     }
 
+    #generateTokenSprites(p5, sketcher, tokenDiameter) {
+        function generateTokenSprite() {
+            return sketcher.buildSketchedEllipse(
+                TOKEN_STROKE_COLOUR,
+                TOKEN_FILL_COLOUR,
+                0,
+                0,
+                tokenDiameter,
+                tokenDiameter,
+                TOKEN_SIDES,
+            );
+        }
+
+        this.#tokenSprites = generateSprites(sketcher, generateTokenSprite);
+    }
+
     #generateWaveSprites(p5, sketcher) {
         const crestHeight = p5.height / CREST_HEIGHT_DIV;
 
@@ -218,12 +241,49 @@ export default class SpriteManager {
 
     }
 
-    drawSprites(stress, { pcPos, platforms, wavePos, stressBarPos }) {
+    #drawPC(pcPos) {
+        if (pcPos) {
+            this.#pcSprites[this.#smoothedStress][this.#variant].draw(pcPos);
+        }
+    }
+
+    #drawPlatforms(platforms) {
+        if (platforms) {
+            for (let { i, pos } of platforms) {
+                let adjustedVariant = (this.#variant + i) % SPRITE_VARIANTS_PER_STRESS;
+                this.#platformSprites[this.#smoothedStress][adjustedVariant].draw(pos);
+            }
+        }
+    }
+
+    #drawTokens(tokens) {
+        if (tokens) {
+            for (let { i, pos } of tokens) {
+                let adjustedVariant = (this.#variant + i) % SPRITE_VARIANTS_PER_STRESS;
+                this.#tokenSprites[this.#smoothedStress][adjustedVariant].draw(pos);
+            }
+        }
+    }
+
+    #drawWave(wavePos) {
+        if (wavePos) {
+            this.#waveSprites[this.#smoothedStress][this.#waveVariant].draw(wavePos);
+        }
+    }
+
+    #drawStressBar(stressBarPos, stress) {
+        if (stressBarPos) {
+            this.#stressBarOutlineSprites[this.#smoothedStress][this.#variant].draw(stressBarPos);
+            this.#stressBarFillSprites[stress][this.#variant].draw(stressBarPos);
+        }
+    }
+
+    drawSprites(stress, { pcPos, platforms, tokens, wavePos, stressBarPos }) {
         // Frames per variant is inversely proportional to stress 
         this.#framesPerVariant = Math.max(MIN_FRAMES_PER_VARIANT,
             Math.round(MAX_FRAMES_PER_VARIANT * (1 - calcStressFraction(stress))));
 
-        // If enough time has passed...
+        // If enough frames have passed...
         if ((this.#p5.frameCount - this.#lastFrameCount) %
             this.#framesPerVariant == 0) {
             // ... increment variant and update smoothed stress 
@@ -232,31 +292,19 @@ export default class SpriteManager {
             this.#lastFrameCount = this.#p5.frameCount;
         }
 
-        // If enough time has passed...
+        // If enough frames have passed...
         if (this.#p5.frameCount % Math.floor(ASSUMED_FRAMERATE / WAVE_FPS) == 0) {
-            // ... increment wave variant 
+            // ... increment wave variant (this is independent of stress)
             this.#waveVariant = (this.#waveVariant + 1) % WAVE_VARIANTS;
         }
 
-        if (pcPos) {
-            this.#pcSprites[this.#smoothedStress][this.#variant].draw(pcPos);
-        }
+        this.#drawPC(pcPos);
+        this.#drawPlatforms(platforms);
+        // console.log(tokens); 
+        this.#drawTokens(tokens);
+        this.#drawStressBar(stressBarPos, stress);
+        this.#drawWave(wavePos);
 
-        if (platforms) {
-            for (let { i, pos } of platforms) {
-                let adjustedVariant = (this.#variant + i) % SPRITE_VARIANTS_PER_STRESS;
-                this.#platformSprites[this.#smoothedStress][adjustedVariant].draw(pos);
-            }
-        }
-
-        if (wavePos) {
-            this.#waveSprites[this.#smoothedStress][this.#waveVariant].draw(wavePos);
-        }
-
-        if (stressBarPos) {
-            this.#stressBarOutlineSprites[this.#smoothedStress][this.#variant].draw(stressBarPos);
-            this.#stressBarFillSprites[stress][this.#variant].draw(stressBarPos);
-        }
     }
 }
 

@@ -53,7 +53,7 @@ export default class Level {
 
     set tokens(tokens) {
         this.#tokens = tokens;
-        this.#tokens.sort((p1, p2) => p2.pos.y - p1.pos.y);
+        this.#tokens.sort((t1, t2) => t2.pos.y - t1.pos.y);
     }
 
     get difficulty() {
@@ -78,8 +78,8 @@ export default class Level {
 
     reset() {
         this.#top = this.topLimit;
-        this.#platforms.forEach(p => p.pos = p.initPos.copy());
-        this.#tokens.forEach(t => t.pos = t.initPos.copy());
+        this.#platforms.forEach(p => p.pos = p.initPos);
+        this.#tokens.forEach(t => t.pos = t.initPos);
     }
 
     /* Move all level elements up or down (incl. PC and wave) */

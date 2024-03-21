@@ -5,6 +5,7 @@ import { LEFT, REST, RIGHT } from "../utils/constants";
 import SpriteManager from "./sprites";
 import StressTracker from "./stresstracker";
 import Wave from "./wave";
+import Token from "./token";
 
 const PAN_RATE_DIV = PC_DIAMETER_DIV * 10;
 const UP = -1;
@@ -39,7 +40,8 @@ export default class LevelController {
         this.#completeLevel = completeLevel;
         this.#spriteManager = new SpriteManager(p5, sketcher,
             this.#pc.diameter,
-            Platform.defaultWidth(p5), Platform.defaultHeight(p5)
+            Platform.defaultWidth(p5), Platform.defaultHeight(p5),
+            Token.defaultDiameter(p5)
         );
     }
 
@@ -121,6 +123,7 @@ export default class LevelController {
             if (this.#waveMoving) {
                 this.#wave.translate({ y: -this.level.waveRiseRate });
             }
+            this.#level.tokens.forEach(t => t.integrate());
 
             // stress management
             this.#stressTracker.updateStress(Math.abs(this.#pc.pos.y - this.#wave.pos.y));
@@ -148,7 +151,7 @@ export default class LevelController {
     }
 
     draw(marginX, lineGap, topLineGap) {
-        this.level.draw(marginX, lineGap, topLineGap);
+        this.level.renderPage(marginX, lineGap, topLineGap);
         this.#spriteManager.drawSprites(this.#stressIndex, {
             pcPos: this.#pc.pos,
             platforms: this.level.platforms
@@ -157,7 +160,10 @@ export default class LevelController {
             wavePos: this.#wave.onScreen() ? this.#wave.pos : undefined,
             stressBarPos: this.#p5.createVector(
                 (this.#p5.width + marginX - this.#spriteManager.stressBarWidth(this.#p5)) / 2,
-                this.#spriteManager.stressBarHeight(this.#p5) / 2)
+                this.#spriteManager.stressBarHeight(this.#p5) / 2),
+            tokens: this.level.tokens
+                .map((t, i) => { return { i: i, pos: t.pos, onScreen: t.onScreen() } })
+                .filter((t) => t.onScreen)
         });
 
         // temporary   

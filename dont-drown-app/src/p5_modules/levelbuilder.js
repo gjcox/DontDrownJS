@@ -1,7 +1,6 @@
 import Level from "./level";
 import { increment } from "./physicsengine";
 import Platform from "./platform";
-import { PC_DIAMETER_DIV } from "./playerball";
 import Token from "./token";
 
 // horizontal, vertical and reflection jump bounds 
@@ -50,7 +49,7 @@ export default class LevelBuilder {
         this.#p5 = p5;
         this.#jumpHeight = jumpHeight * increment(p5);
         this.#jumpWidth = jumpWidth * increment(p5) + Platform.defaultWidth(p5);
-        this.#tokenElevation = 0.75 * p5.width / PC_DIAMETER_DIV;
+        this.#tokenElevation = Token.defaultDiameter(p5);
     }
 
     calcMaxYatX(x) {
@@ -149,6 +148,19 @@ export default class LevelBuilder {
             platformPos.x = Math.min(platformPos.x, width - platformWidth);
         }
 
+        var sinceToken = 0; // platforms since last token 
+        function incrementSinceToken(jumpType) {
+            switch (jumpType) {
+                case V_JUMP:
+                case R_JUMP:
+                    sinceToken += 1.5;
+                    break;
+                case H_JUMP:
+                    sinceToken += 1;
+                    break;
+            }
+        }
+
         const platforms = [];
         const lastPlatform = () => platforms[platforms.length - 1];
         const tokens = [];
@@ -167,7 +179,7 @@ export default class LevelBuilder {
         var jumpType = H_JUMP;
         // ... towards the horizontal middle of the playable area
         var goingLeft = lastPlatform().middle.x > middlePlayable;
-        var sinceToken = this.#p5.random(MIN_PLATFORMS_BETWEEN_TOKENS); // platforms since last token 
+
 
         do {
             var nextPlatformPos = lastPlatform().pos.copy();
@@ -185,14 +197,15 @@ export default class LevelBuilder {
             applyBounds(nextPlatformPos);
 
             // place a token on a new platform off the optimal path
-            if (jumpType !== R_JUMP && sinceToken++ >= MIN_PLATFORMS_BETWEEN_TOKENS) {
+            incrementSinceToken(jumpType);
+            if (jumpType == H_JUMP && sinceToken >= MIN_PLATFORMS_BETWEEN_TOKENS) {
                 const tokenPlatformPos = nextPlatformPos.copy();
-                tokenPlatformPos.add(2 * goingLeft ? x : -x);
+                tokenPlatformPos.add(2 * (goingLeft ? x : -x));
                 applyBounds(tokenPlatformPos);
                 platforms.push(new Platform(this.#p5, tokenPlatformPos));
                 tokens.push(this.buildToken(lastPlatform()));
                 sinceToken = 0;
-            } 
+            }
 
             // add next platform 
             platforms.push(new Platform(this.#p5, nextPlatformPos));

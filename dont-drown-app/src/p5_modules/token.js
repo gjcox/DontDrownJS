@@ -26,6 +26,14 @@ export default class Token {
         this.reset();
     }
 
+    get initPos() {
+        return this.#initPos.copy(); 
+    }
+
+    set pos(newPos) {
+        this.#pos = newPos.copy();
+    }
+
     get pos() {
         return this.#pos.copy();
     }
@@ -36,6 +44,10 @@ export default class Token {
 
     get radius() {
         return this.#radius;
+    }
+
+    static defaultDiameter(p5) {
+        return p5.width / TOKEN_DIAMETER_DIV;
     }
 
     reset() {
