@@ -6,8 +6,8 @@ class Difficulty {
         this.hasGround = hasGround;
         this.verticality = verticality;
         this.waveRiseTime = waveRiseTime;
-        this.string = string; 
-        Object.freeze(this); 
+        this.string = string;
+        Object.freeze(this);
     }
 }
 
@@ -17,14 +17,15 @@ const HARD = new Difficulty(2.5, false, 0.2, 14, "hard");
 const VERY_HARD = new Difficulty(3, false, 0.1, 14, "very hard");
 
 export default class Level {
-    #p5; 
-    #platforms; 
+    #p5;
+    #platforms;
+    #tokens;
     #highestPlatform;
-    #difficulty; 
-    #height; 
-    #topLimit; 
+    #difficulty;
+    #height;
+    #topLimit;
     #top;
-    #waveRiseRate; 
+    #waveRiseRate;
 
     constructor(p5, difficulty) {
         this.#p5 = p5;
@@ -46,6 +47,15 @@ export default class Level {
         this.#highestPlatform = this.#platforms[this.#platforms.length - 1];
     }
 
+    get tokens() {
+        return this.#tokens;
+    }
+
+    set tokens(tokens) {
+        this.#tokens = tokens;
+        this.#tokens.sort((p1, p2) => p2.pos.y - p1.pos.y);
+    }
+
     get difficulty() {
         return this.#difficulty;
     }
@@ -63,23 +73,25 @@ export default class Level {
     }
 
     get highestPlatform() {
-        return this.#highestPlatform; 
+        return this.#highestPlatform;
     }
 
     reset() {
         this.#top = this.topLimit;
-        this.platforms.forEach(p => p.pos = p.initPos.copy());
+        this.#platforms.forEach(p => p.pos = p.initPos.copy());
+        this.#tokens.forEach(t => t.pos = t.initPos.copy());
     }
 
     /* Move all level elements up or down (incl. PC and wave) */
     pan(y) {
         this.#top += y;
         this.#platforms.forEach(p => p.translate(this.#p5.createVector(0, y)));
+        this.#tokens.forEach(t => t.translate({ y: y }));
     }
 
-    draw(marginX, lineGap, topLineGap) {
+    renderPage(marginX, lineGap, topLineGap) {
         renderPage(this.#p5, marginX, lineGap, topLineGap, this.top);
-    } 
+    }
 }
 
 export { EASY, HARD, MEDIUM, VERY_HARD };
