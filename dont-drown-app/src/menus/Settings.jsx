@@ -11,7 +11,7 @@ export default function Settings({ lineGap, setFontSize }) {
 
     const fontSize = (
         <div style={{ display: 'flex', flexDirection: 'row', height: '3em' }}>
-            <MenuLine lineGap={lineGap}>Font size: </MenuLine>
+            <MenuLine lineGap={lineGap}>{['Font size: ']}</MenuLine>
             <div style={{
                 marginTop: '1.5em',
                 display: 'flex',
