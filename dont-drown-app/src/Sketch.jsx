@@ -81,12 +81,18 @@ function sketch(p5) {
         // Get values for level-generation from crash dummy 
         const [jumpHeight, jumpFrames, jumpWidth] = crashDummy.jumpInfo;
 
-        // Generate  levels 
-        levelBuilder = new LevelBuilder(p5, jumpHeight, jumpWidth);
-        levels = [EASY, MEDIUM, HARD, VERY_HARD].map(diff => levelBuilder.buildLevel(diff, marginX));
+        // Generate levels 
+        if (!levelBuilder) {
+            levelBuilder = new LevelBuilder(p5, jumpHeight, jumpWidth);
+        }
+        if (!levels) {
+            levels = [EASY, MEDIUM, HARD, VERY_HARD].map(diff => levelBuilder.buildLevel(diff, marginX));
+        }
 
-        // Build level controller 
-        levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
+        // Build level controller (and by extension sprites)
+        if (!levelController) {
+            levelController = new LevelController(p5, sketcher, jumpHeight, completeLevel);
+        }
     }
 
     p5.updateWithProps = props => {
@@ -118,7 +124,6 @@ function sketch(p5) {
         if (topLineGap !== props.topLineGap) { topLineGap = props.topLineGap; }
         if (menuScrollOffset !== props.menuScrollOffset) { menuScrollOffset = props.menuScrollOffset; }
         // End of values  
-
 
     };
 
