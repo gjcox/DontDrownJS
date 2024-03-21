@@ -68,9 +68,4 @@ export default class Platform {
         return this.#pos.y <= this.#p5.height && this.#pos.y >= this.#height;
     }
 
-    draw() {
-        if (this.onScreen()) {
-            this.sprite.draw(this.#pos);
-        }
-    }
 }
