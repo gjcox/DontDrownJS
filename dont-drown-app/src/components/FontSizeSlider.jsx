@@ -36,10 +36,10 @@ export default function FontSizeSlider({ lineGap, setFontSize }) {
 
     return (
         <ReactSlider
-            className="horizontal-slider"
-            markClassName="example-mark"
-            thumbClassName="example-thumb"
-            trackClassName="example-track"
+            className="menu__font-slider"
+            markClassName="menu__font-slider-mark"
+            thumbClassName="menu__font-slider-thumb"
+            trackClassName="menu__font-slider-track"
             min={SMALL_FONT}
             max={LARGE_FONT}
             marks={[SMALL_FONT, MEDIUM_FONT, LARGE_FONT]}

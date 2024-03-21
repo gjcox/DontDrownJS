@@ -123,13 +123,13 @@ canvas {
   font-size: 2.5em;
 }
 
-.horizontal-slider {
+.menu__font-slider {
   width: 10em;
   max-width: 500px;
   height: 2em;
 }
 
-.example-thumb {
+.menu__font-slider-thumb {
   font-size: 0.9em;
   text-align: center;
   background-color: black;
@@ -137,27 +137,19 @@ canvas {
   cursor: pointer;
   border: .2em solid gray;
   box-sizing: border-box;
-}
-
-.horizontal-slider .example-thumb {
-  /* top: 1px; */
   width: 2em;
   height: 2em;
   line-height: 1em;
 }
 
-.example-track {
+.menu__font-slider-track {
   position: relative;
   background: rgb(221, 221, 221);
-}
-
-
-.horizontal-slider .example-track {
   top: calc((2em - .2em)/2);
   height: .2em;
 }
 
-.example-mark {
+.menu__font-slider-mark {
   width: calc(1em - 2px);
   height: calc(1em - 2px);
   border: 2px solid rgb(0, 0, 0);
@@ -165,9 +157,5 @@ canvas {
   cursor: pointer;
   border-radius: 50%;
   vertical-align: middle;
-}
-
-.horizontal-slider .example-mark {
-  /* margin: 0px calc(2*(1em - 2px)); */
   bottom: calc(50% - (1em - 2px)/2);
 }
