@@ -30,7 +30,6 @@ setFontSize }) {
         setMenuScrollOffset(-scrollRef.current.scrollTop);
     };
 
-
     const [currMenu, setCurrMenu] = useState(MAIN);
     const [menuHistory, setMenuHistory] = useState([]);
     const [fontStyle, setFontStyle] = useState();
@@ -56,6 +55,7 @@ setFontSize }) {
         } else {
             setMenuHistory([...menuHistory, currMenu]);
             setCurrMenu(newState);
+            setMenuScrollOffset(0); 
         }
     }
 
@@ -65,6 +65,7 @@ setFontSize }) {
         if (lastMenu !== undefined) {
             setCurrMenu(lastMenu);
             setMenuHistory(menuHistory.slice(0, -1));
+            setMenuScrollOffset(0); 
         }
     }
 
