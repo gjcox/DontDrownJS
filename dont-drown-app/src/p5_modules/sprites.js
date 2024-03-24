@@ -12,6 +12,7 @@ const PF_GROUND_THICKNESS_MULT = 3; // relative to sketcher.defLineWeight
 const PF_STROKE_COLOUR = 'limegreen';
 const PF_FILL_COLOUR = 'chartreuse';
 
+const TOKEN_STROKE_WEIGHT_MULT = 2; // relative to sketcher.defLineWeight     
 const TOKEN_STROKE_COLOUR = 'goldenrod';
 const TOKEN_FILL_COLOUR = 'gold';
 const TOKEN_SIDES = 4; // number of sides of token shape 
@@ -171,15 +172,17 @@ export default class SpriteManager {
     }
 
     #generateTokenSprites(p5, sketcher, tokenDiameter) {
-        function generateTokenSprite() {
+        const tokenStrokeWeight = sketcher.defLineWeight * TOKEN_STROKE_WEIGHT_MULT;
+        function generateTokenSprite({stressFraction}) {
             return sketcher.buildSketchedEllipse(
                 TOKEN_STROKE_COLOUR,
                 TOKEN_FILL_COLOUR,
                 0,
                 0,
-                tokenDiameter,
+                tokenDiameter + p5.random(-tokenStrokeWeight, tokenStrokeWeight) * stressFraction,
                 tokenDiameter,
                 TOKEN_SIDES,
+                tokenStrokeWeight
             );
         }
 
