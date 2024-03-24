@@ -140,10 +140,10 @@ function sketch(p5) {
         crashDummy.run();
 
         if (crashDummy.done) {
-            generateLevels();
+            !levels && generateLevels();
             setGetLevels(() => () => levels);
             setStartLevel(() => startLevel);
-            setGameState(IN_MENU);
+            gameState != IN_MENU && setGameState(IN_MENU);
         }
     }
 
