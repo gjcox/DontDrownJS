@@ -27,7 +27,7 @@ export default class LevelController {
     #completeLevel;
     #spriteManager;
 
-    constructor(p5, sketcher, jumpHeight, completeLevel) {
+    constructor(p5, sketcher, jumpHeight) {
         this.#p5 = p5;
         this.#pc = new PlayerBall(p5);
         this.#wave = new Wave(p5, sketcher);
@@ -37,7 +37,6 @@ export default class LevelController {
         this.#paused = false;
         this.#stressIndex;
         this.#stressTracker = new StressTracker(value => this.stressIndex = value, jumpHeight * 1.5);
-        this.#completeLevel = completeLevel;
         this.#spriteManager = new SpriteManager(p5, sketcher,
             this.#pc.diameter,
             Platform.defaultWidth(p5), Platform.defaultHeight(p5),
@@ -129,18 +128,14 @@ export default class LevelController {
             this.#stressTracker.updateStress(Math.abs(this.#pc.pos.y - this.#wave.pos.y));
 
             // token collection detection
-            const collected = detectTokenCollection(this.#pc, this.level.tokens)
+            const collected = detectTokenCollection(this.#pc, this.level.tokens.filter((t) => t.onScreen()));
             collected.forEach(token => token.collect());
 
             // collision detection 
-            detectLanding(this.#pc, this.level.platforms);
+            detectLanding(this.#pc, this.level.platforms.filter((p) => p.onScreen()));
             detectEdgeCollision(this.#pc, marginX, this.#p5.width);
             if (this.#pc.pos.y >= this.#wave.pos.y) {
                 this.reset();
-            }
-
-            if (this.#pc.currentPlatform == this.level.highestPlatform) {
-                this.#completeLevel();
             }
 
             // check if panning needed
@@ -151,6 +146,9 @@ export default class LevelController {
             } else {
                 this.#panning = NEITHER;
             }
+
+            // return of true means level is complete 
+            return this.#pc.currentPlatform == this.level.highestPlatform;
         }
     }
 

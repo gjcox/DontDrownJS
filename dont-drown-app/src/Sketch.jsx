@@ -153,13 +153,12 @@ function sketch(p5) {
     }
 
     function runLevel() {
-        // drawing 
-        levelController?.integrate(marginX);
+        const levelComplete = levelController?.integrate(marginX);
         levelController?.draw(marginX, lineGap, topLineGap);
+        if (levelComplete) completeLevel(); 
     }
 
     function completeLevel() {
-        // levelController.level = undefined;
         setGameState(IN_MENU);
     }
 
