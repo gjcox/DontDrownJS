@@ -79,7 +79,7 @@ export default class Level {
     reset() {
         this.#top = this.topLimit;
         this.#platforms.forEach(p => p.pos = p.initPos);
-        this.#tokens.forEach(t => t.pos = t.initPos);
+        this.#tokens.forEach(t => t.reset());
     }
 
     /* Move all level elements up or down (incl. PC and wave) */
