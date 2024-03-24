@@ -60,11 +60,66 @@ function detectLanding(ball, platforms) {
                     return false;
                 }
             }
-                            
+
             // continue search
             return true;
         });
     }
+}
+
+function detectTokenCollection(ball, tokens) {
+    if (tokens.length < 1) {
+        return [];
+    }
+
+    const tokenRadius = tokens[0].radius;
+    const collisionRange = ball.radius + tokenRadius;
+    const collectedTokens = []; // not technically impossible to collect 2 in one frame 
+    tokens.every(token => {
+        if (token.pos.y + tokenRadius <
+            Math.min(ball.oldPos.y, ball.pos.y) - ball.radius) {
+            // token too high
+            // cut off search
+            return false;
+        } else if (token.collected) {
+            // token already collected
+            // continue search
+        } else if (token.pos.y - tokenRadius > Math.max(ball.oldPos.y, ball.pos.y) + ball.radius) {
+            // token too low
+            // continue search
+        } else {
+            if (ball.oldPos.dist(token.pos) <= collisionRange ||
+                ball.pos.dist(token.pos) <= collisionRange) {
+                collectedTokens.push(token);
+            } else {
+                const direction = ball.pos.copy();
+                direction.sub(ball.oldPos);
+
+                // the angle between the pc's path and the token's centre, from the pc's old position
+                const theta = Math.abs(direction.heading() - ball.oldPos.angleBetween(token.pos));
+
+                const hypotenuse = ball.oldPos.dist(token.pos);
+
+                // the shortest distance from the pc's path to the centre of the token
+                const x = (hypotenuse * Math.sin(theta));
+
+                // the distance along the pc's path to the point on that path closest to the token
+                // note that this distance could reflect the path projecting past the PC's current position 
+                const y = (hypotenuse * Math.cos(theta));
+
+                if (theta <= Math.PI / 2 &&
+                    x <= collisionRange &&
+                    y <= ball.oldPos.dist(ball.pos)) {
+                    collectedTokens.push(token);
+                }
+            }
+        }
+
+        // continue search
+        return true;
+    });
+
+    return collectedTokens;
 }
 
 /**
@@ -86,5 +141,5 @@ const increment = (p5) => {
     return p5.width / INCREMENT_DIV;
 }
 
-export { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, detectLanding, detectEdgeCollision, increment };
+export { C, COR_CAVAS_EDGE, COR_PLATFORM, COR_PLATFORM_EDGE, G, INCREMENT_DIV, MU, PC_AIR_THRUST, PC_GROUND_THRUST, PC_JUMP_MULT, PC_MAX_SPEED, detectEdgeCollision, detectLanding, detectTokenCollection, increment };
 

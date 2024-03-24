@@ -27,7 +27,7 @@ export default class Token {
     }
 
     get initPos() {
-        return this.#initPos.copy(); 
+        return this.#initPos.copy();
     }
 
     set pos(newPos) {
@@ -46,8 +46,16 @@ export default class Token {
         return this.#radius;
     }
 
+    get collected() {
+        return this.#collected;
+    }
+
     static defaultDiameter(p5) {
         return p5.width / TOKEN_DIAMETER_DIV;
+    }
+
+    collect() {
+        this.#collected = true;
     }
 
     reset() {

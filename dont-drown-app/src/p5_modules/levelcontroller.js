@@ -1,11 +1,11 @@
-import { detectEdgeCollision, detectLanding, increment } from "./physicsengine";
+import { LEFT, REST, RIGHT } from "../utils/constants";
+import { detectEdgeCollision, detectLanding, detectTokenCollection, increment } from "./physicsengine";
 import Platform from "./platform";
 import PlayerBall, { PC_DIAMETER_DIV } from "./playerball";
-import { LEFT, REST, RIGHT } from "../utils/constants";
 import SpriteManager from "./sprites";
 import StressTracker from "./stresstracker";
-import Wave from "./wave";
 import Token from "./token";
+import Wave from "./wave";
 
 const PAN_RATE_DIV = PC_DIAMETER_DIV * 10;
 const UP = -1;
@@ -127,6 +127,10 @@ export default class LevelController {
 
             // stress management
             this.#stressTracker.updateStress(Math.abs(this.#pc.pos.y - this.#wave.pos.y));
+
+            // token collection detection
+            const collected = detectTokenCollection(this.#pc, this.level.tokens)
+            collected.forEach(token => token.collect());
 
             // collision detection 
             detectLanding(this.#pc, this.level.platforms);
